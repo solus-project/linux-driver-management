@@ -2,7 +2,6 @@ AC_INIT([linux-driver-management], 0.0, [ikey@solus-project.com], [linux-driver-
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wno-portability no-dist-gzip dist-xz foreign subdir-objects])
 AC_PROG_CC
-AC_PROG_CXX
 AC_PROG_CC_STDC
 LT_PREREQ(2.2)
 AC_CONFIG_HEADERS([config.h])
