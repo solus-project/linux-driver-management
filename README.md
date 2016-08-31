@@ -11,6 +11,9 @@ Linux Driver Management is a [Solus project](https://solus-project.com/)
 
 
 NOTE: LDM is currently under heavy development, and should not be used yet.
+Please also note that the name is only a *working name*. We're actively seeking a replacement and
+when a suitable name is found, it'll be replaced. The working name was chosen so that the project
+could be started quickly without further delays. If you have a suggestion, open an issue please :)
 
 Basic core design
 -----------------
