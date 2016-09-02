@@ -30,7 +30,6 @@ libldm_la_SOURCES = 		\
 	src/include/atomics.h	\
 	src/include/ldm.h	\
 	src/include/util.h	\
-	src/detect/main.c 	\
 	src/manager/manager.c
 
 libldm_la_CFLAGS = \
