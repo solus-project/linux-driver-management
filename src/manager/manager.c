@@ -11,24 +11,33 @@
 
 #include <stdlib.h>
 
+#include "atomics.h"
 #include "ldm.h"
 
 struct LdmManager {
-        int __reserved1;
+        ldm_atomic_t atom;
 };
+
+static inline void ldm_manager_destroy(LdmManager *manager)
+{
+        if (!manager) {
+                return;
+        }
+        free(manager);
+}
 
 LdmManager *ldm_manager_new(void)
 {
         LdmManager *ret = NULL;
 
         ret = calloc(1, sizeof(LdmManager));
-        return ret;
+        if (!ret) {
+                return NULL;
+        }
+        return ldm_atomic_init((ldm_atomic_t *)ret, (ldm_atomic_free)ldm_manager_destroy);
 }
 
 void ldm_manager_free(LdmManager *manager)
 {
-        if (!manager) {
-                return;
-        }
-        free(manager);
+        ldm_atomic_unref(manager);
 }
