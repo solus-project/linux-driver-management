@@ -41,3 +41,16 @@ __ldm_public__ void ldm_manager_free(LdmManager *manager)
 {
         ldm_atomic_unref(manager);
 }
+
+/*
+ * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
+ *
+ * Local variables:
+ * c-basic-offset: 8
+ * tab-width: 8
+ * indent-tabs-mode: nil
+ * End:
+ *
+ * vi: set shiftwidth=8 tabstop=8 expandtab:
+ * :indentSize=8:tabSize=8:noTabs=true:
+ */
