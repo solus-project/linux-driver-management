@@ -10,6 +10,10 @@ libtool
 m4/
 *.la
 *.lo
+*.o
 *.deps
 *.dirstamp
 stamp-*
+
+# Main binary
+/linux-device-manager

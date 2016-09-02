@@ -12,3 +12,14 @@
 #pragma once
 
 #define __ldm_inline__ __attribute__((always_inline))
+
+/**
+ * All symbols are hidden by default so must be explicitly be made public in
+ * LDM to define the ABI
+ */
+#define __ldm_public__ __attribute__((visibility("default")))
+
+/**
+ * Helpful in development to suppress compiler warnings for known-unused vars
+ */
+#define __ldm_unused__ __attribute__((unused))

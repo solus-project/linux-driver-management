@@ -26,7 +26,7 @@ static inline void ldm_manager_destroy(LdmManager *manager)
         free(manager);
 }
 
-LdmManager *ldm_manager_new(void)
+__ldm_public__ LdmManager *ldm_manager_new(void)
 {
         LdmManager *ret = NULL;
 
@@ -37,7 +37,7 @@ LdmManager *ldm_manager_new(void)
         return ldm_atomic_init((ldm_atomic_t *)ret, (ldm_atomic_free)ldm_manager_destroy);
 }
 
-void ldm_manager_free(LdmManager *manager)
+__ldm_public__ void ldm_manager_free(LdmManager *manager)
 {
         ldm_atomic_unref(manager);
 }
