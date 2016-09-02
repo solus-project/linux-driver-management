@@ -20,13 +20,15 @@ AM_CFLAGS = \
 	-Wall -W -D_FORTIFY_SOURCE=2 -std=c11
 
 AM_CPPFLAGS = \
-	-I $(top_srcdir)/src
+	-I $(top_srcdir)/src/include
 
 lib_LTLIBRARIES = libldm.la
 
 # Main library
-libldm_la_SOURCES = \
-	src/detect/main.c
+libldm_la_SOURCES = 		\
+	src/include/ldm.h	\
+	src/detect/main.c 	\
+	src/manager/manager.c
 
 libldm_la_CFLAGS = \
 	$(AM_CFLAGS) \
