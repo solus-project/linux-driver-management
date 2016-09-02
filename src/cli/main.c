@@ -17,10 +17,9 @@
 
 int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
-        LdmManager *manager = NULL;
+        autofree(LdmManager) *manager = NULL;
 
         manager = ldm_manager_new();
-        ldm_manager_free(manager);
 
         fputs("not yet implemented\n", stderr);
 

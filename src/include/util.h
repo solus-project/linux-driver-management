@@ -23,3 +23,22 @@
  * Helpful in development to suppress compiler warnings for known-unused vars
  */
 #define __ldm_unused__ __attribute__((unused))
+
+/**
+ * Define a cleanup-attribute based autofree helper
+ *
+ * Used in sol, nica, cve tool, etc.
+ */
+#define DEF_AUTOFREE(N, C)                                                                         \
+        static inline void _autofree_func_##N(void *p)                                             \
+        {                                                                                          \
+                if (p && *(N **)p) {                                                               \
+                        C(*(N **)p);                                                               \
+                        (*(void **)p) = NULL;                                                      \
+                }                                                                                  \
+        }
+
+/**
+ * Mark the variable as an autofree, assuming the type is known with DEF_AUTOFREE
+ */
+#define autofree(N) __attribute__((cleanup(_autofree_func_##N))) N
