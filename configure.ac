@@ -12,6 +12,14 @@ AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_FILES([Makefile])
 
+m4_define([pci_required_version], [0.13.4])
+
+PKG_CHECK_MODULES(CORE,
+        [
+         pciaccess >= pci_required_version
+        ]
+)
+
 AC_OUTPUT
 
 AC_MSG_RESULT([

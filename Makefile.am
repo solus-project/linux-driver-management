@@ -30,9 +30,13 @@ libldm_la_SOURCES = \
 
 libldm_la_CFLAGS = \
 	$(AM_CFLAGS) \
+	$(CORE_CFLAGS) \
 	-fvisibility=hidden
 
 libldm_la_LDFLAGS = \
 	$(AM_LDFLAGS) \
 	-version-info $(LIBLDM_CURRENT):$(LIBLDM_REVISION):$(LIBLDM_AGE) \
 	-export-dynamic
+
+libldm_la_LIBADD = \
+	$(CORE_LIBS)
