@@ -21,6 +21,10 @@ struct LdmManager {
         ldm_atomic_t atom;
 };
 
+#define PCI_VENDOR_ID_INTEL 0x8086
+#define PCI_VENDOR_ID_NVIDIA 0x10DE
+#define PCI_VENDOR_ID_AMD 0x1002
+
 static int _pci_status = 0;
 
 #define IS_DEV_VGA(c) (((c)&0x00ffff00) == ((0x03 << 16) | (0x00 << 8)))
@@ -87,15 +91,26 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
                 if (!IS_DEV_VGA(device->device_class)) {
                         continue;
                 }
-                fprintf(stderr, "Have device: %#x %#x\n", device->vendor_id, device->device_id);
+                fprintf(stderr, "Have VGA device: %#x %#x\n", device->vendor_id, device->device_id);
+                switch (device->vendor_id) {
+                case PCI_VENDOR_ID_INTEL:
+                        fputs(" -> Intel device\n", stderr);
+                        break;
+                case PCI_VENDOR_ID_NVIDIA:
+                        fputs(" -> NVIDIA device\n", stderr);
+                        break;
+                case PCI_VENDOR_ID_AMD:
+                        fputs(" -> AMD device\n", stderr);
+                        break;
+                }
                 if (pci_device_is_boot_vga(device)) {
-                        fprintf(stderr, "Found boot-vga: %#x\n", device->device_class);
+                        fprintf(stderr, " -> Is boot VGA: %#x\n", device->device_class);
                 }
         }
 
         pci_iterator_destroy(devices);
 
-        return false;
+        return true;
 }
 
 /*
