@@ -23,6 +23,8 @@ struct LdmManager {
 
 static int _pci_status = 0;
 
+#define IS_DEV_VGA(c) (((c)&0x00ffff00) == ((0x03 << 16) | (0x00 << 8)))
+
 static inline bool is_pci_available(void)
 {
         return _pci_status == 0;
@@ -79,8 +81,12 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
         }
 
         while ((device = pci_device_next(devices)) != NULL) {
+                if (!IS_DEV_VGA(device->device_class)) {
+                        continue;
+                }
+                fprintf(stderr, "Have device: %#x\n", device->device_id);
                 if (pci_device_is_boot_vga(device)) {
-                        fprintf(stderr, "Found boot-vga: %x\n", device->device_class);
+                        fprintf(stderr, "Found boot-vga: %#x\n", device->device_class);
                 }
         }
 
