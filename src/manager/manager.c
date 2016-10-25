@@ -87,7 +87,7 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
                 if (!IS_DEV_VGA(device->device_class)) {
                         continue;
                 }
-                fprintf(stderr, "Have device: %#x\n", device->device_id);
+                fprintf(stderr, "Have device: %#x %#x\n", device->vendor_id, device->device_id);
                 if (pci_device_is_boot_vga(device)) {
                         fprintf(stderr, "Found boot-vga: %#x\n", device->device_class);
                 }
