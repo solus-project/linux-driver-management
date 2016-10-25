@@ -9,6 +9,8 @@
  * of the License, or (at your option) any later version.
  */
 
+#include <pciaccess.h>
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "atomics.h"
@@ -17,6 +19,25 @@
 struct LdmManager {
         ldm_atomic_t atom;
 };
+
+static int _pci_status = 0;
+
+static inline bool is_pci_available(void)
+{
+        return _pci_status == 0;
+}
+
+__attribute__((constructor)) static void _ldm_init(void)
+{
+        _pci_status = pci_system_init();
+}
+
+__attribute__((destructor)) static void _ldm_deinit(void)
+{
+        if (is_pci_available()) {
+                pci_system_cleanup();
+        }
+}
 
 static inline void ldm_manager_destroy(LdmManager *manager)
 {
