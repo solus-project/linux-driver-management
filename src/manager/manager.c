@@ -64,7 +64,7 @@ __ldm_public__ void ldm_manager_free(LdmManager *manager)
         ldm_atomic_unref(manager);
 }
 
-__ldm_public__ bool ldm_manager_scan(LdmManager *manager)
+__ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
 {
         struct pci_device_iterator *devices = NULL;
         struct pci_device *device = NULL;
@@ -79,7 +79,9 @@ __ldm_public__ bool ldm_manager_scan(LdmManager *manager)
         }
 
         while ((device = pci_device_next(devices)) != NULL) {
-                fprintf(stderr, "Got a device.\n");
+                if (pci_device_is_boot_vga(device)) {
+                        fprintf(stderr, "Found boot-vga: %x\n", device->device_class);
+                }
         }
 
         pci_iterator_destroy(devices);
