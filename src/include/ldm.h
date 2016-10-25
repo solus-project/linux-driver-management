@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 #include "util.h"
 
 typedef struct LdmManager LdmManager;
@@ -24,6 +26,13 @@ LdmManager *ldm_manager_new(void);
  * Free a previously allocated LdmManager
  */
 void ldm_manager_free(LdmManager *manager);
+
+/**
+ * Initiate a scan for the system devices available to us
+ *
+ * @returns true if the operation succeeded
+ */
+bool ldm_manager_scan(LdmManager *manager);
 
 DEF_AUTOFREE(LdmManager, ldm_manager_free)
 

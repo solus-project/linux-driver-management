@@ -11,6 +11,7 @@
 
 #include <pciaccess.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "atomics.h"
@@ -61,6 +62,29 @@ __ldm_public__ LdmManager *ldm_manager_new(void)
 __ldm_public__ void ldm_manager_free(LdmManager *manager)
 {
         ldm_atomic_unref(manager);
+}
+
+__ldm_public__ bool ldm_manager_scan(LdmManager *manager)
+{
+        struct pci_device_iterator *devices = NULL;
+        struct pci_device *device = NULL;
+        struct pci_slot_match match = {.domain = PCI_MATCH_ANY,
+                                       .bus = PCI_MATCH_ANY,
+                                       .dev = PCI_MATCH_ANY,
+                                       .func = PCI_MATCH_ANY };
+
+        devices = pci_slot_match_iterator_create(&match);
+        if (!devices) {
+                return false;
+        }
+
+        while ((device = pci_device_next(devices)) != NULL) {
+                fprintf(stderr, "Got a device.\n");
+        }
+
+        pci_iterator_destroy(devices);
+
+        return false;
 }
 
 /*

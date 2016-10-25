@@ -20,6 +20,9 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
         autofree(LdmManager) *manager = NULL;
 
         manager = ldm_manager_new();
+        if (!ldm_manager_scan(manager)) {
+                fputs("Failed to scan devices\n", stderr);
+        }
 
         fputs("not yet implemented\n", stderr);
 
