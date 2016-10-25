@@ -16,4 +16,4 @@ m4/
 stamp-*
 
 # Main binary
-/linux-device-manager
+/linux-driver-management

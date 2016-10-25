@@ -23,7 +23,7 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src/include
 
 lib_LTLIBRARIES = libldm.la
-bin_PROGRAMS = linux-device-manager
+bin_PROGRAMS = linux-driver-management
 
 # Main library
 libldm_la_SOURCES = 		\
@@ -46,12 +46,12 @@ libldm_la_LIBADD = \
 	$(CORE_LIBS)
 
 # CLI point of entry
-linux_device_manager_SOURCES = \
+linux_driver_management_SOURCES = \
 	src/cli/main.c
 
-linux_device_manager_CFLAGS = \
+linux_driver_management_CFLAGS = \
 	$(AM_CFLAGS)
 
-linux_device_manager_LDADD = \
+linux_driver_management_LDADD = \
 	libldm.la
 
