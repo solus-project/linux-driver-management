@@ -25,9 +25,13 @@ struct LdmManager {
 #define PCI_VENDOR_ID_NVIDIA 0x10DE
 #define PCI_VENDOR_ID_AMD 0x1002
 
-static int _pci_status = 0;
+/** VGA device */
+#define PCI_CLASS_DISPLAY_VGA 0x0300
 
-#define IS_DEV_VGA(c) (((c)&0x00ffff00) == ((0x03 << 16) | (0x00 << 8)))
+/** 3D Controller */
+#define PCI_CLASS_DISPLAY_3D 0x302
+
+static int _pci_status = 0;
 
 __ldm_inline__ static inline bool is_pci_available(void)
 {
@@ -88,7 +92,8 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
         }
 
         while ((device = pci_device_next(devices)) != NULL) {
-                if (!IS_DEV_VGA(device->device_class)) {
+                if (device->device_class != PCI_CLASS_DISPLAY_VGA << 8 &&
+                    device->device_class != PCI_CLASS_DISPLAY_3D << 8) {
                         continue;
                 }
                 fprintf(stderr, "Have VGA device: %#x %#x\n", device->vendor_id, device->device_id);
