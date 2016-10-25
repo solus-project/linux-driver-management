@@ -25,7 +25,7 @@ static int _pci_status = 0;
 
 #define IS_DEV_VGA(c) (((c)&0x00ffff00) == ((0x03 << 16) | (0x00 << 8)))
 
-static inline bool is_pci_available(void)
+__ldm_inline__ static inline bool is_pci_available(void)
 {
         return _pci_status == 0;
 }
@@ -68,6 +68,9 @@ __ldm_public__ void ldm_manager_free(LdmManager *manager)
 
 __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
 {
+        if (!is_pci_available()) {
+                return false;
+        }
         struct pci_device_iterator *devices = NULL;
         struct pci_device *device = NULL;
         struct pci_slot_match match = {.domain = PCI_MATCH_ANY,
