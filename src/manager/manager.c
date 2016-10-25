@@ -9,6 +9,8 @@
  * of the License, or (at your option) any later version.
  */
 
+#define _GNU_SOURCE
+
 #include <pciaccess.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -74,6 +76,16 @@ __ldm_public__ void ldm_manager_free(LdmManager *manager)
         ldm_atomic_unref(manager);
 }
 
+char *ldm_manager_get_xorg_pci_id(struct pci_device *device)
+{
+        char *p = NULL;
+        int ret = asprintf(&p, "PCI:%d:%d:%d", device->domain, device->dev, device->func);
+        if (ret < 0) {
+                return NULL;
+        }
+        return p;
+}
+
 __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
 {
         if (!is_pci_available()) {
@@ -108,9 +120,11 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
                         fputs(" -> AMD device\n", stderr);
                         break;
                 }
+                autofree(char) *pci_id = ldm_manager_get_xorg_pci_id(device);
                 if (pci_device_is_boot_vga(device)) {
                         fprintf(stderr, " -> Is boot VGA: %#x\n", device->device_class);
                 }
+                fprintf(stderr, "X.Org PCI ID: %s\n", pci_id ? pci_id : "<unknown>");
         }
 
         pci_iterator_destroy(devices);

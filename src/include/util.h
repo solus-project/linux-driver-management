@@ -43,6 +43,8 @@
  */
 #define autofree(N) __attribute__((cleanup(_autofree_func_##N))) N
 
+DEF_AUTOFREE(char, free)
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
