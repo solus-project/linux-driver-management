@@ -93,12 +93,8 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
         }
         struct pci_device_iterator *devices = NULL;
         struct pci_device *device = NULL;
-        struct pci_slot_match match = {.domain = PCI_MATCH_ANY,
-                                       .bus = PCI_MATCH_ANY,
-                                       .dev = PCI_MATCH_ANY,
-                                       .func = PCI_MATCH_ANY };
 
-        devices = pci_slot_match_iterator_create(&match);
+        devices = pci_id_match_iterator_create(NULL);
         if (!devices) {
                 return false;
         }
