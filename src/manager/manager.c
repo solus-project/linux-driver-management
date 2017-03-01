@@ -100,8 +100,8 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
         }
 
         while ((device = pci_device_next(devices)) != NULL) {
-                if (device->device_class != PCI_CLASS_DISPLAY_VGA << 8 &&
-                    device->device_class != PCI_CLASS_DISPLAY_3D << 8) {
+                if (device->device_class != (PCI_CLASS_DISPLAY_VGA << 8) &&
+                    device->device_class != (PCI_CLASS_DISPLAY_3D << 8)) {
                         continue;
                 }
                 fprintf(stderr, "Have VGA device: %#x %#x\n", device->vendor_id, device->device_id);
