@@ -48,6 +48,11 @@ static void discover_devices(void)
         if (!ac) {
                 abort();
         }
+        ac->error = printf;
+        ac->warning = printf;
+        ac->debug = printf;
+        ac->method = PCI_ACCESS_PROC_BUS_PCI;
+        ac->debugging = 1;
         pci_init(ac);
         pci_scan_bus(ac);
 
@@ -61,6 +66,10 @@ static void discover_devices(void)
                 if (dev->device_class < PCI_CLASS_DISPLAY_VGA ||
                     dev->device_class > PCI_CLASS_DISPLAY_3D) {
                         gpu = false;
+                }
+
+                if (dev->vendor_id == 0 && dev->device_id == 0) {
+                        continue;
                 }
 
                 switch (dev->vendor_id) {
