@@ -74,7 +74,7 @@ static void discover_devices(void)
                         vendor = "AMD";
                         break;
                 default:
-                        vendor = "<unknown";
+                        vendor = "<unknown>";
                         break;
                 }
                 fprintf(stderr,
