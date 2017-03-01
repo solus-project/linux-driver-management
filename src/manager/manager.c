@@ -115,6 +115,9 @@ __ldm_public__ bool ldm_manager_scan(__ldm_unused__ LdmManager *manager)
                 case PCI_VENDOR_ID_AMD:
                         fputs(" -> AMD device\n", stderr);
                         break;
+                default:
+                        fputs(" -> Some form of device I ain't never seen, mush\n", stderr);
+                        break;
                 }
                 autofree(char) *pci_id = ldm_manager_get_xorg_pci_id(device);
                 if (pci_device_is_boot_vga(device)) {
