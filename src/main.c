@@ -58,11 +58,10 @@ static void discover_devices(void)
                 pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
                 const char *vendor = NULL;
                 char *pci_id = NULL;
-                bool gpu = true;
 
                 if (dev->device_class < PCI_CLASS_DISPLAY_VGA ||
                     dev->device_class > PCI_CLASS_DISPLAY_3D) {
-                        gpu = false;
+                        continue;
                 }
 
                 if (dev->vendor_id == 0 && dev->device_id == 0) {
@@ -97,7 +96,6 @@ static void discover_devices(void)
                 fprintf(stderr, " \u251C Vendor: %s\n", vendor);
                 fprintf(stderr, " \u251C Class: 0x%04x\n", dev->device_class);
                 fprintf(stderr, " \u251C Name: %s\n", nom);
-                fprintf(stderr, " \u251C GPU: %s\n", gpu ? "true" : "false");
                 pci_id = get_xorg_pci_id(dev);
                 fprintf(stderr, " \u2514 X.Org ID: %s\n", pci_id ? pci_id : "<unknown>");
 
