@@ -18,8 +18,8 @@ extern const LdmDisplayManager gdm_display_manager;
  * Valid DM implementations.
  */
 static const LdmDisplayManager *_managers[] = {
-        &lightdm_display_manager, /** LightDM must come before GDM */
-        &gdm_display_manager,     /* Comes last due to others mimicking it */
+        &lightdm_display_manager, /**< LightDM must come before GDM */
+        &gdm_display_manager,     /**< Comes last due to others mimicking it */
 };
 
 /**
