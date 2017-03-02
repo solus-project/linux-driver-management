@@ -32,6 +32,7 @@ dep_pci = dependency('libpci')
 
 executable('linux-driver-management',
            [
+                'src/display-manager.c',
                 'src/main.c',
            ],
            dependencies: [dep_pci],
