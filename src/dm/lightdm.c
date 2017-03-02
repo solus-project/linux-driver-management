@@ -11,6 +11,8 @@
 
 #include "../display-manager.h"
 
+#include <unistd.h>
+
 /**
  * noop
  */
@@ -28,10 +30,22 @@ static bool lightdm_remove_xrandr_output(void)
 }
 
 /**
- * noop
+ * Determine if LightDM is in use
  */
 static bool lightdm_is_used(void)
 {
+        /* lightdm always sets XDG_SEAT_PATH whereas GDM does not */
+        if (!getenv("XDG_SEAT_PATH")) {
+                return false;
+        }
+        static const char *lightdm_binaries[] = { "/usr/sbin/lightdm", "/usr/bin/lightdm" };
+        /* Search for lightdm and if its accessible, use it */
+        for (size_t i = 0; i < sizeof(lightdm_binaries) / sizeof(lightdm_binaries[0]); i++) {
+                if (access(lightdm_binaries[i], X_OK) == 0) {
+                        return true;
+                }
+        }
+        /* Not lightdm */
         return false;
 }
 
