@@ -91,7 +91,7 @@ static void discover_devices(void)
                 }
                 fprintf(stderr,
                         " %02x:%02x.%x: Discovered device\n",
-                        dev->domain,
+                        dev->bus,
                         dev->dev,
                         dev->func);
                 fprintf(stderr, " \u251C Vendor: %s\n", vendor);
