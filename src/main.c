@@ -16,12 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/**
- * Interesting vendors (to LDM)
- */
-#define PCI_VENDOR_ID_INTEL 0x8086
-#define PCI_VENDOR_ID_NVIDIA 0x10DE
-#define PCI_VENDOR_ID_AMD 0x1002
+#include "gpu.h"
 
 /**
  * Return PCI id in format appropriate to X.Org (decimal, prefixed)
