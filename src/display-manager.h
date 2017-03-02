@@ -22,13 +22,13 @@ typedef struct LdmDisplayManager {
         /**
          * Set a configuration item within the DM config
          */
-        bool (*set_config)(const char *section, const char *key);
+        bool (*set_config)(const char *section, const char *key, char *value);
 
         /**
          * Get a configuration value from the DM config. May return
          * NULL or an allocated string
          */
-        char *(*get_config)(const char *section, const char *key, const char *value);
+        char *(*get_config)(const char *section, const char *key);
 
         /**
          * Determine if the DM is actually used
