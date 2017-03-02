@@ -14,7 +14,7 @@
 /**
  * noop
  */
-static bool lightdm_set_config(const char *section, const char *key, char *value)
+static bool lightdm_set_xrandr_output(const char *driver, const char *output)
 {
         return false;
 }
@@ -22,9 +22,9 @@ static bool lightdm_set_config(const char *section, const char *key, char *value
 /**
  * noop
  */
-static char *lightdm_get_config(const char *section, const char *key)
+static bool lightdm_remove_xrandr_output(void)
 {
-        return NULL;
+        return false;
 }
 
 /**
@@ -39,8 +39,8 @@ static bool lightdm_is_used(void)
  * LightDM implementation of the display manager
  */
 static LdmDisplayManager lightdm_display_manager = {
-        .set_config = lightdm_set_config,
-        .get_config = lightdm_get_config,
+        .set_xrandr_output = lightdm_set_xrandr_output,
+        .remove_xrandr_output = lightdm_remove_xrandr_output,
         .is_used = lightdm_is_used,
 };
 

@@ -20,15 +20,16 @@
  */
 typedef struct LdmDisplayManager {
         /**
-         * Set a configuration item within the DM config
+         * Enable xrandr switch at login for the given driver and provider
+         *
+         * i.e. set_xrandr_output("modesetting", "NVIDIA-0")
          */
-        bool (*set_config)(const char *section, const char *key, char *value);
+        bool (*set_xrandr_output)(const char *driver, const char *output);
 
         /**
-         * Get a configuration value from the DM config. May return
-         * NULL or an allocated string
+         * Remove any xrandr switch in place
          */
-        char *(*get_config)(const char *section, const char *key);
+        bool (*remove_xrandr_output)(void);
 
         /**
          * Determine if the DM is actually used
