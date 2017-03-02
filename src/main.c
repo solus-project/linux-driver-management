@@ -42,23 +42,20 @@ static char *get_xorg_pci_id(struct pci_dev *dev)
 static void discover_devices(void)
 {
         struct pci_access *ac = NULL;
+        char buf[1024];
+        char *nom = NULL;
 
         /* Init PCI lookup */
         ac = pci_alloc();
         if (!ac) {
                 abort();
         }
-        ac->error = printf;
-        ac->warning = printf;
-        ac->debug = printf;
-        ac->method = PCI_ACCESS_PROC_BUS_PCI;
-        ac->debugging = 1;
         pci_init(ac);
         pci_scan_bus(ac);
 
         /* Iterate devices looking for something interesting. */
         for (struct pci_dev *dev = ac->devices; dev != NULL; dev = dev->next) {
-                pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_CLASS);
+                pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
                 const char *vendor = NULL;
                 char *pci_id = NULL;
                 bool gpu = true;
@@ -71,6 +68,12 @@ static void discover_devices(void)
                 if (dev->vendor_id == 0 && dev->device_id == 0) {
                         continue;
                 }
+                nom = pci_lookup_name(ac,
+                                      buf,
+                                      sizeof(buf),
+                                      PCI_LOOKUP_DEVICE,
+                                      dev->vendor_id,
+                                      dev->device_id);
 
                 switch (dev->vendor_id) {
                 case PCI_VENDOR_ID_INTEL:
@@ -93,6 +96,7 @@ static void discover_devices(void)
                         dev->func);
                 fprintf(stderr, " \u251C Vendor: %s\n", vendor);
                 fprintf(stderr, " \u251C Class: 0x%04x\n", dev->device_class);
+                fprintf(stderr, " \u251C Name: %s\n", nom);
                 fprintf(stderr, " \u251C GPU: %s\n", gpu ? "true" : "false");
                 pci_id = get_xorg_pci_id(dev);
                 fprintf(stderr, " \u2514 X.Org ID: %s\n", pci_id ? pci_id : "<unknown>");
