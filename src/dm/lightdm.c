@@ -52,7 +52,7 @@ static bool lightdm_is_used(void)
 /**
  * LightDM implementation of the display manager
  */
-static LdmDisplayManager lightdm_display_manager = {
+const LdmDisplayManager lightdm_display_manager = {
         .set_xrandr_output = lightdm_set_xrandr_output,
         .remove_xrandr_output = lightdm_remove_xrandr_output,
         .is_used = lightdm_is_used,

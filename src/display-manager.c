@@ -11,10 +11,14 @@
 
 #include "display-manager.h"
 
+extern const LdmDisplayManager lightdm_display_manager;
+
 /**
- * TODO: Insert actual instances here.
+ * Valid DM implementations.
  */
-static LdmDisplayManager _managers[] = { NULL };
+static const LdmDisplayManager *_managers[] = {
+        &lightdm_display_manager, /** LightDM must come before GDM */
+};
 
 /**
  * Return the LdmDisplayManager for the current system
@@ -22,7 +26,7 @@ static LdmDisplayManager _managers[] = { NULL };
 const LdmDisplayManager const *ldm_display_manager_get_default(void)
 {
         for (size_t i = 0; i < sizeof(_managers) / sizeof(_managers[0]); i++) {
-                const LdmDisplayManager *manager = &_managers[i];
+                const LdmDisplayManager *manager = _managers[i];
                 if (manager->is_used()) {
                         return manager;
                 }
