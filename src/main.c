@@ -29,7 +29,7 @@
 static char *get_xorg_pci_id(struct pci_dev *dev)
 {
         char *p = NULL;
-        int ret = asprintf(&p, "PCI:%d:%d:%d", dev->domain, dev->dev, dev->func);
+        int ret = asprintf(&p, "PCI:%d:%d:%d", dev->bus, dev->dev, dev->func);
         if (ret < 0) {
                 return NULL;
         }
