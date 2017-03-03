@@ -92,6 +92,7 @@ static LdmDevice *ldm_scan_pci_devices(void)
         char buf[1024];
         char *nom = NULL;
         LdmDevice *root = NULL;
+        LdmDevice *last = NULL;
 
         /* Init PCI lookup */
         ac = pci_alloc();
@@ -130,9 +131,11 @@ static LdmDevice *ldm_scan_pci_devices(void)
                 }
                 if (!root) {
                         root = device;
-                } else {
-                        root->next = device;
                 }
+                if (last) {
+                        last->next = device;
+                }
+                last = device;
         }
 
 cleanup:
