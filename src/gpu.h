@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 #include "device.h"
 
 /**
@@ -21,6 +23,7 @@ typedef struct LdmGPU {
         LdmPCIAddress address; /**<Address of the GPU */
         uint16_t vendor_id;    /**<PCI vendor ID */
         uint16_t device_id;    /**<PCI device ID */
+        bool boot_vga;         /**<Whether this is the boot device */
 } LdmGPU;
 
 /**

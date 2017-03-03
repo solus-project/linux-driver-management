@@ -12,14 +12,53 @@
 #define _GNU_SOURCE
 
 #include <assert.h>
+#include <fcntl.h>
 #include <pci/pci.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "device.h"
 #include "gpu.h"
 #include "scanner.h"
+
+/**
+ * Determine if this is the VGA device we booted with
+ */
+static bool ldm_pci_device_is_boot_vga(struct pci_dev *dev)
+{
+        char *p = NULL;
+        char c;
+        bool vga = false;
+
+        if (asprintf(&p,
+                     "/sys/bus/pci/devices/%04x:%02x:%02x.%x/boot_vga",
+                     dev->domain,
+                     dev->bus,
+                     dev->dev,
+                     dev->func) < 0) {
+                abort();
+        }
+        int fd = -1;
+
+        fd = open(p, O_RDONLY | O_NOCTTY | O_CLOEXEC);
+        free(p);
+        if (fd < 0) {
+                return false;
+        }
+
+        if (read(fd, &c, sizeof(c)) != 1) {
+                goto clean;
+        }
+        if (c == '1') {
+                vga = true;
+        }
+clean:
+        close(fd);
+        return vga;
+}
 
 /**
  * Determine the driver for a PCI device
@@ -81,6 +120,7 @@ static LdmDevice *ldm_pci_device_new(LdmDeviceType type, struct pci_dev *dev, ch
                 *gpu = (LdmGPU){
                         .address = addr, .vendor_id = dev->vendor_id, .device_id = dev->device_id,
                 };
+                gpu->boot_vga = ldm_pci_device_is_boot_vga(dev);
                 ret = (LdmDevice *)gpu;
         } break;
         case LDM_DEVICE_UNKNOWN: {
