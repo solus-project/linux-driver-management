@@ -64,10 +64,11 @@ static void print_device(LdmDevice *device)
                 dev->address.bus,
                 dev->address.dev,
                 dev->address.func);
-        fprintf(stderr, " \u251C Vendor: %s\n", vendor);
-        fprintf(stderr, " \u251C Name: %s\n", device->device_name);
+        fprintf(stderr, " \u251C Device Name   : %s\n", device->device_name);
+        fprintf(stderr, " \u251C Vendor ID     : %s\n", vendor);
+        fprintf(stderr, " \u251C Kernel driver : %s\n", device->driver);
         char *pci_id = get_xorg_pci_id(&(dev->address));
-        fprintf(stderr, " \u2514 X.Org ID: %s\n", pci_id ? pci_id : "<unknown>");
+        fprintf(stderr, " \u2514 X.Org PCI ID  : %s\n", pci_id ? pci_id : "<unknown>");
 
         if (pci_id) {
                 free(pci_id);

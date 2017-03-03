@@ -22,6 +22,33 @@
 #include "scanner.h"
 
 /**
+ * Determine the driver for a PCI device
+ */
+static char *ldm_pci_device_driver(struct pci_dev *dev)
+{
+        char *p = NULL;
+        if (asprintf(&p,
+                     "/sys/devices/pci%04x:%02x/%04x:%02x:%02x.%d/driver",
+                     dev->domain,
+                     dev->bus,
+                     dev->domain,
+                     dev->bus,
+                     dev->dev,
+                     dev->func) < 0) {
+                abort();
+        }
+        char *r = realpath(p, NULL);
+        free(p);
+        if (!r) {
+                return strdup("unknown");
+        }
+        char *r2 = basename(r);
+        char *ret = strdup(r2);
+        free(r);
+        return ret;
+}
+
+/**
  * Convert the PCI class into a usable LDM type, i.e. GPU
  */
 static LdmDeviceType ldm_pci_to_device_type(struct pci_dev *dev)
@@ -74,6 +101,7 @@ static LdmDevice *ldm_pci_device_new(LdmDeviceType type, struct pci_dev *dev, ch
 
         /* Finish off the structure */
         ret->type = type;
+        ret->driver = ldm_pci_device_driver(dev);
         if (name) {
                 ret->device_name = strdup(name);
         }

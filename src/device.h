@@ -57,6 +57,7 @@ typedef enum {
 struct LdmDevice {
         struct LdmDevice *next; /**<Simple device chaining */
         char *device_name;      /**<Allocated device name */
+        char *driver;           /**<Name of the driver in used */
         ldm_device_dtor dtor;   /**<Deconstructor for this type */
         LdmDeviceType type;     /**<Type of this device */
 };

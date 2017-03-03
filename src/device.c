@@ -23,6 +23,10 @@ void ldm_device_free(LdmDevice *device)
                 free(device->device_name);
                 device->device_name = NULL;
         }
+        if (device->driver) {
+                free(device->driver);
+                device->driver = NULL;
+        }
 
         /* Call any implementation specific destructor */
         if (device->dtor) {
