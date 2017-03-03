@@ -57,32 +57,6 @@ Solus welcomes contributions into this centralized driver management effort, so 
 these common, long-standing issues, behind us, with a common platform and focus. It will also mean
 that no more Jockey-forks will need to exist in the world, and that **all** distributions will have
 a common platform with which to enable drivers for their users, if they so wish.
-
-Basic core design
------------------
-
-The initial core design will focus solely on the detection API before we bring in vtable based
-driver management for the agnostic distro-installation bits. Right now the focus is a sane API
-for backend detection.
-
-
-        LdmManager {
-                /* private */
-        }
-        
-        ldm_manager_get_devices(manager, CONSTRAINT);
-        ldm_manager_get_all_devices(manager);
-
-        LdmDevice {
-                type: str
-                vendor: str
-        }
-
-        /* Hybrid configurations merged internally */
-        LdmHybridDevice {
-                { LdmDevice .type = HYBRID }
-                devices: LdmDevice[]
-        }
         
 
 License
