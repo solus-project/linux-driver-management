@@ -28,7 +28,7 @@ static char *ldm_pci_device_driver(struct pci_dev *dev)
 {
         char *p = NULL;
         if (asprintf(&p,
-                     "/sys/devices/pci%04x:%02x/%04x:%02x:%02x.%d/driver",
+                     "/sys/devices/pci%04x:%02x/%04x:%02x:%02x.%x/driver",
                      dev->domain,
                      dev->bus,
                      dev->domain,
