@@ -18,6 +18,7 @@
 
 #include "gpu.h"
 #include "scanner.h"
+#include "util.h"
 
 /**
  * Return PCI id in format appropriate to X.Org (decimal, prefixed)
@@ -74,7 +75,7 @@ static void print_device(LdmDevice *device)
         fputs("\n", stderr);
 }
 
-int main(int argc, char **argv)
+int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
         LdmDevice *device = NULL;
 

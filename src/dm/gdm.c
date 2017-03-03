@@ -9,14 +9,16 @@
  * of the License, or (at your option) any later version.
  */
 
-#include "../display-manager.h"
-
 #include <unistd.h>
+
+#include "../display-manager.h"
+#include "../util.h"
 
 /**
  * noop
  */
-static bool gdm_set_xrandr_output(const char *driver, const char *output)
+static bool gdm_set_xrandr_output(__ldm_unused__ const char *driver,
+                                  __ldm_unused__ const char *output)
 {
         return false;
 }
