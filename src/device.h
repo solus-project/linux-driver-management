@@ -48,7 +48,7 @@ typedef enum {
         LDM_DEVICE_MIN = 1 << 0,
         LDM_DEVICE_GPU = 1 << 1,     /**<This is a GPU device. */
         LDM_DEVICE_UNKNOWN = 1 << 2, /**<We don't know about this kind of device */
-        LDM_DEVICE_MAX = 1 << 2,
+        LDM_DEVICE_MAX = 1 << 3,
 } LdmDeviceType;
 
 /**
