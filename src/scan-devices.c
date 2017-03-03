@@ -140,7 +140,7 @@ static LdmDevice *ldm_scan_pci_devices(void)
                 }
 
                 /* Skip dodgy devices */
-                if (dev->vendor_id == 0 && dev->device_id == 0) {
+                if (dev->vendor_id == 0 || dev->device_id == 0) {
                         continue;
                 }
 
