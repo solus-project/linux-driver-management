@@ -17,14 +17,15 @@
 #include <stdlib.h>
 
 #include "gpu.h"
+#include "scanner.h"
 
 /**
  * Return PCI id in format appropriate to X.Org (decimal, prefixed)
  */
-static char *get_xorg_pci_id(struct pci_dev *dev)
+static char *get_xorg_pci_id(LdmPCIAddress *addr)
 {
         char *p = NULL;
-        int ret = asprintf(&p, "PCI:%d:%d:%d", dev->bus, dev->dev, dev->func);
+        int ret = asprintf(&p, "PCI:%d:%d:%d", addr->bus, addr->dev, addr->func);
         if (ret < 0) {
                 return NULL;
         }
@@ -34,78 +35,62 @@ static char *get_xorg_pci_id(struct pci_dev *dev)
 /**
  * Demo code follows
  */
-static void discover_devices(void)
+static void print_device(LdmDevice *device)
 {
-        struct pci_access *ac = NULL;
-        char buf[1024];
-        char *nom = NULL;
-
-        /* Init PCI lookup */
-        ac = pci_alloc();
-        if (!ac) {
-                abort();
+        if (device->type != LDM_DEVICE_GPU) {
+                fprintf(stderr, "Ignoring unknown device with name '%s'\n", device->device_name);
+                return;
         }
-        pci_init(ac);
-        pci_scan_bus(ac);
+        LdmGPU *dev = (LdmGPU *)device;
+        const char *vendor = NULL;
 
-        /* Iterate devices looking for something interesting. */
-        for (struct pci_dev *dev = ac->devices; dev != NULL; dev = dev->next) {
-                pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
-                const char *vendor = NULL;
-                char *pci_id = NULL;
-
-                if (dev->device_class < PCI_CLASS_DISPLAY_VGA ||
-                    dev->device_class > PCI_CLASS_DISPLAY_3D) {
-                        continue;
-                }
-
-                if (dev->vendor_id == 0 && dev->device_id == 0) {
-                        continue;
-                }
-                nom = pci_lookup_name(ac,
-                                      buf,
-                                      sizeof(buf),
-                                      PCI_LOOKUP_DEVICE,
-                                      dev->vendor_id,
-                                      dev->device_id);
-
-                switch (dev->vendor_id) {
-                case PCI_VENDOR_ID_INTEL:
-                        vendor = "Intel";
-                        break;
-                case PCI_VENDOR_ID_NVIDIA:
-                        vendor = "NVIDIA";
-                        break;
-                case PCI_VENDOR_ID_AMD:
-                        vendor = "AMD";
-                        break;
-                default:
-                        vendor = "<unknown>";
-                        break;
-                }
-                fprintf(stderr,
-                        " %02x:%02x.%x: Discovered device\n",
-                        dev->bus,
-                        dev->dev,
-                        dev->func);
-                fprintf(stderr, " \u251C Vendor: %s\n", vendor);
-                fprintf(stderr, " \u251C Class: 0x%04x\n", dev->device_class);
-                fprintf(stderr, " \u251C Name: %s\n", nom);
-                pci_id = get_xorg_pci_id(dev);
-                fprintf(stderr, " \u2514 X.Org ID: %s\n", pci_id ? pci_id : "<unknown>");
-
-                if (pci_id) {
-                        free(pci_id);
-                }
-                fputs("\n", stderr);
+        switch (dev->vendor_id) {
+        case PCI_VENDOR_ID_INTEL:
+                vendor = "Intel";
+                break;
+        case PCI_VENDOR_ID_NVIDIA:
+                vendor = "NVIDIA";
+                break;
+        case PCI_VENDOR_ID_AMD:
+                vendor = "AMD";
+                break;
+        default:
+                vendor = "<unknown>";
+                break;
         }
+        fprintf(stderr,
+                " %02x:%02x.%x: Discovered device\n",
+                dev->address.bus,
+                dev->address.dev,
+                dev->address.func);
+        fprintf(stderr, " \u251C Vendor: %s\n", vendor);
+        fprintf(stderr, " \u251C Name: %s\n", device->device_name);
+        char *pci_id = get_xorg_pci_id(&(dev->address));
+        fprintf(stderr, " \u2514 X.Org ID: %s\n", pci_id ? pci_id : "<unknown>");
 
-        pci_cleanup(ac);
+        if (pci_id) {
+                free(pci_id);
+        }
+        fputs("\n", stderr);
 }
 
 int main(int argc, char **argv)
 {
-        discover_devices();
+        LdmDevice *device = NULL;
+
+        device = ldm_scan_devices();
+        if (!device) {
+                fputs("Unable to locate devices\n", stderr);
+                return EXIT_FAILURE;
+        }
+
+        /* Iterate all discovered devices */
+        for (LdmDevice *dev = device; dev; dev = dev->next) {
+                print_device(dev);
+        }
+
+        ldm_device_free(device);
+
         return EXIT_SUCCESS;
 }
 
