@@ -18,7 +18,6 @@
  */
 typedef struct LdmGPU {
         LdmDevice device;      /**<Extend LdmDevice */
-        char *device_name;     /**<Allocated device name */
         LdmPCIAddress address; /**<Address of the GPU */
         uint16_t vendor_id;    /**<PCI vendor ID */
         uint16_t device_id;    /**<PCI device ID */

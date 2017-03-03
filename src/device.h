@@ -42,6 +42,7 @@ typedef enum {
  */
 typedef struct LdmDevice {
         struct LdmDevice *next; /**<Simple device chaining */
+        char *device_name;      /**<Allocated device name */
         LdmDeviceType type;     /**<Type of this device */
 } LdmDevice;
 
