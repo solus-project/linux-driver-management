@@ -58,6 +58,12 @@ static LdmDevice *ldm_pci_device_new(LdmDeviceType type, struct pci_dev *dev, ch
                 };
                 ret = (LdmDevice *)gpu;
         } break;
+        case LDM_DEVICE_UNKNOWN: {
+                ret = calloc(1, sizeof(LdmDevice));
+                if (!ret) {
+                        goto oom_fail;
+                }
+        } break;
         default:
                 fputs("Condition should not be reached", stderr);
                 abort();
