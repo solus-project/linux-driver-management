@@ -9,24 +9,13 @@
  * of the License, or (at your option) any later version.
  */
 
-#pragma once
-
-#include "device.h"
-
 /**
- * LdmGPU represents a usable GPU on the system
+ * Scan the system for usable device types. Return a chained list of devices
+ * This list must be freed with ldm_device_free on the root node.
+ *
+ * @note Currently this only supports PCI devices
  */
-typedef struct LdmGPU {
-        LdmDevice device;      /**<Extend LdmDevice */
-        LdmPCIAddress address; /**<Address of the GPU */
-        uint16_t vendor_id;    /**<PCI vendor ID */
-        uint16_t device_id;    /**<PCI device ID */
-} LdmGPU;
-
-/**
- * Free a previously LdmGPU
- */
-void ldm_gpu_free(LdmGPU *gpu);
+LdmDevice *ldm_scan_devices(void);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

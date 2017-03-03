@@ -9,24 +9,15 @@
  * of the License, or (at your option) any later version.
  */
 
-#pragma once
-
 #include "device.h"
+#include "scanner.h"
 
-/**
- * LdmGPU represents a usable GPU on the system
- */
-typedef struct LdmGPU {
-        LdmDevice device;      /**<Extend LdmDevice */
-        LdmPCIAddress address; /**<Address of the GPU */
-        uint16_t vendor_id;    /**<PCI vendor ID */
-        uint16_t device_id;    /**<PCI device ID */
-} LdmGPU;
+#include <stdlib.h>
 
-/**
- * Free a previously LdmGPU
- */
-void ldm_gpu_free(LdmGPU *gpu);
+LdmDevice *ldm_scan_devices()
+{
+        return NULL;
+}
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

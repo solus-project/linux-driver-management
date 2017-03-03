@@ -32,10 +32,12 @@ dep_pci = dependency('libpci')
 
 executable('linux-driver-management',
            [
+                'src/device.c',
                 'src/display-manager.c',
                 'src/dm/gdm.c',
                 'src/dm/lightdm.c',
                 'src/main.c',
+                'src/scan-devices.c',
            ],
            dependencies: [dep_pci],
            c_args: am_cflags,

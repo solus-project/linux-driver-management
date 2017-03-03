@@ -11,12 +11,25 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <stdlib.h>
+
 /**
  * Interesting vendors (to LDM)
  */
 #define PCI_VENDOR_ID_INTEL 0x8086
 #define PCI_VENDOR_ID_NVIDIA 0x10DE
 #define PCI_VENDOR_ID_AMD 0x1002
+
+/**
+ * Forward declare for use in the dtor
+ */
+typedef struct LdmDevice LdmDevice;
+
+/**
+ * Deconstructor for an LdmDevice
+ */
+typedef void (*ldm_device_dtor)(LdmDevice *self);
 
 /**
  * Encapsulate the PCI address for a device
@@ -40,11 +53,17 @@ typedef enum {
 /**
  * LdmDevice is the fundamental device "type" within LDM
  */
-typedef struct LdmDevice {
+struct LdmDevice {
         struct LdmDevice *next; /**<Simple device chaining */
         char *device_name;      /**<Allocated device name */
+        ldm_device_dtor dtor;   /**<Deconstructor for this type */
         LdmDeviceType type;     /**<Type of this device */
-} LdmDevice;
+};
+
+/**
+ * Free a previously allocated LdmDevice, and any chained siblings
+ */
+void ldm_device_free(LdmDevice *device);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
