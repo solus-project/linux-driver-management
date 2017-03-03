@@ -51,8 +51,7 @@ static char *ldm_pci_device_driver(struct pci_dev *dev)
  */
 static LdmDeviceType ldm_pci_to_device_type(struct pci_dev *dev)
 {
-        if (dev->device_class >= PCI_CLASS_DISPLAY_VGA &&
-            dev->device_class <= PCI_CLASS_DISPLAY_3D) {
+        if ((dev->device_class & 0xff00) == PCI_CLASS_DISPLAY_VGA) {
                 return LDM_DEVICE_GPU;
         }
         return LDM_DEVICE_UNKNOWN;
