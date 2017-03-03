@@ -67,6 +67,12 @@ struct LdmDevice {
  */
 void ldm_device_free(LdmDevice *device);
 
+/**
+ * Find the first device in the list with the given vendor, and return
+ * a pointer to it.
+ */
+LdmDevice *ldm_device_find_vendor(LdmDevice *device, uint16_t vendor);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

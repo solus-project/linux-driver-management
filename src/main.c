@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "device.h"
 #include "gpu.h"
 #include "scanner.h"
 #include "util.h"
@@ -89,6 +90,11 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
         /* Iterate all discovered devices */
         for (LdmDevice *dev = device; dev; dev = dev->next) {
                 print_device(dev);
+        }
+
+        if (ldm_device_find_vendor(device, PCI_VENDOR_ID_INTEL) != NULL &&
+            ldm_device_find_vendor(device, PCI_VENDOR_ID_NVIDIA) != NULL) {
+                fprintf(stderr, "*Technically* found Optimus. Probably didn't\n");
         }
 
         ldm_device_free(device);

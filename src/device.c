@@ -10,6 +10,7 @@
  */
 
 #include "device.h"
+#include "gpu.h"
 
 void ldm_device_free(LdmDevice *device)
 {
@@ -36,6 +37,19 @@ void ldm_device_free(LdmDevice *device)
         free(device);
 }
 
+LdmDevice *ldm_device_find_vendor(LdmDevice *device, uint16_t vendor)
+{
+        for (LdmDevice *dev = device; dev; dev = dev->next) {
+                if (dev->type != LDM_DEVICE_GPU) {
+                        continue;
+                }
+                LdmGPU *gpu = (LdmGPU *)dev;
+                if (gpu->vendor_id == vendor) {
+                        return dev;
+                }
+        }
+        return NULL;
+}
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
