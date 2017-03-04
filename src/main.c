@@ -58,11 +58,11 @@ static void print_device(LdmDevice *device)
                 break;
         }
         fprintf(stderr,
-                " %02x:%02x.%x: Discovered device\n",
+                " %02x:%02x.%x: %s\n",
                 dev->address.bus,
                 dev->address.dev,
-                dev->address.func);
-        fprintf(stderr, " \u251C Device Name   : %s\n", device->device_name);
+                dev->address.func,
+                device->device_name);
         fprintf(stderr, " \u251C Vendor ID     : %s\n", vendor);
         fprintf(stderr, " \u251C Kernel driver : %s\n", device->driver);
         fprintf(stderr, " \u251C VGA Boot      : %s\n", dev->boot_vga ? "yes" : "no");
