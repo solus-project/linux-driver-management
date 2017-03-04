@@ -39,6 +39,8 @@ static char *get_xorg_pci_id(LdmPCIAddress *addr)
  */
 static void print_device(LdmDevice *device)
 {
+        autofree(char) *pci_id = NULL;
+
         if (device->type != LDM_DEVICE_GPU) {
                 fprintf(stderr, "Ignoring unknown device with name '%s'\n", device->device_name);
                 return;
@@ -69,18 +71,14 @@ static void print_device(LdmDevice *device)
         fprintf(stderr, " \u251C Vendor ID     : %s\n", vendor);
         fprintf(stderr, " \u251C Kernel driver : %s\n", device->driver);
         fprintf(stderr, " \u251C VGA Boot      : %s\n", dev->boot_vga ? "yes" : "no");
-        char *pci_id = get_xorg_pci_id(&(dev->address));
+        pci_id = get_xorg_pci_id(&(dev->address));
         fprintf(stderr, " \u2514 X.Org PCI ID  : %s\n", pci_id ? pci_id : "<unknown>");
-
-        if (pci_id) {
-                free(pci_id);
-        }
         fputs("\n", stderr);
 }
 
 int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
-        LdmDevice *device = NULL;
+        autofree(LdmDevice) *device = NULL;
         LdmDevice *intel = NULL;
 
         device = ldm_scan_devices();
@@ -101,8 +99,6 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
                         fprintf(stderr, "*Technically* found Optimus. Probably didn't\n");
                 }
         }
-
-        ldm_device_free(device);
 
         return EXIT_SUCCESS;
 }

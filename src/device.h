@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "util.h"
+
 /**
  * Interesting vendors (to LDM)
  */
@@ -72,6 +74,8 @@ void ldm_device_free(LdmDevice *device);
  * a pointer to it.
  */
 LdmDevice *ldm_device_find_vendor(LdmDevice *device, uint16_t vendor);
+
+DEF_AUTOFREE(LdmDevice, ldm_device_free)
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

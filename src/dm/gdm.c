@@ -42,7 +42,7 @@ static bool gdm_is_used(void)
         }
         static const char *gdm_binaries[] = { "/usr/sbin/gdm", "/usr/bin/gdm" };
         /* Search for gdm and if its accessible, use it */
-        for (size_t i = 0; i < sizeof(gdm_binaries) / sizeof(gdm_binaries[0]); i++) {
+        for (size_t i = 0; i < ARRAY_SIZE(gdm_binaries[0]); i++) {
                 if (access(gdm_binaries[i], X_OK) == 0) {
                         return true;
                 }

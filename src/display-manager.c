@@ -10,6 +10,7 @@
  */
 
 #include "display-manager.h"
+#include "util.h"
 
 extern const LdmDisplayManager lightdm_display_manager;
 extern const LdmDisplayManager gdm_display_manager;
@@ -27,7 +28,7 @@ static const LdmDisplayManager *_managers[] = {
  */
 const LdmDisplayManager const *ldm_display_manager_get_default(void)
 {
-        for (size_t i = 0; i < sizeof(_managers) / sizeof(_managers[0]); i++) {
+        for (size_t i = 0; i < ARRAY_SIZE(_managers); i++) {
                 const LdmDisplayManager *manager = _managers[i];
                 if (manager->is_used()) {
                         return manager;

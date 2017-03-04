@@ -40,6 +40,8 @@
  */
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
+DEF_AUTOFREE(char, free)
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

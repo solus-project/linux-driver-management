@@ -24,12 +24,16 @@
 #include "gpu.h"
 #include "scanner.h"
 
+typedef struct pci_access pci_access;
+
+DEF_AUTOFREE(pci_access, pci_cleanup)
+
 /**
  * Determine if this is the VGA device we booted with
  */
 static bool ldm_pci_device_is_boot_vga(struct pci_dev *dev)
 {
-        char *p = NULL;
+        autofree(char) *p = NULL;
         char c;
         bool vga = false;
 
@@ -44,7 +48,6 @@ static bool ldm_pci_device_is_boot_vga(struct pci_dev *dev)
         int fd = -1;
 
         fd = open(p, O_RDONLY | O_NOCTTY | O_CLOEXEC);
-        free(p);
         if (fd < 0) {
                 return false;
         }
@@ -65,7 +68,7 @@ clean:
  */
 static char *ldm_pci_device_driver(struct pci_dev *dev)
 {
-        char *p = NULL;
+        autofree(char) *p = NULL;
         if (asprintf(&p,
                      "/sys/bus/pci/devices/%04x:%02x:%02x.%x/driver",
                      dev->domain,
@@ -74,15 +77,12 @@ static char *ldm_pci_device_driver(struct pci_dev *dev)
                      dev->func) < 0) {
                 abort();
         }
-        char *r = realpath(p, NULL);
-        free(p);
+        autofree(char) *r = realpath(p, NULL);
         if (!r) {
                 return strdup("unknown");
         }
         char *r2 = basename(r);
-        char *ret = strdup(r2);
-        free(r);
-        return ret;
+        return strdup(r2);
 }
 
 /**
@@ -154,7 +154,7 @@ oom_fail:
 
 static LdmDevice *ldm_scan_pci_devices(void)
 {
-        struct pci_access *ac = NULL;
+        autofree(pci_access) *ac = NULL;
         char buf[1024];
         char *nom = NULL;
         LdmDevice *root = NULL;
@@ -205,7 +205,6 @@ static LdmDevice *ldm_scan_pci_devices(void)
         }
 
 cleanup:
-        pci_cleanup(ac);
         return root;
 }
 
