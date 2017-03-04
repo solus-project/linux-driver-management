@@ -18,6 +18,14 @@
  */
 LdmDevice *ldm_scan_devices(LdmDeviceType type, unsigned int class_mask);
 
+/**
+ * Scan for PCI devices only, with the given classmask
+ * @TODO Make this private!
+ *
+ * @return a chained list of devices
+ */
+LdmDevice *ldm_scan_pci_devices(unsigned int classmask);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
