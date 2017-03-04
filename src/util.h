@@ -42,6 +42,11 @@
 
 DEF_AUTOFREE(char, free)
 
+/**
+ * Allocate a string or abort
+ */
+char *string_printf(const char *s, ...) __attribute__((format(printf, 1, 2)));
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
