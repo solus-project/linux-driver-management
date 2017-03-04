@@ -11,14 +11,14 @@
 
 #pragma once
 
+#include "device.h"
+
 /**
- * Scan the system for usable devices of the given type and class.
- * This list must be freed with ldm_device_free on the root node.
+ * Scan for PCI devices only, with the given classmask
  *
- * @note Currently this only supports PCI devices
  * @return a chained list of devices
  */
-LdmDevice *ldm_scan_devices(LdmDeviceType type, unsigned int class_mask);
+LdmDevice *ldm_scan_pci_devices(unsigned int classmask);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

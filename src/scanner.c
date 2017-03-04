@@ -14,6 +14,7 @@
 #include <stdio.h>
 
 #include "device.h"
+#include "ldm-private.h"
 #include "pci.h"
 #include "scanner.h"
 

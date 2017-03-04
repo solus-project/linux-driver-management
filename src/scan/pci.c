@@ -20,6 +20,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "ldm-private.h"
 #include "pci.h"
 
 typedef struct pci_access pci_access;
