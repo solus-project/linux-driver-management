@@ -155,11 +155,6 @@ LdmDevice *ldm_scan_pci_devices(unsigned int classmask)
                 LdmDeviceClass class = ldm_pci_to_device_class(dev);
                 LdmDevice *device = NULL;
 
-                /* Skip unknown for now */
-                if (class == 0) {
-                        continue;
-                }
-
                 /* Skip unrequested types */
                 if ((class & classmask) != classmask) {
                         continue;
