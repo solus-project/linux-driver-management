@@ -28,6 +28,23 @@ typedef struct pci_access pci_access;
 DEF_AUTOFREE(pci_access, pci_cleanup)
 
 /**
+ * Construct the base PCI sysfs path
+ */
+static char *ldm_pci_device_sysfs_path(struct pci_dev *dev)
+{
+        char *p = NULL;
+        if (asprintf(&p,
+                     "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
+                     dev->domain,
+                     dev->bus,
+                     dev->dev,
+                     dev->func) < 0) {
+                return NULL;
+        }
+        return p;
+}
+
+/**
  * Determine if this is the VGA device we booted with
  */
 static bool ldm_pci_device_is_boot_vga(struct pci_dev *dev)
@@ -116,6 +133,9 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
         *pci_dev = (LdmPCIDevice){
                 .address = addr, .vendor_id = dev->vendor_id, .device_id = dev->device_id,
         };
+        pci_dev->sysfs_address = ldm_pci_device_sysfs_path(dev);
+        assert(pci_dev->sysfs_address != NULL);
+
         /* TODO: Remove boot_vga field and make it a function */
         pci_dev->boot_vga = ldm_pci_device_is_boot_vga(dev);
         ret = (LdmDevice *)pci_dev;
