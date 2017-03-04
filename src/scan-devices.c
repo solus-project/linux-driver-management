@@ -124,6 +124,7 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
         /* Finish off the structure */
         ret->type = LDM_DEVICE_PCI;
         ret->driver = ldm_pci_device_driver(dev);
+        ret->dtor = (ldm_device_dtor)ldm_pci_device_free;
         if (name) {
                 ret->device_name = strdup(name);
         }
