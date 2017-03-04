@@ -26,12 +26,7 @@
  */
 static char *get_xorg_pci_id(LdmPCIAddress *addr)
 {
-        char *p = NULL;
-        int ret = asprintf(&p, "PCI:%d:%d:%d", addr->bus, addr->dev, addr->func);
-        if (ret < 0) {
-                return NULL;
-        }
-        return p;
+        return string_printf("PCI:%d:%d:%d", addr->bus, addr->dev, addr->func);
 }
 
 /**
