@@ -81,9 +81,9 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
         autofree(LdmDevice) *device = NULL;
         LdmDevice *intel = NULL;
 
-        device = ldm_scan_devices(LDM_DEVICE_PCI);
+        device = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
         if (!device) {
-                fputs("Unable to locate devices\n", stderr);
+                fputs("Unable to locate graphical PCI devices\n", stderr);
                 return EXIT_FAILURE;
         }
 

@@ -40,9 +40,9 @@ typedef enum {
  * Each device may have a given class, or capability.
  */
 typedef enum {
-        LDM_CLASS_MIN = 1 << 0,
-        LDM_CLASS_GRAPHICS = 1 << 1, /**<Graphical device, i.e. GPU */
-        LDM_CLASS_MAX = 1 << 2,
+        LDM_CLASS_ANY = 0,           /**<Special situation for any device match */
+        LDM_CLASS_GRAPHICS = 1 << 0, /**<Graphical device, i.e. GPU */
+        LDM_CLASS_MAX = 1 << 1,
 } LdmDeviceClass;
 
 /**

@@ -136,7 +136,7 @@ oom_fail:
         return NULL;
 }
 
-static LdmDevice *ldm_scan_pci_devices(void)
+static LdmDevice *ldm_scan_pci_devices(unsigned int classmask)
 {
         autofree(pci_access) *ac = NULL;
         char buf[1024];
@@ -160,6 +160,11 @@ static LdmDevice *ldm_scan_pci_devices(void)
 
                 /* Skip unknown for now */
                 if (class == 0) {
+                        continue;
+                }
+
+                /* Skip unrequested types */
+                if ((class & classmask) != classmask) {
                         continue;
                 }
 
@@ -193,11 +198,11 @@ cleanup:
         return root;
 }
 
-LdmDevice *ldm_scan_devices(LdmDeviceType type)
+LdmDevice *ldm_scan_devices(LdmDeviceType type, unsigned int classmask)
 {
         switch (type) {
         case LDM_DEVICE_PCI:
-                return ldm_scan_pci_devices();
+                return ldm_scan_pci_devices(classmask);
         default:
                 fputs("Unknown type of device\n", stderr);
                 return NULL;
