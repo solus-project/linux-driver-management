@@ -10,12 +10,13 @@
  */
 
 /**
- * Scan the system for usable device types. Return a chained list of devices
+ * Scan the system for usable devices of the given type.
  * This list must be freed with ldm_device_free on the root node.
  *
  * @note Currently this only supports PCI devices
+ * @return a chained list of devices
  */
-LdmDevice *ldm_scan_devices(void);
+LdmDevice *ldm_scan_devices(LdmDeviceType type);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

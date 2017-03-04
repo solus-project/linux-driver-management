@@ -16,20 +16,32 @@
 #include "device.h"
 
 /**
- * LdmGPU represents a usable GPU on the system
+ * Interesting vendors (to LDM)
  */
-typedef struct LdmGPU {
+#define PCI_VENDOR_ID_INTEL 0x8086
+#define PCI_VENDOR_ID_NVIDIA 0x10DE
+#define PCI_VENDOR_ID_AMD 0x1002
+
+/**
+ * Encapsulate the PCI address for a device
+ */
+typedef struct LdmPCIAddress {
+        uint16_t domain; /**<Host bridge */
+        uint8_t bus;     /**<Bus on the bridge */
+        uint8_t dev;     /**<Device */
+        uint8_t func;    /**<Functon of the device */
+} LdmPCIAddress;
+
+/**
+ * LdmPCIDevice represents a PCI device on the system
+ */
+typedef struct LdmPCIDevice {
         LdmDevice device;      /**<Extend LdmDevice */
-        LdmPCIAddress address; /**<Address of the GPU */
+        LdmPCIAddress address; /**<Address of the PCI device */
         uint16_t vendor_id;    /**<PCI vendor ID */
         uint16_t device_id;    /**<PCI device ID */
         bool boot_vga;         /**<Whether this is the boot device */
-} LdmGPU;
-
-/**
- * Free a previously LdmGPU
- */
-void ldm_gpu_free(LdmGPU *gpu);
+} LdmPCIDevice;
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

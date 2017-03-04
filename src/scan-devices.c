@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 #include "device.h"
-#include "gpu.h"
+#include "pci.h"
 #include "scanner.h"
 
 typedef struct pci_access pci_access;
@@ -86,59 +86,43 @@ static char *ldm_pci_device_driver(struct pci_dev *dev)
 }
 
 /**
- * Convert the PCI class into a usable LDM type, i.e. GPU
+ * Convert the PCI class into a usable LDM class, i.e. GPU
  */
-static LdmDeviceType ldm_pci_to_device_type(struct pci_dev *dev)
+static unsigned int ldm_pci_to_device_class(struct pci_dev *dev)
 {
         if (dev->device_class >= PCI_CLASS_DISPLAY_VGA &&
             dev->device_class <= PCI_CLASS_DISPLAY_3D) {
-                return LDM_DEVICE_GPU;
+                return LDM_CLASS_GRAPHICS;
         }
-        return LDM_DEVICE_UNKNOWN;
+        return 0;
 }
 
 /**
  * Construct a new LdmDevice for a PCI device
  */
-static LdmDevice *ldm_pci_device_new(LdmDeviceType type, struct pci_dev *dev, char *name)
+static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
 {
         LdmDevice *ret = NULL;
         LdmPCIAddress addr = {
                 .domain = dev->domain, .bus = dev->bus, .dev = dev->dev, .func = dev->func,
         };
 
-        switch (type) {
-        case LDM_DEVICE_GPU: {
-                /* Handle GPU specific device construction */
-                LdmGPU *gpu = NULL;
+        /* Handle PCI specific device construction */
+        LdmPCIDevice *pci_dev = NULL;
 
-                gpu = calloc(1, sizeof(LdmGPU));
-                if (!gpu) {
-                        goto oom_fail;
-                }
-
-                *gpu = (LdmGPU){
-                        .address = addr, .vendor_id = dev->vendor_id, .device_id = dev->device_id,
-                };
-                gpu->boot_vga = ldm_pci_device_is_boot_vga(dev);
-                ret = (LdmDevice *)gpu;
-        } break;
-        case LDM_DEVICE_UNKNOWN: {
-                ret = calloc(1, sizeof(LdmDevice));
-                if (!ret) {
-                        goto oom_fail;
-                }
-        } break;
-        default:
-                fputs("Condition should not be reached", stderr);
-                abort();
-                break;
+        pci_dev = calloc(1, sizeof(LdmPCIDevice));
+        if (!pci_dev) {
+                goto oom_fail;
         }
-
-        assert(ret != NULL);
+        *pci_dev = (LdmPCIDevice){
+                .address = addr, .vendor_id = dev->vendor_id, .device_id = dev->device_id,
+        };
+        /* TODO: Remove boot_vga field and make it a function */
+        pci_dev->boot_vga = ldm_pci_device_is_boot_vga(dev);
+        ret = (LdmDevice *)pci_dev;
 
         /* Finish off the structure */
-        ret->type = type;
+        ret->type = LDM_DEVICE_PCI;
         ret->driver = ldm_pci_device_driver(dev);
         if (name) {
                 ret->device_name = strdup(name);
@@ -171,11 +155,11 @@ static LdmDevice *ldm_scan_pci_devices(void)
         /* Iterate devices looking for something interesting. */
         for (struct pci_dev *dev = ac->devices; dev != NULL; dev = dev->next) {
                 pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES | PCI_FILL_CLASS);
-                LdmDeviceType type = ldm_pci_to_device_type(dev);
+                LdmDeviceClass class = ldm_pci_to_device_class(dev);
                 LdmDevice *device = NULL;
 
                 /* Skip unknown for now */
-                if (type == LDM_DEVICE_UNKNOWN) {
+                if (class == 0) {
                         continue;
                 }
 
@@ -191,10 +175,11 @@ static LdmDevice *ldm_scan_pci_devices(void)
                                       dev->vendor_id,
                                       dev->device_id);
 
-                device = ldm_pci_device_new(type, dev, nom);
+                device = ldm_pci_device_new(dev, nom);
                 if (!device) {
                         goto cleanup;
                 }
+                device->class = class;
                 if (!root) {
                         root = device;
                 }
@@ -208,14 +193,15 @@ cleanup:
         return root;
 }
 
-LdmDevice *ldm_scan_devices()
+LdmDevice *ldm_scan_devices(LdmDeviceType type)
 {
-        LdmDevice *ret = NULL;
-
-        /* Scan PCI right now, in future we may add USB, etc. */
-        ret = ldm_scan_pci_devices();
-
-        return ret;
+        switch (type) {
+        case LDM_DEVICE_PCI:
+                return ldm_scan_pci_devices();
+        default:
+                fputs("Unknown type of device\n", stderr);
+                return NULL;
+        }
 }
 
 /*

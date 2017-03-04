@@ -10,7 +10,7 @@
  */
 
 #include "device.h"
-#include "gpu.h"
+#include "pci.h"
 
 void ldm_device_free(LdmDevice *device)
 {
@@ -38,11 +38,11 @@ void ldm_device_free(LdmDevice *device)
 LdmDevice *ldm_device_find_vendor(LdmDevice *device, uint16_t vendor)
 {
         for (LdmDevice *dev = device; dev; dev = dev->next) {
-                if (dev->type != LDM_DEVICE_GPU) {
+                if (dev->type != LDM_DEVICE_PCI) {
                         continue;
                 }
-                LdmGPU *gpu = (LdmGPU *)dev;
-                if (gpu->vendor_id == vendor) {
+                LdmPCIDevice *pci_dev = (LdmPCIDevice *)dev;
+                if (pci_dev->vendor_id == vendor) {
                         return dev;
                 }
         }

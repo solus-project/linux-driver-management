@@ -17,7 +17,7 @@
 #include <stdlib.h>
 
 #include "device.h"
-#include "gpu.h"
+#include "pci.h"
 #include "scanner.h"
 #include "util.h"
 
@@ -41,11 +41,11 @@ static void print_device(LdmDevice *device)
 {
         autofree(char) *pci_id = NULL;
 
-        if (device->type != LDM_DEVICE_GPU) {
+        if (device->type != LDM_DEVICE_PCI) {
                 fprintf(stderr, "Ignoring unknown device with name '%s'\n", device->device_name);
                 return;
         }
-        LdmGPU *dev = (LdmGPU *)device;
+        LdmPCIDevice *dev = (LdmPCIDevice *)device;
         const char *vendor = NULL;
 
         switch (dev->vendor_id) {
@@ -81,7 +81,7 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
         autofree(LdmDevice) *device = NULL;
         LdmDevice *intel = NULL;
 
-        device = ldm_scan_devices();
+        device = ldm_scan_devices(LDM_DEVICE_PCI);
         if (!device) {
                 fputs("Unable to locate devices\n", stderr);
                 return EXIT_FAILURE;
@@ -95,7 +95,7 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
         /* Determine Optimus support */
         if ((intel = ldm_device_find_vendor(device, PCI_VENDOR_ID_INTEL)) != NULL &&
             ldm_device_find_vendor(device, PCI_VENDOR_ID_NVIDIA) != NULL) {
-                if (((LdmGPU *)intel)->boot_vga) {
+                if (((LdmPCIDevice *)intel)->boot_vga) {
                         fprintf(stderr, "*Technically* found Optimus. Probably didn't\n");
                 }
         }
