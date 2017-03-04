@@ -32,36 +32,22 @@ DEF_AUTOFREE(pci_access, pci_cleanup)
  */
 static char *ldm_pci_device_sysfs_path(struct pci_dev *dev)
 {
-        char *p = NULL;
-        if (asprintf(&p,
-                     "/sys/bus/pci/devices/%04x:%02x:%02x.%x",
-                     dev->domain,
-                     dev->bus,
-                     dev->dev,
-                     dev->func) < 0) {
-                return NULL;
-        }
-        return p;
+        return string_printf("/sys/bus/pci/devices/%04x:%02x:%02x.%x",
+                             dev->domain,
+                             dev->bus,
+                             dev->dev,
+                             dev->func);
 }
 
 /**
  * Determine if this is the VGA device we booted with
  */
-static bool ldm_pci_device_is_boot_vga(struct pci_dev *dev)
+static bool ldm_pci_device_is_boot_vga(LdmPCIDevice *device)
 {
-        autofree(char) *p = NULL;
         char c;
         bool vga = false;
-
-        if (asprintf(&p,
-                     "/sys/bus/pci/devices/%04x:%02x:%02x.%x/boot_vga",
-                     dev->domain,
-                     dev->bus,
-                     dev->dev,
-                     dev->func) < 0) {
-                abort();
-        }
         int fd = -1;
+        autofree(char) *p = string_printf("%s/boot_vga", device->sysfs_address);
 
         fd = open(p, O_RDONLY | O_NOCTTY | O_CLOEXEC);
         if (fd < 0) {
@@ -82,17 +68,9 @@ clean:
 /**
  * Determine the driver for a PCI device
  */
-static char *ldm_pci_device_driver(struct pci_dev *dev)
+static char *ldm_pci_device_driver(LdmPCIDevice *device)
 {
-        autofree(char) *p = NULL;
-        if (asprintf(&p,
-                     "/sys/bus/pci/devices/%04x:%02x:%02x.%x/driver",
-                     dev->domain,
-                     dev->bus,
-                     dev->dev,
-                     dev->func) < 0) {
-                abort();
-        }
+        autofree(char) *p = string_printf("%s/driver", device->sysfs_address);
         autofree(char) *r = realpath(p, NULL);
         if (!r) {
                 return strdup("unknown");
@@ -134,15 +112,14 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
                 .address = addr, .vendor_id = dev->vendor_id, .device_id = dev->device_id,
         };
         pci_dev->sysfs_address = ldm_pci_device_sysfs_path(dev);
-        assert(pci_dev->sysfs_address != NULL);
 
         /* TODO: Remove boot_vga field and make it a function */
-        pci_dev->boot_vga = ldm_pci_device_is_boot_vga(dev);
+        pci_dev->boot_vga = ldm_pci_device_is_boot_vga(pci_dev);
         ret = (LdmDevice *)pci_dev;
 
         /* Finish off the structure */
         ret->type = LDM_DEVICE_PCI;
-        ret->driver = ldm_pci_device_driver(dev);
+        ret->driver = ldm_pci_device_driver(pci_dev);
         ret->dtor = (ldm_device_dtor)ldm_pci_device_free;
         if (name) {
                 ret->device_name = strdup(name);
