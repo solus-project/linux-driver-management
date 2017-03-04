@@ -14,20 +14,18 @@
 
 void ldm_device_free(LdmDevice *device)
 {
+        if (!device) {
+                return;
+        }
+
         /* We'll free from last to first, in effect. */
         if (device->next) {
                 ldm_device_free(device->next);
                 device->next = NULL;
         }
 
-        if (device->device_name) {
-                free(device->device_name);
-                device->device_name = NULL;
-        }
-        if (device->driver) {
-                free(device->driver);
-                device->driver = NULL;
-        }
+        free(device->device_name);
+        free(device->driver);
 
         /* Call any implementation specific destructor */
         if (device->dtor) {
