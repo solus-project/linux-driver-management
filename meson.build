@@ -24,6 +24,7 @@ am_cflags = [
     '-Wunreachable-code',
     '-Wall',
     '-W',
+    '-I' + join_paths(meson.current_source_dir(), 'src'),
 ]
 
 add_global_arguments(am_cflags, language: 'c')
