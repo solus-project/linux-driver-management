@@ -39,10 +39,7 @@ static char *ldm_pci_device_sysfs_path(struct pci_dev *dev)
                              dev->func);
 }
 
-/**
- * Determine if this is the VGA device we booted with
- */
-static bool ldm_pci_device_is_boot_vga(LdmPCIDevice *device)
+bool ldm_pci_device_is_boot_vga(LdmPCIDevice *device)
 {
         char c;
         bool vga = false;
@@ -112,9 +109,6 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
                 .address = addr, .vendor_id = dev->vendor_id, .device_id = dev->device_id,
         };
         pci_dev->sysfs_address = ldm_pci_device_sysfs_path(dev);
-
-        /* TODO: Remove boot_vga field and make it a function */
-        pci_dev->boot_vga = ldm_pci_device_is_boot_vga(pci_dev);
         ret = (LdmDevice *)pci_dev;
 
         /* Finish off the structure */

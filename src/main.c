@@ -42,6 +42,11 @@ static void print_device(LdmDevice *device)
         }
         LdmPCIDevice *dev = (LdmPCIDevice *)device;
         const char *vendor = NULL;
+        bool boot_vga = false;
+        bool gpu = (device->class & LDM_CLASS_GRAPHICS) == LDM_CLASS_GRAPHICS;
+        if (gpu) {
+                boot_vga = ldm_pci_device_is_boot_vga(dev);
+        }
 
         switch (dev->vendor_id) {
         case PCI_VENDOR_ID_INTEL:
@@ -65,7 +70,9 @@ static void print_device(LdmDevice *device)
                 device->device_name);
         fprintf(stderr, " \u251C Vendor ID     : %s\n", vendor);
         fprintf(stderr, " \u251C Kernel driver : %s\n", device->driver);
-        fprintf(stderr, " \u251C VGA Boot      : %s\n", dev->boot_vga ? "yes" : "no");
+        if (gpu) {
+                fprintf(stderr, " \u251C VGA Boot      : %s\n", boot_vga ? "yes" : "no");
+        }
         pci_id = get_xorg_pci_id(&(dev->address));
         fprintf(stderr, " \u2514 X.Org PCI ID  : %s\n", pci_id ? pci_id : "<unknown>");
         fputs("\n", stderr);
@@ -76,7 +83,7 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
         autofree(LdmDevice) *device = NULL;
         LdmDevice *intel = NULL;
 
-        device = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
+        device = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_ANY);
         if (!device) {
                 fputs("Unable to locate graphical PCI devices\n", stderr);
                 return EXIT_FAILURE;
@@ -90,7 +97,7 @@ int main(__ldm_unused__ int argc, __ldm_unused__ char **argv)
         /* Determine Optimus support */
         if ((intel = ldm_device_find_vendor(device, PCI_VENDOR_ID_INTEL)) != NULL &&
             ldm_device_find_vendor(device, PCI_VENDOR_ID_NVIDIA) != NULL) {
-                if (((LdmPCIDevice *)intel)->boot_vga) {
+                if (ldm_pci_device_is_boot_vga((LdmPCIDevice *)intel)) {
                         fprintf(stderr, "*Technically* found Optimus. Probably didn't\n");
                 }
         }
