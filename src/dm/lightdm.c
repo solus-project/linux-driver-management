@@ -40,7 +40,7 @@ static bool lightdm_set_xrandr_output(const char *driver, const char *output)
         }
 
         /* Write the executable for LDM */
-        randr_exec = fopen(LIGHTDM_RANDR_EXEC, "rw");
+        randr_exec = fopen(LIGHTDM_RANDR_EXEC, "w+");
         if (!randr_exec) {
                 fprintf(stderr, "Failed to create lightdm randr file: %s\n", strerror(errno));
                 return false;
@@ -60,7 +60,7 @@ static bool lightdm_set_xrandr_output(const char *driver, const char *output)
         chmod(LIGHTDM_RANDR_EXEC, 00755);
 
         /* Write the lightdm config file */
-        randr_conf = fopen(LIGHTDM_RANDR_FILE, "rw");
+        randr_conf = fopen(LIGHTDM_RANDR_FILE, "w+");
         if (!randr_conf) {
                 fprintf(stderr, "Failed to create lightdm config file: %s\n", strerror(errno));
                 return false;

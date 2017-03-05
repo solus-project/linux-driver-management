@@ -394,7 +394,7 @@ static bool ldm_configure_gpu_optimus(__ldm_unused__ LdmDevice *igpu, LdmDevice 
         }
 
         /* Create an xorg config file */
-        xorg_config = fopen(XORG_CONFIG, "rw");
+        xorg_config = fopen(XORG_CONFIG, "w+");
         if (!xorg_config) {
                 goto fail;
         }
