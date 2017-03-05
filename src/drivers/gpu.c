@@ -19,6 +19,7 @@
 
 #include "config.h"
 #include "device.h"
+#include "dm/display-manager.h"
 #include "ldm.h"
 #include "pci.h"
 #include "scanner.h"
@@ -28,6 +29,14 @@
  * TODO: Consider an /etc/X11/xorg.conf.d/ path..
  */
 #define XORG_CONFIG "/etc/X11/xorg.conf"
+
+/**
+ * Return the PCI ID on xorg's format
+ */
+static char *ldm_gpu_get_xorg_pci_id(LdmPCIAddress *addr)
+{
+        return string_printf("PCI:%d:%d:%d", addr->bus, addr->dev, addr->func);
+}
 
 /**
  * Map the enums to the real disk names
@@ -278,11 +287,62 @@ static bool ldm_configure_gpu_simple(LdmDevice *device)
 /**
  * Encountered Optimus GPU configuration
  */
-static bool ldm_configure_gpu_optimus(LdmDevice *igpu, LdmDevice *dgpu)
+static bool ldm_configure_gpu_optimus(__ldm_unused__ LdmDevice *igpu, LdmDevice *dgpu)
 {
-        fprintf(stderr, "Optimus: %s (IGPU) | %s (DGPU) \n", igpu->device_name, dgpu->device_name);
-        fputs("Not yet implemented\n", stderr);
-        return false;
+        const LdmDisplayManager *dm = ldm_display_manager_get_default();
+        autofree(FILE) *xorg_config = NULL;
+        autofree(char) *pci_id = NULL;
+        LdmPCIDevice *secondary = (LdmPCIDevice *)dgpu;
+
+        /* No proprietary drivers available */
+        if (!ldm_gl_provider_available(LDM_GL_NVIDIA)) {
+                if (dm) {
+                        dm->remove_xrandr_output();
+                }
+                return ldm_gl_provider_install(LDM_GL_MESA);
+        }
+
+        /* Attempt to set up the links for nvidia */
+        if (!ldm_gl_provider_install(LDM_GL_NVIDIA)) {
+                return ldm_gl_provider_install(LDM_GL_MESA);
+        }
+
+        /* Set up the diplay manager configuration files */
+        if (dm) {
+                if (!dm->set_xrandr_output("modesetting", "NVIDIA-0")) {
+                        goto fail;
+                }
+        }
+
+        /* Create an xorg config file */
+        xorg_config = fopen(XORG_CONFIG, "rw");
+        if (!xorg_config) {
+                goto fail;
+        }
+
+        pci_id = ldm_gpu_get_xorg_pci_id(&(secondary->address));
+
+        /* Set modesetting by default, and enable the nvidia driver only on the
+         * nvidia PCI ID
+         * Special thanks to the Arch Wiki:
+         * https://wiki.archlinux.org/index.php/NVIDIA_Optimus#Using_nvidia
+         */
+        if (fprintf(xorg_config,
+                    "Section \"Module\"\n"
+                    "    Load \"modesetting\"\n"
+                    "EndSection\n\n"
+                    "Section \"Device\"\n"
+                    "    Identifier \"nvidia\"\n"
+                    "    BusID \"%s\"\n"
+                    "    Option \"AllowEmptyInitialConfiguration\"\n",
+                    pci_id) < 0) {
+                goto fail;
+        }
+
+        return true;
+fail:
+        fprintf(stderr, "Failed to configure optimus: %s\n", strerror(errno));
+        return ldm_gl_provider_install(LDM_GL_MESA);
 }
 
 /**

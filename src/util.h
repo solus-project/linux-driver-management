@@ -12,6 +12,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -46,6 +47,7 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
 DEF_AUTOFREE(char, free)
+DEF_AUTOFREE(FILE, fclose)
 
 /**
  * Allocate a string or abort

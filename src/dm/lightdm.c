@@ -23,8 +23,6 @@
 #define LIGHTDM_RANDR_FILE LIGHTDM_CONF_DIR "/99-ldm-xrandr.conf"
 #define LIGHTDM_RANDR_EXEC "/etc/lightdm-xrandr-init.sh"
 
-DEF_AUTOFREE(FILE, fclose)
-
 /**
  * Create the xrandr optimus configuration
  */
