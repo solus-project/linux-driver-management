@@ -30,6 +30,11 @@ int ldm_cli_status(int argc, char **argv);
  */
 int ldm_cli_version(int argc, char **argv);
 
+/**
+ * Help command
+ */
+int ldm_cli_help(int argc, char **argv);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

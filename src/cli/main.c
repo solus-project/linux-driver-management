@@ -21,19 +21,22 @@ static const char *prog_name = NULL;
  * Main program commands
  */
 static CLICommand commands[] = {
+        { "help", "Display the available commands and quit", ldm_cli_help },
         { "status", "Display the driver status for the system", ldm_cli_status },
         { "version", "Display the program version and quit", ldm_cli_version },
 };
 
 /**
- * Emit help for all of our commands
+ * Emit help for the CLI - multi function
  */
-static void print_help(void)
+int ldm_cli_help(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
+        /* TODO: Show specific help for a given command */
         for (size_t i = 0; i < ARRAY_SIZE(commands); i++) {
                 CLICommand *command = &(commands[i]);
                 fprintf(stdout, "%15s - %s\n", command->name, command->summary);
         }
+        return EXIT_SUCCESS;
 }
 
 /**
@@ -42,7 +45,7 @@ static void print_help(void)
 static void print_usage(void)
 {
         fprintf(stderr, "Usage: %s [subcommand]\n\n", prog_name);
-        print_help();
+        ldm_cli_help(-1, NULL);
 }
 
 /**
@@ -80,7 +83,7 @@ int main(int argc, char **argv)
         /* Tell them which commands *do* exist */
         if (!command) {
                 fprintf(stderr, "Unknown command: '%s'\n\n", subcommand);
-                print_help();
+                ldm_cli_help(-1, NULL);
                 return EXIT_FAILURE;
         }
 
