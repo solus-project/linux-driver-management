@@ -13,17 +13,19 @@
 #include <stdlib.h>
 
 #include "cli.h"
+#include "config.h"
 #include "util.h"
 
 int ldm_cli_version(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
-        fprintf(stdout, "linux-driver-management - version 0.0.1\n\n");
+        fprintf(stdout, PACKAGE_NAME " - version " PACKAGE_VERSION "\n\n");
         fprintf(stdout, "Copyright © 2016-2017 Ikey Doherty\n\n");
         fprintf(stdout,
-                "linux-driver-management is free software; you can redistribute it and/or\n"
+                PACKAGE_NAME
+                " is free software; you can redistribute it and/or\n"
                 "modify it under the terms of the GNU Lesser General Public License as\n"
-                "published by the Free Software Foundation; either version 2.1\n"
-                "of the License, or (at your option) any later version.\n");
+                "published by the Free Software Foundation; either version 2.1 of the\n"
+                "License, or (at your option) any later version.\n");
         return EXIT_SUCCESS;
 }
 

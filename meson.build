@@ -10,6 +10,15 @@ project(
     ],
 )
 
+conf_data = configuration_data()
+conf_data.set_quoted('PACKAGE_VERSION', meson.project_version())
+conf_data.set_quoted('PACKAGE_NAME', meson.project_name())
+
+configure_file(
+    output: 'config.h',
+    configuration: conf_data,
+)
+
 am_cflags = [
     '-fstack-protector',
     '-pedantic',
