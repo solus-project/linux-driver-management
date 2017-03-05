@@ -9,13 +9,88 @@
  * of the License, or (at your option) any later version.
  */
 
-#include <stdio.h>
+#define _GNU_SOURCE
 
+#include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+#include "config.h"
 #include "device.h"
 #include "ldm.h"
 #include "pci.h"
 #include "scanner.h"
 #include "util.h"
+
+/**
+ * Map the enums to the real disk names
+ */
+static const char const *gl_driver_mapping[] = {
+            [LDM_GL_NVIDIA] = "nvidia", [LDM_GL_AMD] = "amd", [LDM_GL_MESA] = "default",
+};
+
+LdmGLProvider ldm_pci_vendor_to_gl_provider(LdmPCIDevice *device)
+{
+        switch (device->vendor_id) {
+        case PCI_VENDOR_ID_NVIDIA:
+                return LDM_GL_NVIDIA;
+        case PCI_VENDOR_ID_AMD:
+                return LDM_GL_AMD;
+        case PCI_VENDOR_ID_INTEL:
+        default:
+                return LDM_GL_MESA;
+        }
+}
+
+static inline bool path_exists(const char *p)
+{
+        __attribute__((unused)) struct stat st = { 0 };
+        return ((lstat(p, &st) == 0));
+}
+
+bool ldm_gl_provider_available(LdmGLProvider provider)
+{
+        return ldm_gl_provider_status(provider) != LDM_STATUS_UNINSTALLED;
+}
+
+/*
+ * Basically we just iterate the mandatory paths and determine if we have a
+ * full, partial, or missing installation.
+ */
+LdmInstallStatus ldm_gl_provider_status(LdmGLProvider provider_id)
+{
+        const char *provider = gl_driver_mapping[provider_id];
+        autofree(char) *gl_dir = string_printf("%s/glx-provider/%s", LIBDIR, provider);
+        if (!path_exists(gl_dir)) {
+                return LDM_STATUS_UNINSTALLED;
+        }
+        LdmInstallStatus ret = LDM_STATUS_UNINSTALLED;
+
+        /* libglx.so is not mandatory due to xorg / mesa separation */
+        static const char *mandatory_links[] = {
+                "libGL.so.1", "libEGL.so.1", "libGLESv1_CM.so.1", "libGLESv2.so.2",
+        };
+
+        for (size_t i = 0; i < ARRAY_SIZE(mandatory_links); i++) {
+                const char *link = mandatory_links[i];
+                autofree(char) *fullp =
+                    string_printf("%s/glx-provider/%s/%s", LIBDIR, provider, link);
+                if (!path_exists(fullp)) {
+                        if (ret == LDM_STATUS_INSTALLED) {
+                                return LDM_STATUS_CORRUPT;
+                        }
+                        ret = LDM_STATUS_UNINSTALLED;
+                }
+                ret = LDM_STATUS_INSTALLED;
+        }
+        return ret;
+}
+
+bool ldm_gl_provider_install(LdmGLProvider provider)
+{
+        fprintf(stderr, "Not yet implemented\n");
+        return false;
+}
 
 LdmGPUConfig *ldm_gpu_config_new(LdmDevice *devices)
 {
@@ -134,21 +209,22 @@ void ldm_gpu_config_free(LdmGPUConfig *self)
 static bool ldm_configure_gpu_simple(LdmDevice *device)
 {
         LdmPCIDevice *pci = (LdmPCIDevice *)device;
-        fprintf(stderr, "Simple configure: %s\n", device->device_name);
-        switch (pci->vendor_id) {
-        case PCI_VENDOR_ID_AMD:
-                fputs(" - AMD GPU\n", stderr);
+        LdmGLProvider provider = ldm_pci_vendor_to_gl_provider(pci);
+        const char *provider_name = gl_driver_mapping[provider];
+
+        switch (ldm_gl_provider_status(provider)) {
+        case LDM_STATUS_CORRUPT:
+                fprintf(stderr, "GL provider '%s' is corrupt\n", provider_name);
                 break;
-        case PCI_VENDOR_ID_INTEL:
-                fputs(" - Intel GPU\n", stderr);
+        case LDM_STATUS_INSTALLED:
+                fprintf(stderr, "GL provider '%s' is OK\n", provider_name);
                 break;
-        case PCI_VENDOR_ID_NVIDIA:
-                fputs(" - NVIDIA GPU\n", stderr);
-                break;
-        default:
-                fputs(" - Unknown GPU vendor\n", stderr);
+        case LDM_STATUS_UNINSTALLED:
+                fprintf(stderr, "GL provider '%s' is uninstalled!\n", provider_name);
                 break;
         }
+
+        fprintf(stderr, "Simple configure: %s\n", device->device_name);
         fputs("Not yet implemented\n", stderr);
         return false;
 }

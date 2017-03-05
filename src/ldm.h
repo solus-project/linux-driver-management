@@ -14,7 +14,29 @@
 #include <stdbool.h>
 
 #include "device.h"
+#include "pci.h"
 
+/**
+ * Various provider types (pre glvnd)
+ */
+typedef enum {
+        LDM_GL_NVIDIA = 1, /**<The nvidia libGL provider */
+        LDM_GL_AMD,        /**<The AMD libGL provider */
+        LDM_GL_MESA,       /**<The default mesa libGL provider */
+} LdmGLProvider;
+
+/**
+ * Installation status for a GL provider
+ */
+typedef enum {
+        LDM_STATUS_UNINSTALLED = 1, /**<Not yet installed */
+        LDM_STATUS_CORRUPT,         /**<Corrupt (partially installed) */
+        LDM_STATUS_INSTALLED,       /**<Fully installed */
+} LdmInstallStatus;
+
+/**
+ * The supported GPU configurations
+ */
 typedef enum {
         LDM_GPU_SIMPLE = 1, /**<Trivial GPU configuration */
         LDM_GPU_SLI,        /**<NVIDIA SLI configuration */
@@ -43,6 +65,26 @@ LdmGPUConfig *ldm_gpu_config_new(LdmDevice *devices);
  * Free the previously allocated GPU configuration
  */
 void ldm_gpu_config_free(LdmGPUConfig *self);
+
+/**
+ * Determine if the given GL provider is available for installation
+ */
+bool ldm_gl_provider_available(LdmGLProvider provider);
+
+/**
+ * Check if the GL provider is fully installed or not
+ */
+LdmInstallStatus ldm_gl_provider_status(LdmGLProvider provider);
+
+/**
+ * Install the given LDM GL provider
+ */
+bool ldm_gl_provider_install(LdmGLProvider provider);
+
+/**
+ * Convert the vendor ID to the appropriate GL provider
+ */
+LdmGLProvider ldm_pci_vendor_to_gl_provider(LdmPCIDevice *device);
 
 /**
  * Attempt to configure the system GPU(s)
