@@ -13,8 +13,7 @@ project(
 conf_data = configuration_data()
 conf_data.set_quoted('PACKAGE_VERSION', meson.project_version())
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name())
-#conf_data.set_quoted('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
-conf_data.set_quoted('LIBDIR', '/usr/lib64')
+conf_data.set_quoted('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
 
 configure_file(
     output: 'config.h',
