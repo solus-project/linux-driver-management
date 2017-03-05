@@ -61,7 +61,7 @@ static void print_device(LdmDevice *device, const char *label)
                 break;
         }
         fprintf(stderr,
-                " \u251C %02x:%02x.%x: %s (%s)\n",
+                " \u251C PCI:%02x:%02x.%x   : %s (%s)\n",
                 dev->address.bus,
                 dev->address.dev,
                 dev->address.func,
