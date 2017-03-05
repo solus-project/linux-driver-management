@@ -15,9 +15,9 @@
  * A CLICommand lends a subcommand approach to the "UI", akin to git
  */
 typedef struct CLICommand {
-        const char *name;                      /**<Textual name of the command */
-        const char *summary;                   /**<Help summary for the command */
-        int (*command)(int argc, char **argv); /**<Main entry */
+        const char *name;                   /**<Textual name of the command */
+        const char *summary;                /**<Help summary for the command */
+        int (*exec)(int argc, char **argv); /**<Main entry */
 } CLICommand;
 
 /**
