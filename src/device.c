@@ -54,7 +54,7 @@ LdmDevice *ldm_device_find_vendor(LdmDevice *device, uint16_t vendor)
  */
 int ldm_device_n_devices(LdmDevice *device)
 {
-        int ret = -1;
+        int ret = 0;
         for (LdmDevice *d = device; d; d = d->next) {
                 ++ret;
         }

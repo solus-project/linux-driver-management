@@ -16,6 +16,7 @@
 #include "cli.h"
 #include "config.h"
 #include "device.h"
+#include "pci.h"
 #include "scanner.h"
 #include "util.h"
 
@@ -29,7 +30,18 @@ static const char *known_driver_types = "gpu";
  */
 int ldm_cli_configure_gpu_simple(__ldm_unused__ LdmDevice *device)
 {
-        fputs("Simple configure: Not yet implemented\n", stderr);
+        fprintf(stderr, "Simple configure: %s\n", device->device_name);
+        fputs("Not yet implemented\n", stderr);
+        return EXIT_FAILURE;
+}
+
+/**
+ * Encountered Optimus GPU configuration
+ */
+int ldm_cli_configure_gpu_optimus(LdmDevice *intel_dev, LdmDevice *nvidia_dev)
+{
+        fprintf(stderr, "Optimus: %s | %s\n", intel_dev->device_name, nvidia_dev->device_name);
+        fputs("Not yet implemented\n", stderr);
         return EXIT_FAILURE;
 }
 
@@ -39,6 +51,8 @@ int ldm_cli_configure_gpu_simple(__ldm_unused__ LdmDevice *device)
 int ldm_cli_configure_gpu(void)
 {
         autofree(LdmDevice) *devices = NULL;
+        LdmDevice *intel = NULL;
+        LdmDevice *nvidia = NULL;
 
         /* Find the usable GPUs first */
         devices = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
@@ -51,6 +65,26 @@ int ldm_cli_configure_gpu(void)
         if (ldm_device_n_devices(devices) == 1) {
                 return ldm_cli_configure_gpu_simple(devices);
         }
+
+        /* Look for optimus GPU */
+        intel = ldm_device_find_vendor(devices, PCI_VENDOR_ID_INTEL);
+        nvidia = ldm_device_find_vendor(devices, PCI_VENDOR_ID_NVIDIA);
+
+        if (!intel || !nvidia) {
+                goto non_optimus;
+        }
+
+        /* At this point we have intel & nvidia. If intel is the GPU used
+         * by the BIOS we have optimus. */
+        if (ldm_pci_device_is_boot_vga((LdmPCIDevice *)intel)) {
+                return ldm_cli_configure_gpu_optimus(intel, nvidia);
+        }
+
+        /* Has NVIDIA, but not optimus. Only configure the NVIDIA gpu */
+        return ldm_cli_configure_gpu_simple(nvidia);
+
+non_optimus:
+        /* TODO: Check for AMDGPU hybrid */
 
         /* Multiple devices, potential ATX+iGPU+DGPU/SLI/Hybrid */
         fputs("Complex configure: Not yet implemented\n", stderr);
