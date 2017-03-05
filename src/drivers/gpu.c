@@ -21,7 +21,22 @@
  */
 static bool ldm_configure_gpu_simple(LdmDevice *device)
 {
+        LdmPCIDevice *pci = (LdmPCIDevice *)device;
         fprintf(stderr, "Simple configure: %s\n", device->device_name);
+        switch (pci->vendor_id) {
+        case PCI_VENDOR_ID_AMD:
+                fputs(" - AMD GPU\n", stderr);
+                break;
+        case PCI_VENDOR_ID_INTEL:
+                fputs(" - Intel GPU\n", stderr);
+                break;
+        case PCI_VENDOR_ID_NVIDIA:
+                fputs(" - NVIDIA GPU\n", stderr);
+                break;
+        default:
+                fputs(" - Unknown GPU vendor\n", stderr);
+                break;
+        }
         fputs("Not yet implemented\n", stderr);
         return false;
 }
