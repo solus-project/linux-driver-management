@@ -25,6 +25,11 @@ typedef struct CLICommand {
  */
 int ldm_cli_status(int argc, char **argv);
 
+/**
+ * Defined in main.c - version emit
+ */
+int ldm_cli_version(int argc, char **argv);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

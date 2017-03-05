@@ -22,6 +22,7 @@ static const char *prog_name = NULL;
  */
 static CLICommand commands[] = {
         { "status", "Display the driver status for the system", ldm_cli_status },
+        { "version", "Display the program version and quit", ldm_cli_version },
 };
 
 /**
