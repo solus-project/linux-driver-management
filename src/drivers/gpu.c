@@ -19,7 +19,7 @@
 /**
  * Simple GPU configuration.
  */
-bool ldm_configure_gpu_simple(__ldm_unused__ LdmDevice *device)
+static bool ldm_configure_gpu_simple(LdmDevice *device)
 {
         fprintf(stderr, "Simple configure: %s\n", device->device_name);
         fputs("Not yet implemented\n", stderr);
@@ -29,7 +29,7 @@ bool ldm_configure_gpu_simple(__ldm_unused__ LdmDevice *device)
 /**
  * Encountered Optimus GPU configuration
  */
-bool ldm_configure_gpu_optimus(LdmDevice *intel_dev, LdmDevice *nvidia_dev)
+static bool ldm_configure_gpu_optimus(LdmDevice *intel_dev, LdmDevice *nvidia_dev)
 {
         fprintf(stderr, "Optimus: %s | %s\n", intel_dev->device_name, nvidia_dev->device_name);
         fputs("Not yet implemented\n", stderr);
