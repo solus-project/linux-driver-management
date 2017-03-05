@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include "device.h"
+#include "ldm.h"
 #include "pci.h"
 #include "scanner.h"
 #include "util.h"
@@ -29,10 +30,7 @@ static char *get_xorg_pci_id(LdmPCIAddress *addr)
         return string_printf("PCI:%d:%d:%d", addr->bus, addr->dev, addr->func);
 }
 
-/**
- * Demo code follows
- */
-static void print_device(LdmDevice *device)
+static void print_device(LdmDevice *device, const char *label)
 {
         autofree(char) *pci_id = NULL;
 
@@ -63,11 +61,12 @@ static void print_device(LdmDevice *device)
                 break;
         }
         fprintf(stderr,
-                " %02x:%02x.%x: %s\n",
+                " \u251C %02x:%02x.%x: %s (%s)\n",
                 dev->address.bus,
                 dev->address.dev,
                 dev->address.func,
-                device->device_name);
+                device->device_name,
+                label);
         fprintf(stderr, " \u251C Vendor ID     : %s\n", vendor);
         if (gpu) {
                 fprintf(stderr, " \u251C Kernel driver : %s\n", device->driver);
@@ -77,13 +76,41 @@ static void print_device(LdmDevice *device)
         } else {
                 fprintf(stderr, " \u2514 Kernel driver : %s\n", device->driver);
         }
-        fputs("\n", stderr);
+}
+
+void print_gpu_configuration(LdmGPUConfig *config)
+{
+        switch (config->type) {
+        case LDM_GPU_AMD_HYBRID:
+                fputs("AMD Hybrid\n", stderr);
+                break;
+        case LDM_GPU_OPTIMUS:
+                fputs("NVIDIA Optimus\n", stderr);
+                break;
+        case LDM_GPU_CROSSFIRE:
+                fputs("AMD Crossfire\n", stderr);
+                break;
+        case LDM_GPU_SLI:
+                fputs("NVIDIA SLI\n", stderr);
+        case LDM_GPU_SIMPLE:
+        default:
+                fputs("Simple GPU Configuration\n", stderr);
+                break;
+        }
+
+        if (config->primary) {
+                print_device(config->primary, "Primary");
+        }
+        if (config->secondary) {
+                fputs(" \u251F Secondary GPU\n", stderr);
+                print_device(config->secondary, "Secondary");
+        }
 }
 
 int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
         autofree(LdmDevice) *device = NULL;
-        LdmDevice *intel = NULL;
+        autofree(LdmGPUConfig) *gpu = NULL;
 
         /* TEMPORARY: Only show GPU */
         device = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
@@ -92,18 +119,8 @@ int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
                 return EXIT_FAILURE;
         }
 
-        /* Iterate all discovered devices */
-        for (LdmDevice *dev = device; dev; dev = dev->next) {
-                print_device(dev);
-        }
-
-        /* Determine Optimus support */
-        if ((intel = ldm_device_find_vendor(device, PCI_VENDOR_ID_INTEL)) != NULL &&
-            ldm_device_find_vendor(device, PCI_VENDOR_ID_NVIDIA) != NULL) {
-                if (ldm_pci_device_is_boot_vga((LdmPCIDevice *)intel)) {
-                        fprintf(stderr, "*Technically* found Optimus. Probably didn't\n");
-                }
-        }
+        gpu = ldm_gpu_config_new(device);
+        print_gpu_configuration(gpu);
 
         return EXIT_SUCCESS;
 }
