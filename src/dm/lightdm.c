@@ -100,10 +100,6 @@ static bool lightdm_remove_xrandr_output(void)
  */
 static bool lightdm_is_used(void)
 {
-        /* lightdm always sets XDG_SEAT_PATH whereas GDM does not */
-        if (!getenv("XDG_SEAT_PATH")) {
-                return false;
-        }
         static const char *lightdm_binaries[] = { "/usr/sbin/lightdm", "/usr/bin/lightdm" };
         /* Search for lightdm and if its accessible, use it */
         for (size_t i = 0; i < ARRAY_SIZE(lightdm_binaries); i++) {
