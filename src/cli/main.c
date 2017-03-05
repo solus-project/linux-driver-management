@@ -68,17 +68,22 @@ int main(int argc, char **argv)
         prog_name = argv[0];
         const char *subcommand = NULL;
 
+        /* Forward arguments beyond prog name */
+        ++argv;
+        --argc;
+
         /* No arguments, just emit usage */
-        if (argc < 2) {
+        if (argc < 1) {
                 print_usage();
                 return EXIT_SUCCESS;
         }
-        subcommand = argv[1];
+        /* Set up subcommand context */
+        subcommand = argv[0];
+        ++argv;
+        --argc;
 
         /* Find command, wind the arguments */
         command = ldm_cli_find_command(subcommand);
-        ++argv;
-        --argc;
 
         /* Tell them which commands *do* exist */
         if (!command) {
