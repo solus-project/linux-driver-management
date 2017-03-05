@@ -44,10 +44,22 @@ static bool ldm_configure_gpu_simple(LdmDevice *device)
 /**
  * Encountered Optimus GPU configuration
  */
-static bool ldm_configure_gpu_optimus(LdmDevice *intel_dev, LdmDevice *nvidia_dev)
+static bool ldm_configure_gpu_optimus(LdmDevice *igpu, LdmDevice *dgpu)
 {
-        fprintf(stderr, "Optimus: %s | %s\n", intel_dev->device_name, nvidia_dev->device_name);
+        fprintf(stderr, "Optimus: %s (IGPU) | %s (DGPU) \n", igpu->device_name, dgpu->device_name);
         fputs("Not yet implemented\n", stderr);
+        return false;
+}
+
+/**
+ * Configure AMD hybrid GPU situation
+ */
+static bool ldm_configure_gpu_amd_hybrid(LdmDevice *igpu, LdmDevice *dgpu)
+{
+        fprintf(stderr,
+                "AMD Hybrid: %s (IGPU) | %s (DGPU)\n",
+                igpu->device_name,
+                dgpu->device_name);
         return false;
 }
 
@@ -57,8 +69,10 @@ static bool ldm_configure_gpu_optimus(LdmDevice *intel_dev, LdmDevice *nvidia_de
 bool ldm_configure_gpu(void)
 {
         autofree(LdmDevice) *devices = NULL;
-        LdmDevice *intel = NULL;
-        LdmDevice *nvidia = NULL;
+        LdmDevice *non_boot_vga = NULL;
+        LdmDevice *boot_vga = NULL;
+        uint16_t boot_vendor_id;
+        uint16_t non_boot_vendor_id;
 
         /* Find the usable GPUs first */
         devices = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
@@ -72,29 +86,57 @@ bool ldm_configure_gpu(void)
                 return ldm_configure_gpu_simple(devices);
         }
 
-        /* Look for optimus GPU */
-        intel = ldm_device_find_vendor(devices, PCI_VENDOR_ID_INTEL);
-        nvidia = ldm_device_find_vendor(devices, PCI_VENDOR_ID_NVIDIA);
-
-        if (!intel || !nvidia) {
-                goto non_optimus;
+        /* Find the boot_vga and the non_boot_vga */
+        for (LdmDevice *dev = devices; dev; dev = dev->next) {
+                if (ldm_pci_device_is_boot_vga((LdmPCIDevice *)dev)) {
+                        boot_vga = dev;
+                } else {
+                        non_boot_vga = dev;
+                }
         }
 
-        /* At this point we have intel & nvidia. If intel is the GPU used
-         * by the BIOS we have optimus. */
-        if (ldm_pci_device_is_boot_vga((LdmPCIDevice *)intel)) {
-                return ldm_configure_gpu_optimus(intel, nvidia);
+        /* If somehow we fail to get boot_vga (highly unlikely, make it the first one we encounter
+         */
+        if (!boot_vga) {
+                boot_vga = devices;
         }
 
-        /* Has NVIDIA, but not optimus. Only configure the NVIDIA gpu */
-        return ldm_configure_gpu_simple(nvidia);
+        boot_vendor_id = ((LdmPCIDevice *)boot_vga)->vendor_id;
 
-non_optimus:
-        /* TODO: Check for AMDGPU hybrid */
+        /* SLI/Crossfire most likely. Configure the first boot_vga */
+        if (!non_boot_vga) {
+                switch (boot_vendor_id) {
+                case PCI_VENDOR_ID_AMD:
+                        fputs("Detected possible Crossfire system\n", stderr);
+                        break;
+                case PCI_VENDOR_ID_NVIDIA:
+                        fputs("Detected possible SLI system\n", stderr);
+                        break;
+                default:
+                        break;
+                }
+                return ldm_configure_gpu_simple(boot_vga);
+        }
 
-        /* Multiple devices, potential ATX+iGPU+DGPU/SLI/Hybrid */
-        fputs("Complex configure: Not yet implemented\n", stderr);
-        return false;
+        non_boot_vendor_id = ((LdmPCIDevice *)non_boot_vga)->vendor_id;
+
+        switch (non_boot_vendor_id) {
+        case PCI_VENDOR_ID_AMD:
+                if (boot_vendor_id == PCI_VENDOR_ID_INTEL || boot_vendor_id == PCI_VENDOR_ID_AMD) {
+                        return ldm_configure_gpu_amd_hybrid(boot_vga, non_boot_vga);
+                }
+                break;
+        case PCI_VENDOR_ID_NVIDIA:
+                if (boot_vendor_id == PCI_VENDOR_ID_INTEL) {
+                        return ldm_configure_gpu_optimus(boot_vga, non_boot_vga);
+                }
+                break;
+        default:
+                break;
+        }
+
+        /* Restort to simple configure on the boot_vga */
+        return ldm_configure_gpu_simple(boot_vga);
 }
 
 /*
