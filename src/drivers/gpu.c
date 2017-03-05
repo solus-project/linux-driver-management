@@ -11,7 +11,9 @@
 
 #define _GNU_SOURCE
 
+#include <errno.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -21,6 +23,11 @@
 #include "pci.h"
 #include "scanner.h"
 #include "util.h"
+
+/**
+ * TODO: Consider an /etc/X11/xorg.conf.d/ path..
+ */
+#define XORG_CONFIG "/etc/X11/xorg.conf"
 
 /**
  * Map the enums to the real disk names
@@ -204,6 +211,31 @@ void ldm_gpu_config_free(LdmGPUConfig *self)
 }
 
 /**
+ * Perform a simple configure on NVIDIA
+ */
+static inline bool ldm_configure_gpu_xorg_nvidia(void)
+{
+        if (system("nvidia-xconfig") != 0) {
+                fprintf(stderr, "Error invoking nvidia-xconfig: %s\n", strerror(errno));
+                return false;
+        }
+        return true;
+}
+
+/**
+ * Try to remove any previous xorg configs (non-fatal mostly.)
+ */
+static inline void ldm_configure_gpu_nuke_xorg(void)
+{
+        if (!path_exists(XORG_CONFIG)) {
+                return;
+        }
+        if (unlink(XORG_CONFIG) < 0) {
+                fprintf(stderr, "Error removing xorg config: %s\n", strerror(errno));
+        }
+}
+
+/**
  * Simple GPU configuration.
  */
 static bool ldm_configure_gpu_simple(LdmDevice *device)
@@ -214,7 +246,21 @@ static bool ldm_configure_gpu_simple(LdmDevice *device)
         /* Here we determine if we can use the proprietary driver or have to
          * fallback to mesa */
         if (ldm_gl_provider_available(provider)) {
-                return ldm_gl_provider_install(provider);
+                if (!ldm_gl_provider_install(provider)) {
+                        return false;
+                }
+                /* Now write the xorg config. */
+                switch (provider) {
+                case LDM_GL_NVIDIA:
+                        return ldm_configure_gpu_xorg_nvidia();
+                default:
+                        break;
+                }
+        }
+
+        /* Proprietary driver no longer available, make sure to remove xorg config */
+        if (provider != LDM_GL_MESA) {
+                ldm_configure_gpu_nuke_xorg();
         }
 
         /* Fallback to mesa, nothing we can do without the drivers */
