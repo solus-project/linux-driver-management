@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
         /* Find command, wind the arguments */
         command = ldm_cli_find_command(subcommand);
-        ++argc;
+        ++argv;
         --argc;
 
         /* Tell them which commands *do* exist */
