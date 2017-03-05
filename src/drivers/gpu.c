@@ -184,8 +184,7 @@ bool ldm_gl_provider_install(LdmGLProvider provider_id)
                 }
         }
 
-        fprintf(stderr, "Not yet implemented\n");
-        return false;
+        return true;
 }
 
 LdmGPUConfig *ldm_gpu_config_new(LdmDevice *devices)
