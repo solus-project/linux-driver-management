@@ -11,6 +11,9 @@
 
 #pragma once
 
+#include <stdbool.h>
+#include <string.h>
+
 /**
  * Shut up the compiler
  */
@@ -46,6 +49,17 @@ DEF_AUTOFREE(char, free)
  * Allocate a string or abort
  */
 char *string_printf(const char *s, ...) __attribute__((format(printf, 1, 2)));
+
+/**
+ * Determine if two strings are equal, accounting also for NULL strings
+ */
+static inline bool streq(const char *a, const char *b)
+{
+        if (!a || !b) {
+                return false;
+        }
+        return (strcmp(a, b) == 0);
+}
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
