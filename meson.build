@@ -61,3 +61,8 @@ executable('linux-driver-management',
            c_args: am_cflags,
            install: true,
 )
+
+# install gl-driver-switch compatability
+if get_option('with-gl-driver-switch-compat') == true
+    install_data('gl-driver-switch', install_dir: join_paths(get_option('prefix'), get_option('bindir')))
+endif

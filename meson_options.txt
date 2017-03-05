@@ -1,0 +1,1 @@
+option('with-gl-driver-switch-compat', type: 'boolean', value: false, description: 'Enable (Solus specific) gl-driver-switch compatability')

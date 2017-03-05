@@ -1,0 +1,3 @@
+#!/bin/bash
+# Provide a migration path for Solus users
+linux-driver-management configure gpu
