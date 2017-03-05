@@ -21,6 +21,11 @@ typedef struct CLICommand {
 } CLICommand;
 
 /**
+ * Configure a given set of drivers on the system
+ */
+int ldm_cli_configure(int argc, char **argv);
+
+/**
  * Main status command
  */
 int ldm_cli_status(int argc, char **argv);

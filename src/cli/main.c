@@ -21,6 +21,7 @@ static const char *prog_name = NULL;
  * Main program commands
  */
 static CLICommand commands[] = {
+        { "configure", "Configure the system drivers", ldm_cli_configure },
         { "help", "Display the available commands and quit", ldm_cli_help },
         { "status", "Display the driver status for the system", ldm_cli_status },
         { "version", "Display the program version and quit", ldm_cli_version },
