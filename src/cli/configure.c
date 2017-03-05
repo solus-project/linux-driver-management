@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "cli.h"
 #include "config.h"
@@ -32,14 +33,32 @@ int ldm_cli_configure_gpu(void)
 
 int ldm_cli_configure(int argc, char **argv)
 {
+        int (*arg_configure)(void) = NULL;
+
         if (argc != 1) {
                 fputs("Incorrect usage. Expected keyword\n", stderr);
                 goto emit_types;
         }
+
+        /* Determine the helper to use */
         if (streq(argv[0], "gpu")) {
-                return ldm_cli_configure_gpu();
+                arg_configure = ldm_cli_configure_gpu;
         }
-        fprintf(stderr, "Unknown driver type: '%s'\n", argv[0]);
+
+        if (!arg_configure) {
+                fprintf(stderr, "Unknown driver type: '%s'\n", argv[0]);
+                goto emit_types;
+        }
+
+        /* Make sure they're root now. */
+        if (geteuid() != 0) {
+                fputs("You must have root privileges to use this command\n", stderr);
+                return EXIT_FAILURE;
+        }
+
+        /* Execute using the helper */
+        return arg_configure();
+
 emit_types:
         fprintf(stderr, "Known types: %s\n", known_driver_types);
         return EXIT_FAILURE;
