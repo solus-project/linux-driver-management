@@ -210,23 +210,15 @@ static bool ldm_configure_gpu_simple(LdmDevice *device)
 {
         LdmPCIDevice *pci = (LdmPCIDevice *)device;
         LdmGLProvider provider = ldm_pci_vendor_to_gl_provider(pci);
-        const char *provider_name = gl_driver_mapping[provider];
 
-        switch (ldm_gl_provider_status(provider)) {
-        case LDM_STATUS_CORRUPT:
-                fprintf(stderr, "GL provider '%s' is corrupt\n", provider_name);
-                break;
-        case LDM_STATUS_INSTALLED:
-                fprintf(stderr, "GL provider '%s' is OK\n", provider_name);
-                break;
-        case LDM_STATUS_UNINSTALLED:
-                fprintf(stderr, "GL provider '%s' is uninstalled!\n", provider_name);
-                break;
+        /* Here we determine if we can use the proprietary driver or have to
+         * fallback to mesa */
+        if (ldm_gl_provider_available(provider)) {
+                return ldm_gl_provider_install(provider);
         }
 
-        fprintf(stderr, "Simple configure: %s\n", device->device_name);
-        fputs("Not yet implemented\n", stderr);
-        return false;
+        /* Fallback to mesa, nothing we can do without the drivers */
+        return ldm_gl_provider_install(LDM_GL_MESA);
 }
 
 /**
@@ -242,13 +234,14 @@ static bool ldm_configure_gpu_optimus(LdmDevice *igpu, LdmDevice *dgpu)
 /**
  * Configure AMD hybrid GPU situation
  */
-static bool ldm_configure_gpu_amd_hybrid(LdmDevice *igpu, LdmDevice *dgpu)
+static bool ldm_configure_gpu_amd_hybrid(__ldm_unused__ LdmDevice *igpu,
+                                         __ldm_unused__ LdmDevice *dgpu)
 {
-        fprintf(stderr,
-                "AMD Hybrid: %s (IGPU) | %s (DGPU)\n",
-                igpu->device_name,
-                dgpu->device_name);
-        return false;
+        /* Currently we don't support AMD Hybrid graphics on Solus, as we don't
+         * yet have the AMD proprietary driver installed. For now we'll just
+         * ensure mesa is "OK"
+         */
+        return ldm_gl_provider_install(LDM_GL_MESA);
 }
 
 /**
