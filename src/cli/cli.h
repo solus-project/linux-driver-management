@@ -9,27 +9,21 @@
  * of the License, or (at your option) any later version.
  */
 
-#include <stdlib.h>
-
-#include "cli.h"
+#pragma once
 
 /**
- * Main program commands
+ * A CLICommand lends a subcommand approach to the "UI", akin to git
  */
-static CLICommand commands[] = {
-        { "status", "Display the driver status for the system", ldm_cli_status },
-};
+typedef struct CLICommand {
+        const char *name;                      /**<Textual name of the command */
+        const char *summary;                   /**<Help summary for the command */
+        int (*command)(int argc, char **argv); /**<Main entry */
+} CLICommand;
 
-int main(int argc, char **argv)
-{
-        CLICommand *command = NULL;
-
-        /* TODO: Assign command from CLI args */
-        if (!command) {
-                return EXIT_FAILURE;
-        }
-        return EXIT_FAILURE;
-}
+/**
+ * Main status command
+ */
+int ldm_cli_status(int argc, char **argv);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
