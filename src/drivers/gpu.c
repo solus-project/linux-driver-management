@@ -102,8 +102,88 @@ LdmInstallStatus ldm_gl_provider_status(LdmGLProvider provider_id)
         return ret;
 }
 
-bool ldm_gl_provider_install(LdmGLProvider provider)
+bool ldm_gl_provider_install(LdmGLProvider provider_id)
 {
+        const char *provider = gl_driver_mapping[provider_id];
+
+        char *libdirs[] = {
+                LIBDIR, NULL,
+        };
+
+        /* Full paths */
+        static const char *paths[] = { "libGL.so.1",
+                                       "libEGL.so.1",
+                                       "libGLESv1_CM.so.1",
+                                       "libGLESv2.so.2",
+                                       "libglx.so.1" };
+
+        /* TODO: Take multilib dir through an alternative configure option. */
+        if (access("/usr/lib32", F_OK) == 0) {
+                libdirs[1] = "/usr/lib32";
+        }
+
+        for (size_t j = 0; j < ARRAY_SIZE(libdirs); j++) {
+                const char *dir = libdirs[j];
+                if (!dir) {
+                        continue;
+                }
+
+                for (size_t i = 0; i < ARRAY_SIZE(paths); i++) {
+                        const char *current = paths[i];
+                        autofree(char) *target_path = NULL;
+                        autofree(char) *target_dir = NULL;
+                        autofree(char) *source_path =
+                            string_printf("%s/glx-provider/%s/%s", dir, provider, current);
+                        autofree(char) *source_resolved = NULL;
+
+                        /* Non-fatal due to a chicken-and-egg situation with xorg-server's libglx */
+                        if (!path_exists(source_path)) {
+                                continue;
+                        }
+
+                        /* Must still try to continue */
+                        source_resolved = realpath(source_path, NULL);
+                        if (!source_resolved) {
+                                fprintf(stderr, "Cannot read link: %s\n", strerror(errno));
+                                continue;
+                        }
+
+                        /* xorg module is handled differently */
+                        if (streq(current, "libglx.so.1")) {
+                                target_dir = string_printf("%s/xorg/modules/extensions", dir);
+                                target_path = string_printf("%s/libglx.so", target_dir);
+                        } else {
+                                target_path = string_printf("%s/%s", dir, current);
+                        }
+
+                        /* Remove existing symlink first */
+                        if (path_exists(target_path) && unlink(target_path) < 0) {
+                                fprintf(stderr,
+                                        "Unable to remove %s: %s\n",
+                                        target_path,
+                                        strerror(errno));
+                                return false;
+                        }
+
+                        if (target_dir && !path_exists(target_dir) && !mkdir_p(target_dir, 00755)) {
+                                fprintf(stderr,
+                                        "Unable to create required directory %s: %s\n",
+                                        target_dir,
+                                        strerror(errno));
+                                return false;
+                        }
+
+                        if (symlink(source_resolved, target_path) != 0) {
+                                fprintf(stderr,
+                                        "Unable to link %s -> %s: %s\n",
+                                        source_resolved,
+                                        target_path,
+                                        strerror(errno));
+                                return false;
+                        }
+                }
+        }
+
         fprintf(stderr, "Not yet implemented\n");
         return false;
 }
