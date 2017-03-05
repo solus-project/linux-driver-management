@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "device.h"
+
 /**
  * Scan the system for usable devices of the given type and class.
  * This list must be freed with ldm_device_free on the root node.

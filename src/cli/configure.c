@@ -15,6 +15,8 @@
 
 #include "cli.h"
 #include "config.h"
+#include "device.h"
+#include "scanner.h"
 #include "util.h"
 
 /**
@@ -23,11 +25,35 @@
 static const char *known_driver_types = "gpu";
 
 /**
+ * Simple GPU configuration.
+ */
+int ldm_cli_configure_gpu_simple(__ldm_unused__ LdmDevice *device)
+{
+        fputs("Simple configure: Not yet implemented\n", stderr);
+        return EXIT_FAILURE;
+}
+
+/**
  * Configure the system GPU
  */
 int ldm_cli_configure_gpu(void)
 {
-        fputs("Not yet implemented\n", stderr);
+        autofree(LdmDevice) *devices = NULL;
+
+        /* Find the usable GPUs first */
+        devices = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
+        if (!devices) {
+                fputs("Cannot find a usable GPU on this system\n", stderr);
+                return EXIT_FAILURE;
+        }
+
+        /* Trivial configuration */
+        if (ldm_device_n_devices(devices) == 1) {
+                return ldm_cli_configure_gpu_simple(devices);
+        }
+
+        /* Multiple devices, potential ATX+iGPU+DGPU/SLI/Hybrid */
+        fputs("Complex configure: Not yet implemented\n", stderr);
         return EXIT_FAILURE;
 }
 

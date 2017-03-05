@@ -68,6 +68,11 @@ void ldm_device_free(LdmDevice *device);
  */
 LdmDevice *ldm_device_find_vendor(LdmDevice *device, uint16_t vendor);
 
+/**
+ * Determine the number of devices
+ */
+int ldm_device_n_devices(LdmDevice *device);
+
 DEF_AUTOFREE(LdmDevice, ldm_device_free)
 
 /*

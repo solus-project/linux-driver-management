@@ -48,6 +48,19 @@ LdmDevice *ldm_device_find_vendor(LdmDevice *device, uint16_t vendor)
         }
         return NULL;
 }
+
+/**
+ * Determine the number of devices in the chain
+ */
+int ldm_device_n_devices(LdmDevice *device)
+{
+        int ret = -1;
+        for (LdmDevice *d = device; d; d = d->next) {
+                ++ret;
+        }
+        return ret;
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
