@@ -107,7 +107,7 @@ static bool lightdm_is_used(void)
         static const char *lightdm_binaries[] = { "/usr/sbin/lightdm", "/usr/bin/lightdm" };
         /* Search for lightdm and if its accessible, use it */
         for (size_t i = 0; i < ARRAY_SIZE(lightdm_binaries); i++) {
-                if (access(lightdm_binaries[i], X_OK) == 0) {
+                if (access(lightdm_binaries[i], F_OK) == 0) {
                         return true;
                 }
         }
