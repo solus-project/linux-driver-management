@@ -413,7 +413,8 @@ static bool ldm_configure_gpu_optimus(__ldm_unused__ LdmDevice *igpu, LdmDevice 
                     "Section \"Device\"\n"
                     "    Identifier \"nvidia\"\n"
                     "    BusID \"%s\"\n"
-                    "    Option \"AllowEmptyInitialConfiguration\"\n",
+                    "    Option \"AllowEmptyInitialConfiguration\"\n"
+                    "EndSection\n",
                     pci_id) < 0) {
                 goto fail;
         }
