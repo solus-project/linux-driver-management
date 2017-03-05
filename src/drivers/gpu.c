@@ -35,7 +35,7 @@
  */
 static char *ldm_gpu_get_xorg_pci_id(LdmPCIAddress *addr)
 {
-        return string_printf("PCI:%d:%d:%d", addr->bus, addr->dev, addr->func);
+        return string_printf("%d:%d:%d", addr->bus, addr->dev, addr->func);
 }
 
 /**
@@ -412,6 +412,7 @@ static bool ldm_configure_gpu_optimus(__ldm_unused__ LdmDevice *igpu, LdmDevice 
                     "EndSection\n\n"
                     "Section \"Device\"\n"
                     "    Identifier \"nvidia\"\n"
+                    "    Driver \"nvidia\"\n"
                     "    BusID \"%s\"\n"
                     "    Option \"AllowEmptyInitialConfiguration\"\n"
                     "EndSection\n",
