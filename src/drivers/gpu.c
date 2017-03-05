@@ -240,8 +240,16 @@ static inline void ldm_configure_gpu_nuke_xorg(void)
  */
 static bool ldm_configure_gpu_simple(LdmDevice *device)
 {
-        LdmPCIDevice *pci = (LdmPCIDevice *)device;
-        LdmGLProvider provider = ldm_pci_vendor_to_gl_provider(pci);
+        LdmPCIDevice *pci = NULL;
+        LdmGLProvider provider = LDM_GL_MESA;
+
+        /* No GPU device so just hook up stock mesa */
+        if (!device) {
+                return ldm_gl_provider_install(LDM_GL_MESA);
+        }
+
+        pci = (LdmPCIDevice *)device;
+        provider = ldm_pci_vendor_to_gl_provider(pci);
 
         /* Here we determine if we can use the proprietary driver or have to
          * fallback to mesa */
@@ -301,8 +309,9 @@ bool ldm_configure_gpu(void)
         /* Find the usable GPUs first */
         devices = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
         if (!devices) {
+                /* We may be in a chroot or image build */
                 fputs("Cannot find a usable GPU on this system\n", stderr);
-                return false;
+                return ldm_configure_gpu_simple(NULL);
         }
 
         config = ldm_gpu_config_new(devices);
