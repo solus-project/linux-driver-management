@@ -14,6 +14,10 @@ conf_data = configuration_data()
 conf_data.set_quoted('PACKAGE_VERSION', meson.project_version())
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name())
 conf_data.set_quoted('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
+if get_option('with-emul32') == true
+        conf_data.set('WITH_EMUL32', '1')
+        conf_data.set_quoted('EMUL32LIBDIR', get_option('emul32-libdir'))
+endif
 
 configure_file(
     output: 'config.h',

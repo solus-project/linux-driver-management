@@ -107,7 +107,10 @@ bool ldm_gl_provider_install(LdmGLProvider provider_id)
         const char *provider = gl_driver_mapping[provider_id];
 
         char *libdirs[] = {
-                LIBDIR, NULL,
+                LIBDIR,
+#ifdef WITH_EMUL32
+                EMUL32LIBDIR,
+#endif
         };
 
         /* Full paths */
@@ -116,11 +119,6 @@ bool ldm_gl_provider_install(LdmGLProvider provider_id)
                                        "libGLESv1_CM.so.1",
                                        "libGLESv2.so.2",
                                        "libglx.so.1" };
-
-        /* TODO: Take multilib dir through an alternative configure option. */
-        if (access("/usr/lib32", F_OK) == 0) {
-                libdirs[1] = "/usr/lib32";
-        }
 
         for (size_t j = 0; j < ARRAY_SIZE(libdirs); j++) {
                 const char *dir = libdirs[j];
