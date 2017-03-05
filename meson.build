@@ -44,7 +44,7 @@ executable('linux-driver-management',
            [
                 'src/device.c',
                 'src/drivers/gpu.c',
-                'src/display-manager.c',
+                'src/dm/display-manager.c',
                 'src/dm/gdm.c',
                 'src/dm/lightdm.c',
                 'src/scanner.c',

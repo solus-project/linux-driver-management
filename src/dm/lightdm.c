@@ -11,8 +11,8 @@
 
 #include <unistd.h>
 
-#include "../display-manager.h"
-#include "../util.h"
+#include "display-manager.h"
+#include "util.h"
 
 /**
  * noop
