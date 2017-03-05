@@ -11,12 +11,19 @@
 
 #define _GNU_SOURCE
 
+#include <errno.h>
+#include <libgen.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "util.h"
 
+/**
+ * Adapted from code now in clr-boot-manager LGPL-2.1
+ * https://github.com/ikeydoherty/clr-boot-manager/blob/master/src/lib/util.c
+ */
 char *string_printf(const char *s, ...)
 {
         va_list va;
@@ -28,6 +35,29 @@ char *string_printf(const char *s, ...)
         }
         va_end(va);
         return p;
+}
+
+/**
+ * Taken from nica (LGPL-2.1)
+ * https://github.com/ikeydoherty/libnica/blob/master/src/files.c
+ */
+bool mkdir_p(const char *path, mode_t mode)
+{
+        autofree(char) *cl = NULL;
+        char *cl_base = NULL;
+
+        if (streq(path, ".") || streq(path, "/") || streq(path, "//")) {
+                return true;
+        }
+
+        cl = strdup(path);
+        cl_base = dirname(cl);
+
+        if (!mkdir_p(cl_base, mode) && errno != EEXIST) {
+                return false;
+        }
+
+        return !((mkdir(path, mode) < 0 && errno != EEXIST));
 }
 
 /*

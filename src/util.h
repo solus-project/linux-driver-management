@@ -13,6 +13,8 @@
 
 #include <stdbool.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 /**
  * Shut up the compiler
@@ -60,6 +62,8 @@ static inline bool streq(const char *a, const char *b)
         }
         return (strcmp(a, b) == 0);
 }
+
+bool mkdir_p(const char *path, mode_t mode);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
