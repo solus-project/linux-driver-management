@@ -88,10 +88,6 @@ static bool gdm_remove_xrandr_output(void)
  */
 static bool gdm_is_used(void)
 {
-        /* lightdm also sets this but we check lightdm *before* gdm */
-        if (!getenv("GDMSESSION")) {
-                return false;
-        }
         static const char *gdm_binaries[] = { "/usr/sbin/gdm", "/usr/bin/gdm" };
         /* Search for gdm and if its accessible, use it */
         for (size_t i = 0; i < ARRAY_SIZE(gdm_binaries[0]); i++) {
