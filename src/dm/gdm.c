@@ -32,7 +32,7 @@ static bool gdm_set_xrandr_output(const char *driver, const char *output)
         /* Create required directories */
         for (size_t i = 0; i < ARRAY_SIZE(gdm_autostart_dirs); i++) {
                 const char *dir = gdm_autostart_dirs[i];
-                if (mkdir_p(dir, 00755)) {
+                if (!mkdir_p(dir, 00755)) {
                         fprintf(stderr,
                                 "Failed to create autostart dir %s: %s\n",
                                 dir,
