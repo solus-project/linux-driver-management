@@ -376,11 +376,13 @@ static bool ldm_configure_gpu_optimus(__ldm_unused__ LdmDevice *igpu, LdmDevice 
                 if (dm) {
                         dm->remove_xrandr_output();
                 }
+                ldm_configure_gpu_nuke_xorg();
                 return ldm_gl_provider_install(LDM_GL_MESA);
         }
 
         /* Attempt to set up the links for nvidia */
         if (!ldm_gl_provider_install(LDM_GL_NVIDIA)) {
+                ldm_configure_gpu_nuke_xorg();
                 return ldm_gl_provider_install(LDM_GL_MESA);
         }
 
@@ -421,6 +423,7 @@ static bool ldm_configure_gpu_optimus(__ldm_unused__ LdmDevice *igpu, LdmDevice 
         return true;
 fail:
         fprintf(stderr, "Failed to configure optimus: %s\n", strerror(errno));
+        ldm_configure_gpu_nuke_xorg();
         return ldm_gl_provider_install(LDM_GL_MESA);
 }
 
