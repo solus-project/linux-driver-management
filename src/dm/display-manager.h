@@ -40,7 +40,7 @@ typedef struct LdmDisplayManager {
 /**
  * Return the LdmDisplayManager for the current system
  */
-const LdmDisplayManager const *ldm_display_manager_get_default(void);
+const LdmDisplayManager *ldm_display_manager_get_default(void);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

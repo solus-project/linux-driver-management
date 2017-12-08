@@ -26,7 +26,7 @@ static const LdmDisplayManager *_managers[] = {
 /**
  * Return the LdmDisplayManager for the current system
  */
-const LdmDisplayManager const *ldm_display_manager_get_default(void)
+const LdmDisplayManager *ldm_display_manager_get_default(void)
 {
         for (size_t i = 0; i < ARRAY_SIZE(_managers); i++) {
                 const LdmDisplayManager *manager = _managers[i];

@@ -95,7 +95,7 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
 {
         LdmDevice *ret = NULL;
         LdmPCIAddress addr = {
-                .domain = dev->domain,
+                .domain = (uint16_t)dev->domain,
                 .bus = dev->bus,
                 .dev = dev->dev,
                 .func = dev->func,

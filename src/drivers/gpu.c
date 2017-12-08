@@ -41,7 +41,7 @@ static char *ldm_gpu_get_xorg_pci_id(LdmPCIAddress *addr)
 /**
  * Map the enums to the real disk names
  */
-static const char const *gl_driver_mapping[] = {
+static const char *gl_driver_mapping[] = {
         [LDM_GL_NVIDIA] = "nvidia",
         [LDM_GL_AMD] = "amd",
         [LDM_GL_MESA] = "default",

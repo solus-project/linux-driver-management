@@ -92,6 +92,7 @@ void print_gpu_configuration(LdmGPUConfig *config)
                 break;
         case LDM_GPU_SLI:
                 fputs("NVIDIA SLI\n", stderr);
+                break;
         case LDM_GPU_SIMPLE:
         default:
                 fputs("Simple GPU Configuration\n", stderr);
