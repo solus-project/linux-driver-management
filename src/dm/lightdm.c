@@ -81,7 +81,8 @@ static bool lightdm_set_xrandr_output(const char *driver, const char *output)
 static bool lightdm_remove_xrandr_output(void)
 {
         static const char *lightdm_xrandr_files[] = {
-                LIGHTDM_RANDR_FILE, LIGHTDM_RANDR_EXEC,
+                LIGHTDM_RANDR_FILE,
+                LIGHTDM_RANDR_EXEC,
         };
         bool ret = true;
 

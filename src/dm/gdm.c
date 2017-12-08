@@ -19,7 +19,8 @@ static const char *gdm_autostart_paths[] = { "/usr/share/gdm/greeter/autostart/o
                                              "/etc/xdg/autostart/optimus.desktop" };
 
 static const char *gdm_autostart_dirs[] = {
-        "/usr/share/gdm/greeter/autostart", "/etc/xdg/autostart",
+        "/usr/share/gdm/greeter/autostart",
+        "/etc/xdg/autostart",
 };
 
 /**

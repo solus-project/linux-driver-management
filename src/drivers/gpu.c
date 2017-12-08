@@ -42,7 +42,9 @@ static char *ldm_gpu_get_xorg_pci_id(LdmPCIAddress *addr)
  * Map the enums to the real disk names
  */
 static const char const *gl_driver_mapping[] = {
-            [LDM_GL_NVIDIA] = "nvidia", [LDM_GL_AMD] = "amd", [LDM_GL_MESA] = "default",
+        [LDM_GL_NVIDIA] = "nvidia",
+        [LDM_GL_AMD] = "amd",
+        [LDM_GL_MESA] = "default",
 };
 
 LdmGLProvider ldm_pci_vendor_to_gl_provider(LdmPCIDevice *device)
@@ -84,7 +86,10 @@ LdmInstallStatus ldm_gl_provider_status(LdmGLProvider provider_id)
 
         /* libglx.so is not mandatory due to xorg / mesa separation */
         static const char *mandatory_links[] = {
-                "libGL.so.1", "libEGL.so.1", "libGLESv1_CM.so.1", "libGLESv2.so.2",
+                "libGL.so.1",
+                "libEGL.so.1",
+                "libGLESv1_CM.so.1",
+                "libGLESv2.so.2",
         };
 
         for (size_t i = 0; i < ARRAY_SIZE(mandatory_links); i++) {

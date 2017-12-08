@@ -95,7 +95,10 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
 {
         LdmDevice *ret = NULL;
         LdmPCIAddress addr = {
-                .domain = dev->domain, .bus = dev->bus, .dev = dev->dev, .func = dev->func,
+                .domain = dev->domain,
+                .bus = dev->bus,
+                .dev = dev->dev,
+                .func = dev->func,
         };
 
         /* Handle PCI specific device construction */
@@ -106,7 +109,9 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
                 goto oom_fail;
         }
         *pci_dev = (LdmPCIDevice){
-                .address = addr, .vendor_id = dev->vendor_id, .device_id = dev->device_id,
+                .address = addr,
+                .vendor_id = dev->vendor_id,
+                .device_id = dev->device_id,
         };
         pci_dev->sysfs_address = ldm_pci_device_sysfs_path(dev);
         ret = (LdmDevice *)pci_dev;
