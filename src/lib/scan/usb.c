@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "device.h"
 #include "ldm-private.h"
 #include "usb.h"
 
@@ -73,11 +74,34 @@ static unsigned int accumulate_device_classes(libusb_device *device,
         return accum;
 }
 
-static char *ldm_pci_device_sysfs_path(libusb_device *device)
+static char *ldm_usb_device_sysfs_path(libusb_device *device)
 {
         return string_printf("/sys/bus/usb/devices/%d-%d",
                              libusb_get_bus_number(device),
                              libusb_get_device_address(device));
+}
+
+static LdmDevice *ldm_usb_device_new(libusb_device *device)
+{
+        LdmDevice *ret = NULL;
+        LdmUSBDevice *usb = NULL;
+
+        usb = calloc(1, sizeof(LdmUSBDevice));
+        if (!usb) {
+                goto oom_fail;
+        }
+        ret = (LdmDevice *)usb;
+
+        /* Finish off the structure */
+        ret->type = LDM_DEVICE_USB;
+        ret->sysfs_address = ldm_usb_device_sysfs_path(device);
+        ret->driver = ldm_device_driver(ret);
+
+        return ret;
+oom_fail:
+        fputs("Out of memory", stderr);
+        abort();
+        return NULL;
 }
 
 LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
@@ -86,7 +110,7 @@ LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
         ssize_t n_usbs = 0;
         libusb_device **usb_devices = NULL;
         struct libusb_device_descriptor usb_desc = { 0 };
-        LdmDevice *ret = NULL;
+        LdmDevice *root = NULL;
         bool errored = true;
 
         n_usbs = libusb_get_device_list(NULL, &usb_devices);
@@ -100,6 +124,7 @@ LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
                 libusb_device *device = usb_devices[i];
                 int ret = 0;
                 LdmDeviceClass class = 0;
+                LdmDevice *dev = NULL;
 
                 ret = libusb_get_device_descriptor(device, &usb_desc);
                 if (ret < 0) {
@@ -112,6 +137,14 @@ LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
                 if ((class & classmask) != classmask) {
                         continue;
                 }
+
+                dev = ldm_usb_device_new(device);
+                if (!dev) {
+                        goto error;
+                }
+
+                dev->next = root;
+                root = dev;
 
                 printf("Got a device\n");
         }
@@ -128,7 +161,7 @@ error:
         }
 
         libusb_exit(NULL);
-        return ret;
+        return root;
 }
 
 /*
