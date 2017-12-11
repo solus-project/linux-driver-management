@@ -24,10 +24,12 @@ static void ldm_monitor_uevent(LdmMonitor *self, const gchar *action, GUdevDevic
 static void ldm_monitor_udev_add(LdmMonitor *self, GUdevDevice *device);
 static void ldm_monitor_udev_remove(LdmMonitor *self, GUdevDevice *device);
 static bool ldm_monitor_refresh_gpu(LdmMonitor *self);
+static bool ldm_monitor_refresh_usb(LdmMonitor *self);
 
 struct LdmMonitor {
         GUdevClient *udev_client; /**<Connection to udev */
         LdmDevice *gpu_list;      /**<Known GPUs */
+        LdmDevice *usb_list;      /**<Known USB devices */
         LdmGPUConfig *gpu_config; /**<Condensed GPU configuration */
 };
 
@@ -69,6 +71,9 @@ static bool ldm_monitor_init(LdmMonitor *self)
         if (!ldm_monitor_refresh_gpu(self)) {
                 g_warning("GPU configuration is unknown");
         }
+        if (!ldm_monitor_refresh_usb(self)) {
+                g_warning("USB configuration is unknown");
+        }
 
         g_message("Early probe complete");
 
@@ -80,6 +85,7 @@ void ldm_monitor_free(LdmMonitor *self)
         g_clear_object(&self->udev_client);
         g_clear_pointer(&self->gpu_config, ldm_gpu_config_free);
         g_clear_pointer(&self->gpu_list, ldm_device_free);
+        g_clear_pointer(&self->usb_list, ldm_device_free);
         free(self);
 }
 
@@ -129,6 +135,25 @@ static bool ldm_monitor_refresh_gpu(LdmMonitor *self)
                 g_message("debug: discovered Optimus system");
         } else {
                 g_message("debug: discovered simple GPU config");
+        }
+
+        return true;
+}
+/**
+ *
+ * Attempt to learn some details about the USB configuration.
+ */
+static bool ldm_monitor_refresh_usb(LdmMonitor *self)
+{
+        g_clear_pointer(&self->usb_list, ldm_device_free);
+
+        self->usb_list = ldm_scan_devices(LDM_DEVICE_USB, LDM_CLASS_ANY);
+        if (!self->usb_list) {
+                return false;
+        }
+
+        for (LdmDevice *device = self->usb_list; device; device = device->next) {
+                fprintf(stderr, "USB Device: %s\n", device->device_name);
         }
 
         return true;

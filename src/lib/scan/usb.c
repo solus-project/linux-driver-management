@@ -11,14 +11,18 @@
 
 #define _GNU_SOURCE
 
+#include <libusb.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "ldm-private.h"
 #include "usb.h"
 
-LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
+LdmDevice *ldm_scan_usb_devices(__ldm_unused__ unsigned int classmask)
 {
+        libusb_init(NULL);
+
+        libusb_exit(NULL);
         return NULL;
 }
 
