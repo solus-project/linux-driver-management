@@ -41,8 +41,14 @@ typedef enum {
  */
 typedef enum {
         LDM_CLASS_ANY = 0,           /**<Special situation for any device match */
-        LDM_CLASS_GRAPHICS = 1 << 0, /**<Graphical device, i.e. GPU */
-        LDM_CLASS_MAX = 1 << 1,
+        LDM_CLASS_AUDIO = 1 << 0,    /**<Likely a USB headset */
+        LDM_CLASS_GRAPHICS = 1 << 1, /**<Graphical device, i.e. GPU */
+        LDM_CLASS_HID = 1 << 2,      /**<Input device, i.e. mouse */
+        LDM_CLASS_PRINTER = 1 << 3,  /**<Attached printer */
+        LDM_CLASS_VIDEO = 1 << 4,    /**<Video device such as a USB camera */
+        LDM_CLASS_WIRELESS =
+            1 << 5, /**<Some kind of wireless USB device (wireless mouse, dongle, etc) */
+        LDM_CLASS_MAX = 1 << 6,
 } LdmDeviceClass;
 
 /**
