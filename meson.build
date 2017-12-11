@@ -55,10 +55,18 @@ config_h = configure_file(
 )
 config_h_dir = include_directories('.')
 
+# Required dependencies
 dep_pci = dependency('libpci')
+glib_min_version = '>= 2.54.0'
+dep_glib2 = dependency('glib-2.0', version: glib_min_version)
+dep_gio_unix = dependency('gio-unix-2.0', version: glib_min_version)
+dep_gudev = dependency('gudev-1.0', version: '>= 230')
 
 # Sort out compatibility stuff
 with_gl_driver_switch_compat = get_option('with-gl-driver-switch-compat')
+with_ldm_monitor = get_option('with-monitor')
+
+# Maybe build compat
 subdir('compat')
 
 # Now go build the source
@@ -78,6 +86,7 @@ report = [
     '    ==============',
     '',
     '    gl-driver-switch-compat:                @0@'.format(with_gl_driver_switch_compat),
+    '    hardware plug monitor:                  @0@'.format(with_ldm_monitor),
 ]
 
 # Output some stuff to validate the build config

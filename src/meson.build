@@ -12,3 +12,7 @@ executable('linux-driver-management',
     dependencies: link_libldm,
     install: true,
 )
+
+if with_ldm_monitor == true
+    subdir('monitor')
+endif
