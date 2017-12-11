@@ -153,8 +153,6 @@ static bool ldm_monitor_refresh_usb(LdmMonitor *self)
         }
 
         for (LdmDevice *device = self->usb_list; device; device = device->next) {
-                const char *lab = NULL;
-
                 if ((device->class & LDM_CLASS_HID) == LDM_CLASS_HID) {
                         fprintf(stderr, "Found USB HID: %s\n", device->sysfs_address);
                 } else if ((device->class & LDM_CLASS_AUDIO) == LDM_CLASS_AUDIO) {
