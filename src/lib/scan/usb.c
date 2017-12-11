@@ -73,6 +73,13 @@ static unsigned int accumulate_device_classes(libusb_device *device,
         return accum;
 }
 
+static char *ldm_pci_device_sysfs_path(libusb_device *device)
+{
+        return string_printf("/sys/bus/usb/devices/%d-%d",
+                             libusb_get_bus_number(device),
+                             libusb_get_device_address(device));
+}
+
 LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
 {
         libusb_init(NULL);
