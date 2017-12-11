@@ -43,7 +43,7 @@ static void print_device(LdmDevice *device, const char *label)
         bool boot_vga = false;
         bool gpu = (device->class & LDM_CLASS_GRAPHICS) == LDM_CLASS_GRAPHICS;
         if (gpu) {
-                boot_vga = ldm_pci_device_is_boot_vga(dev);
+                boot_vga = ldm_pci_device_is_boot_vga(device);
         }
 
         switch (dev->vendor_id) {

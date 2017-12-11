@@ -19,8 +19,7 @@
  * LdmUSBDevice represents a PCI device on the system
  */
 typedef struct LdmUSBDevice {
-        LdmDevice device;    /**<Extend LdmDevice */
-        char *sysfs_address; /**</sys address on the host */
+        LdmDevice device; /**<Extend LdmDevice */
 } LdmUSBDevice;
 
 /**

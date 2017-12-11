@@ -38,20 +38,14 @@ typedef struct LdmPCIAddress {
 typedef struct LdmPCIDevice {
         LdmDevice device;      /**<Extend LdmDevice */
         LdmPCIAddress address; /**<Address of the PCI device */
-        char *sysfs_address;   /**</sys address on the host */
         uint16_t vendor_id;    /**<PCI vendor ID */
         uint16_t device_id;    /**<PCI device ID */
 } LdmPCIDevice;
 
 /**
- * Free PCI specific fields
- */
-void ldm_pci_device_free(LdmPCIDevice *device);
-
-/**
  * Determine if the given PCI device is the one we booted with
  */
-bool ldm_pci_device_is_boot_vga(LdmPCIDevice *device);
+bool ldm_pci_device_is_boot_vga(LdmDevice *device);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

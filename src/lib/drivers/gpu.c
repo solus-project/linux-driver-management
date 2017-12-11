@@ -233,7 +233,7 @@ LdmGPUConfig *ldm_gpu_config_new(LdmDevice *devices)
                 if ((dev->class & LDM_CLASS_GRAPHICS) != LDM_CLASS_GRAPHICS) {
                         continue;
                 }
-                if (ldm_pci_device_is_boot_vga((LdmPCIDevice *)dev)) {
+                if (ldm_pci_device_is_boot_vga(dev)) {
                         boot_vga = dev;
                 } else {
                         non_boot_vga = dev;

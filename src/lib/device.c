@@ -26,6 +26,7 @@ void ldm_device_free(LdmDevice *device)
 
         free(device->device_name);
         free(device->driver);
+        free(device->sysfs_address);
 
         /* Call any implementation specific destructor */
         if (device->dtor) {

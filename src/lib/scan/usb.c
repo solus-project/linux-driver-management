@@ -26,14 +26,6 @@ LdmDevice *ldm_scan_usb_devices(__ldm_unused__ unsigned int classmask)
         return NULL;
 }
 
-void ldm_usb_device_free(LdmUSBDevice *device)
-{
-        if (!device) {
-                return;
-        }
-        free(device->sysfs_address);
-}
-
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
