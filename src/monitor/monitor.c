@@ -19,6 +19,8 @@
 static bool ldm_monitor_init(LdmMonitor *self);
 static void ldm_monitor_uevent(LdmMonitor *self, const gchar *action, GUdevDevice *device,
                                GUdevClient *client);
+static void ldm_monitor_udev_add(LdmMonitor *self, GUdevDevice *device);
+static void ldm_monitor_udev_remove(LdmMonitor *self, GUdevDevice *device);
 
 struct LdmMonitor {
         GUdevClient *udev_client; /**<Connection to udev */
@@ -56,6 +58,7 @@ static bool ldm_monitor_init(LdmMonitor *self)
         if (!self->udev_client) {
                 return false;
         }
+
         g_signal_connect_swapped(self->udev_client, "uevent", G_CALLBACK(ldm_monitor_uevent), self);
 
         return true;
@@ -70,10 +73,24 @@ void ldm_monitor_free(LdmMonitor *self)
 /**
  * Begin processing a uevent - udev has some hardware change for us.
  */
-static void ldm_monitor_uevent(__ldm_unused__ LdmMonitor *self, const gchar *action,
-                               GUdevDevice *device, __ldm_unused__ GUdevClient *client)
+static void ldm_monitor_uevent(LdmMonitor *self, const gchar *action, GUdevDevice *device,
+                               __ldm_unused__ GUdevClient *client)
 {
-        g_message("uevent(): %s %s", action, g_udev_device_get_sysfs_path(device));
+        if (g_str_equal(action, "add")) {
+                ldm_monitor_udev_add(self, device);
+        } else if (g_str_equal(action, "remove")) {
+                ldm_monitor_udev_remove(self, device);
+        }
+}
+
+static void ldm_monitor_udev_add(LdmMonitor *self, GUdevDevice *device)
+{
+        g_message("uevent(add): %s", g_udev_device_get_sysfs_path(device));
+}
+
+static void ldm_monitor_udev_remove(LdmMonitor *self, GUdevDevice *device)
+{
+        g_message("uevent(remove): %s", g_udev_device_get_sysfs_path(device));
 }
 
 /*
