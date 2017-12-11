@@ -21,9 +21,44 @@
 LdmDevice *ldm_scan_usb_devices(__ldm_unused__ unsigned int classmask)
 {
         libusb_init(NULL);
+        ssize_t n_usbs = 0;
+        libusb_device **usb_devices = NULL;
+        struct libusb_device_descriptor usb_desc = { 0 };
+        LdmDevice *ret = NULL;
+        bool errored = true;
+
+        n_usbs = libusb_get_device_list(NULL, &usb_devices);
+        if (n_usbs < 0) {
+                goto error;
+        }
+
+        fprintf(stderr, "debug(): %ld USB devices\n", n_usbs);
+
+        for (ssize_t i = 0; i < n_usbs; i++) {
+                libusb_device *device = usb_devices[i];
+                int ret = 0;
+
+                ret = libusb_get_device_descriptor(device, &usb_desc);
+                if (ret < 0) {
+                        goto error;
+                }
+
+                fprintf(stderr, "Got device: %d\n", usb_desc.bDeviceClass);
+        }
+
+        errored = false;
+
+error:
+        if (errored) {
+                fprintf(stderr, "Failed to retrieve USB devices: %s", libusb_strerror(n_usbs));
+        }
+
+        if (usb_devices) {
+                libusb_free_device_list(usb_devices, (int)n_usbs);
+        }
 
         libusb_exit(NULL);
-        return NULL;
+        return ret;
 }
 
 /*
