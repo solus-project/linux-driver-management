@@ -18,7 +18,10 @@ libldm = static_library(
     'ldm',
     sources: lib_sources,
     include_directories: libldm_includes,
-    dependencies: dep_pci,
+    dependencies: [
+        dep_pci,
+        dep_usb,
+    ],
     install: false,
 )
 

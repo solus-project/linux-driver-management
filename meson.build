@@ -56,7 +56,9 @@ config_h = configure_file(
 config_h_dir = include_directories('.')
 
 # Required dependencies
-dep_pci = dependency('libpci')
+dep_pci = dependency('libpci', version: '>= 3.5.6')
+dep_usb = dependency('libusb-1.0', version: '1.0.21')
+
 glib_min_version = '>= 2.54.0'
 dep_glib2 = dependency('glib-2.0', version: glib_min_version)
 dep_gio_unix = dependency('gio-unix-2.0', version: glib_min_version)
