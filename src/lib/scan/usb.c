@@ -70,7 +70,7 @@ static unsigned int accumulate_device_classes(libusb_device *device,
                 libusb_free_config_descriptor(config);
         }
 
-        return 0;
+        return accum;
 }
 
 LdmDevice *ldm_scan_usb_devices(__ldm_unused__ unsigned int classmask)
@@ -105,6 +105,8 @@ LdmDevice *ldm_scan_usb_devices(__ldm_unused__ unsigned int classmask)
                 if ((class & classmask) != classmask) {
                         continue;
                 }
+
+                printf("Got a device\n");
         }
 
         errored = false;
