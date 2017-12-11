@@ -27,6 +27,11 @@ LdmDevice *ldm_scan_pci_devices(unsigned int classmask);
  */
 LdmDevice *ldm_scan_usb_devices(unsigned int classmask);
 
+/**
+ * Determine the driver for a PCI device
+ */
+char *ldm_device_driver(LdmDevice *device);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

@@ -63,20 +63,6 @@ clean:
 }
 
 /**
- * Determine the driver for a PCI device
- */
-static char *ldm_pci_device_driver(LdmDevice *device)
-{
-        autofree(char) *p = string_printf("%s/driver", device->sysfs_address);
-        autofree(char) *r = realpath(p, NULL);
-        if (!r) {
-                return strdup("unknown");
-        }
-        char *r2 = basename(r);
-        return strdup(r2);
-}
-
-/**
  * Convert the PCI class into a usable LDM class, i.e. GPU
  */
 static unsigned int ldm_pci_to_device_class(struct pci_dev *dev)
@@ -118,7 +104,7 @@ static LdmDevice *ldm_pci_device_new(struct pci_dev *dev, char *name)
         /* Finish off the structure */
         ret->type = LDM_DEVICE_PCI;
         ret->sysfs_address = ldm_pci_device_sysfs_path(dev);
-        ret->driver = ldm_pci_device_driver(ret);
+        ret->driver = ldm_device_driver(ret);
         if (name) {
                 ret->device_name = strdup(name);
         }

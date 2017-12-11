@@ -9,8 +9,26 @@
  * of the License, or (at your option) any later version.
  */
 
+#define _GNU_SOURCE
+
+#include <libgen.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "device.h"
 #include "pci.h"
+
+/* Private utility */
+char *ldm_device_driver(LdmDevice *device)
+{
+        autofree(char) *p = string_printf("%s/driver", device->sysfs_address);
+        autofree(char) *r = realpath(p, NULL);
+        if (!r) {
+                return strdup("unknown");
+        }
+        char *r2 = basename(r);
+        return strdup(r2);
+}
 
 void ldm_device_free(LdmDevice *device)
 {
