@@ -13,7 +13,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "ldm.h"
 #include "monitor.h"
+#include "scanner.h"
 #include "util.h"
 
 static bool ldm_monitor_init(LdmMonitor *self);
@@ -21,9 +23,12 @@ static void ldm_monitor_uevent(LdmMonitor *self, const gchar *action, GUdevDevic
                                GUdevClient *client);
 static void ldm_monitor_udev_add(LdmMonitor *self, GUdevDevice *device);
 static void ldm_monitor_udev_remove(LdmMonitor *self, GUdevDevice *device);
+static bool ldm_monitor_refresh_gpu(LdmMonitor *self);
 
 struct LdmMonitor {
         GUdevClient *udev_client; /**<Connection to udev */
+        LdmDevice *gpu_list;      /**<Known GPUs */
+        LdmGPUConfig *gpu_config; /**<Condensed GPU configuration */
 };
 
 LdmMonitor *ldm_monitor_new(void)
@@ -61,12 +66,20 @@ static bool ldm_monitor_init(LdmMonitor *self)
 
         g_signal_connect_swapped(self->udev_client, "uevent", G_CALLBACK(ldm_monitor_uevent), self);
 
+        if (!ldm_monitor_refresh_gpu(self)) {
+                g_warning("GPU configuration is unknown");
+        }
+
+        g_message("Early probe complete");
+
         return true;
 }
 
 void ldm_monitor_free(LdmMonitor *self)
 {
         g_clear_object(&self->udev_client);
+        g_clear_pointer(&self->gpu_config, ldm_gpu_config_free);
+        g_clear_pointer(&self->gpu_list, ldm_device_free);
         free(self);
 }
 
@@ -91,6 +104,29 @@ static void ldm_monitor_udev_add(LdmMonitor *self, GUdevDevice *device)
 static void ldm_monitor_udev_remove(LdmMonitor *self, GUdevDevice *device)
 {
         g_message("uevent(remove): %s", g_udev_device_get_sysfs_path(device));
+}
+
+static bool ldm_monitor_refresh_gpu(LdmMonitor *self)
+{
+        g_clear_pointer(&self->gpu_config, ldm_gpu_config_free);
+        g_clear_pointer(&self->gpu_list, ldm_device_free);
+
+        self->gpu_list = ldm_scan_devices(LDM_DEVICE_PCI, LDM_CLASS_GRAPHICS);
+        if (!self->gpu_list) {
+                return false;
+        }
+        self->gpu_config = ldm_gpu_config_new(self->gpu_list);
+        if (!self->gpu_config) {
+                return false;
+        }
+
+        if (self->gpu_config->type == LDM_GPU_OPTIMUS) {
+                g_message("debug: discovered Optimus system");
+        } else {
+                g_message("debug: discovered simple GPU config");
+        }
+
+        return true;
 }
 
 /*
