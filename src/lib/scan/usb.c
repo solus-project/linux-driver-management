@@ -142,7 +142,7 @@ LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
                 if (!dev) {
                         goto error;
                 }
-
+                dev->class = class;
                 dev->next = root;
                 root = dev;
 
