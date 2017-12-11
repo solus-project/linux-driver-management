@@ -13,6 +13,8 @@
 #include <glib-unix.h>
 #include <stdbool.h>
 
+#include "util.h"
+
 #define LDM_APP_ID "com.solus-project.linux-driver-management.Monitor"
 
 static bool have_shutdown = false;
@@ -37,7 +39,7 @@ static gboolean ldm_shutdown_trigger(GApplication *app)
  * Handle our initial application startup and hook up signals so that
  * we can safely shut down again using the main context.
  */
-static void ldm_app_startup(GApplication *app, gpointer v)
+static void ldm_app_startup(GApplication *app, __ldm_unused__ gpointer v)
 {
         g_message("App is started");
 
@@ -52,7 +54,7 @@ static void ldm_app_startup(GApplication *app, gpointer v)
  * The application was shutdown after g_application_release,
  * so clean up any existing state.
  */
-static void ldm_app_shutdown(GApplication *app, gpointer v)
+static void ldm_app_shutdown(__ldm_unused__ GApplication *app, __ldm_unused__ gpointer v)
 {
         g_message("App is deaded.");
 }
