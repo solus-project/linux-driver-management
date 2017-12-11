@@ -19,6 +19,8 @@
 
 static bool have_shutdown = false;
 
+DEF_AUTOFREE(GApplication, g_object_unref)
+
 /**
  * We're called on the main context *after* a SIGINT so we don't need
  * a volatile var. Just ask the application to release so that we can
@@ -61,18 +63,14 @@ static void ldm_app_shutdown(__ldm_unused__ GApplication *app, __ldm_unused__ gp
 
 int main(int argc, char **argv)
 {
-        GApplication *app = NULL;
-        int ret = 0;
+        autofree(GApplication) *app = NULL;
 
         app = g_application_new(LDM_APP_ID, G_APPLICATION_IS_SERVICE);
         g_signal_connect(app, "startup", G_CALLBACK(ldm_app_startup), NULL);
         g_signal_connect(app, "shutdown", G_CALLBACK(ldm_app_shutdown), NULL);
 
         /* Run the app */
-        ret = g_application_run(app, argc, argv);
-        g_object_unref(app);
-
-        return ret;
+        return g_application_run(app, argc, argv);
 }
 
 /*
