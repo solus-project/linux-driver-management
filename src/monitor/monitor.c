@@ -14,8 +14,11 @@
 #include <stdlib.h>
 
 #include "monitor.h"
+#include "util.h"
 
 static bool ldm_monitor_init(LdmMonitor *self);
+static void ldm_monitor_uevent(LdmMonitor *self, const gchar *action, GUdevDevice *device,
+                               GUdevClient *client);
 
 struct LdmMonitor {
         GUdevClient *udev_client; /**<Connection to udev */
@@ -53,6 +56,7 @@ static bool ldm_monitor_init(LdmMonitor *self)
         if (!self->udev_client) {
                 return false;
         }
+        g_signal_connect_swapped(self->udev_client, "uevent", G_CALLBACK(ldm_monitor_uevent), self);
 
         return true;
 }
@@ -61,6 +65,15 @@ void ldm_monitor_free(LdmMonitor *self)
 {
         g_clear_object(&self->udev_client);
         free(self);
+}
+
+/**
+ * Begin processing a uevent - udev has some hardware change for us.
+ */
+static void ldm_monitor_uevent(__ldm_unused__ LdmMonitor *self, const gchar *action,
+                               GUdevDevice *device, __ldm_unused__ GUdevClient *client)
+{
+        g_message("uevent(): %s %s", action, g_udev_device_get_sysfs_path(device));
 }
 
 /*
