@@ -73,7 +73,7 @@ static unsigned int accumulate_device_classes(libusb_device *device,
         return accum;
 }
 
-LdmDevice *ldm_scan_usb_devices(__ldm_unused__ unsigned int classmask)
+LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
 {
         libusb_init(NULL);
         ssize_t n_usbs = 0;
