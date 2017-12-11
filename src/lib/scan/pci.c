@@ -123,7 +123,6 @@ LdmDevice *ldm_scan_pci_devices(unsigned int classmask)
         char buf[1024];
         char *nom = NULL;
         LdmDevice *root = NULL;
-        LdmDevice *last = NULL;
 
         /* Init PCI lookup */
         ac = pci_alloc();
@@ -161,13 +160,8 @@ LdmDevice *ldm_scan_pci_devices(unsigned int classmask)
                         goto cleanup;
                 }
                 device->class = class;
-                if (!root) {
-                        root = device;
-                }
-                if (last) {
-                        last->next = device;
-                }
-                last = device;
+                device->next = root;
+                root = device;
         }
 
 cleanup:
