@@ -11,25 +11,23 @@
 
 #define _GNU_SOURCE
 
-#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "device.h"
 #include "ldm-private.h"
-#include "pci.h"
-#include "scanner.h"
 #include "usb.h"
 
-LdmDevice *ldm_scan_devices(LdmDeviceType type, unsigned int classmask)
+LdmDevice *ldm_scan_usb_devices(unsigned int classmask)
 {
-        switch (type) {
-        case LDM_DEVICE_PCI:
-                return ldm_scan_pci_devices(classmask);
-        case LDM_DEVICE_USB:
-                return ldm_scan_usb_devices(classmask);
-        default:
-                fputs("Unknown type of device\n", stderr);
-                return NULL;
+        return NULL;
+}
+
+void ldm_usb_device_free(LdmUSBDevice *device)
+{
+        if (!device) {
+                return;
         }
+        free(device->sysfs_address);
 }
 
 /*

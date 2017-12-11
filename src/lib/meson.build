@@ -6,6 +6,7 @@ lib_sources = [
     'dm/lightdm.c',
     'scanner.c',
     'scan/pci.c',
+    'scan/usb.c',
     'util.c',
 ]
 

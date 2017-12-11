@@ -9,28 +9,24 @@
  * of the License, or (at your option) any later version.
  */
 
-#define _GNU_SOURCE
+#pragma once
 
-#include <stdio.h>
+#include <stdbool.h>
 
 #include "device.h"
-#include "ldm-private.h"
-#include "pci.h"
-#include "scanner.h"
-#include "usb.h"
 
-LdmDevice *ldm_scan_devices(LdmDeviceType type, unsigned int classmask)
-{
-        switch (type) {
-        case LDM_DEVICE_PCI:
-                return ldm_scan_pci_devices(classmask);
-        case LDM_DEVICE_USB:
-                return ldm_scan_usb_devices(classmask);
-        default:
-                fputs("Unknown type of device\n", stderr);
-                return NULL;
-        }
-}
+/**
+ * LdmUSBDevice represents a PCI device on the system
+ */
+typedef struct LdmUSBDevice {
+        LdmDevice device;    /**<Extend LdmDevice */
+        char *sysfs_address; /**</sys address on the host */
+} LdmUSBDevice;
+
+/**
+ * Free USB specific fields
+ */
+void ldm_usb_device_free(LdmUSBDevice *device);
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html

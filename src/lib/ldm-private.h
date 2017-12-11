@@ -20,6 +20,13 @@
  */
 LdmDevice *ldm_scan_pci_devices(unsigned int classmask);
 
+/**
+ * Scan for USB devices only, with the given classmask
+ *
+ * @return a chained list of devices
+ */
+LdmDevice *ldm_scan_usb_devices(unsigned int classmask);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
