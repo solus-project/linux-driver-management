@@ -34,7 +34,7 @@ static gboolean ldm_shutdown_trigger(GApplication *app)
                 return FALSE;
         }
         have_shutdown = true;
-        g_message("Triggering shutdown");
+        g_message("Initiating shutdown");
         g_application_release(app);
         return FALSE;
 }
@@ -45,8 +45,7 @@ static gboolean ldm_shutdown_trigger(GApplication *app)
  */
 static void ldm_app_startup(GApplication *app, __ldm_unused__ gpointer v)
 {
-        g_message("App is started");
-
+        g_message("LDM Monitor running");
         monitor = ldm_monitor_new();
         if (!monitor) {
                 g_message("Cannot allocate monitor");
@@ -66,7 +65,7 @@ static void ldm_app_startup(GApplication *app, __ldm_unused__ gpointer v)
  */
 static void ldm_app_shutdown(__ldm_unused__ GApplication *app, __ldm_unused__ gpointer v)
 {
-        g_message("App is deaded.");
+        g_message("Shutting down LDM Monitor");
         g_clear_pointer(&monitor, ldm_monitor_free);
 }
 
