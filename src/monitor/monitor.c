@@ -106,6 +106,11 @@ static void ldm_monitor_udev_remove(LdmMonitor *self, GUdevDevice *device)
         g_message("uevent(remove): %s", g_udev_device_get_sysfs_path(device));
 }
 
+/**
+ * Attempt to learn some details about the GPU configuration.
+ *
+ * This allows us to learn some early PCI devices
+ */
 static bool ldm_monitor_refresh_gpu(LdmMonitor *self)
 {
         g_clear_pointer(&self->gpu_config, ldm_gpu_config_free);
