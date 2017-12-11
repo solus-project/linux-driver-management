@@ -11,17 +11,17 @@
 
 #include <gio/gio.h>
 #include <glib-unix.h>
-#include <gudev/gudev.h>
 #include <stdbool.h>
 
+#include "monitor.h"
 #include "util.h"
 
 #define LDM_APP_ID "com.solus-project.linux-driver-management.Monitor"
 
 static bool have_shutdown = false;
+static LdmMonitor *monitor = NULL;
 
 DEF_AUTOFREE(GApplication, g_object_unref)
-DEF_AUTOFREE(GUdevClient, g_object_unref)
 
 /**
  * We're called on the main context *after* a SIGINT so we don't need
@@ -47,6 +47,12 @@ static void ldm_app_startup(GApplication *app, __ldm_unused__ gpointer v)
 {
         g_message("App is started");
 
+        monitor = ldm_monitor_new();
+        if (!monitor) {
+                g_message("Cannot allocate monitor");
+                g_application_quit(app);
+        }
+
         /* Safely add shutdown callback. */
         g_unix_signal_add(SIGINT, (GSourceFunc)ldm_shutdown_trigger, app);
 
@@ -61,36 +67,16 @@ static void ldm_app_startup(GApplication *app, __ldm_unused__ gpointer v)
 static void ldm_app_shutdown(__ldm_unused__ GApplication *app, __ldm_unused__ gpointer v)
 {
         g_message("App is deaded.");
-}
-
-static void ldm_app_uevent(GUdevClient *client, const gchar *action, GUdevDevice *device,
-                           gpointer v)
-{
-        const gchar *devname = NULL;
-        const gchar *sysfspath = NULL;
-        const gchar *driver = NULL;
-
-        devname = g_udev_device_get_name(device);
-        sysfspath = g_udev_device_get_sysfs_path(device);
-        driver = g_udev_device_get_driver(device);
-        g_message("Event: %s (driver: %s  devname: %s) @ %s", action, driver, devname, sysfspath);
+        g_clear_pointer(&monitor, ldm_monitor_free);
 }
 
 int main(int argc, char **argv)
 {
         autofree(GApplication) *app = NULL;
-        autofree(GUdevClient) *client = NULL;
-        static const gchar *subsystems[] = {
-                "usb/usb_interface",
-                NULL,
-        };
 
         app = g_application_new(LDM_APP_ID, G_APPLICATION_IS_SERVICE);
         g_signal_connect(app, "startup", G_CALLBACK(ldm_app_startup), NULL);
         g_signal_connect(app, "shutdown", G_CALLBACK(ldm_app_shutdown), NULL);
-
-        client = g_udev_client_new(subsystems);
-        g_signal_connect(client, "uevent", G_CALLBACK(ldm_app_uevent), NULL);
 
         /* Run the app */
         return g_application_run(app, argc, argv);

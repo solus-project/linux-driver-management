@@ -1,5 +1,6 @@
 monitor_sources = [
     'main.c',
+    'monitor.c',
 ]
 
 executable('ldm-monitor',
