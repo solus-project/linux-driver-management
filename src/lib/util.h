@@ -16,6 +16,25 @@
  */
 #define __ldm_unused__ __attribute__((unused))
 
+/**
+ * Taken from libnica and about fourteen of my previous projects..
+ */
+
+#define DEF_AUTOFREE(N, C)                                                                         \
+        static inline void _autofree_func_##N(void *p)                                             \
+        {                                                                                          \
+                if (p && *(N **)p) {                                                               \
+                        C(*(N **)p);                                                               \
+                        (*(void **)p) = NULL;                                                      \
+                }                                                                                  \
+        }
+
+/**
+ * Make use of __attribute__((cleanup(x))) functionality with a previously
+ * declared autofree handler, by way of DEF_AUTOFREE
+ */
+#define autofree(N) __attribute__((cleanup(_autofree_func_##N))) N
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
