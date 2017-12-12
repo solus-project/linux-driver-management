@@ -228,7 +228,7 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
 }
 
 /**
- * ldm_devide_new_from_udev:
+ * ldm_device_new_from_udev:
  * @device: Associated udev device
  * @hwinfo: If set, the hwdb entry for this device.
  *
