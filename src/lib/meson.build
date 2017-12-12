@@ -72,7 +72,7 @@ libldm_vapi = gnome.generate_vapi(
     install: true,
 )
 
-# Install pkgconfig file to enable building against budgie-plugin
+# Install pkgconfig file to enable building against libldm
 pkgconfig.generate(
     name: 'ldm-1.0',
     description: 'Linux Driver Management Library',
