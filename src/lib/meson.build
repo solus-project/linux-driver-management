@@ -21,6 +21,7 @@ libldm_dependencies = [
 
 libldm_main = shared_library(
     'ldm',
+    version: abi_version,
     sources: libldm_main_sources,
     include_directories: libldm_main_includes,
     dependencies: libldm_dependencies,

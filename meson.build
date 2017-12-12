@@ -68,6 +68,17 @@ dep_gudev = dependency('gudev-1.0', version: '>= 230')
 with_gl_driver_switch_compat = get_option('with-gl-driver-switch-compat')
 with_ldm_monitor = get_option('with-monitor')
 
+# Define our ABI
+abi_major_version = '0'
+abi_minor_version = '0'
+abi_micro_version = '0'
+
+abi_version = '@0@.@1@.@2@'.format(
+    abi_major_version,
+    abi_minor_version,
+    abi_micro_version,
+)
+
 # Maybe build compat
 subdir('compat')
 
