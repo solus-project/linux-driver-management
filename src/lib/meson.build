@@ -13,10 +13,21 @@ libldm_enums = gnome.mkenums(
     install_dir: join_paths(get_option('includedir'), 'budgie-desktop'),
 )
 
+# Fight meson race conditions..
+libenum = static_library(
+    'enum',
+    libldm_enums,
+    dependencies: dep_glib2,
+)
+
+link_libenum = declare_dependency(
+    sources: libldm_enums,
+    include_directories: include_directories('.'),
+)
+
 libldm_main_sources = [
     'device.c',
     'manager.c',
-    libldm_enums,
 ]
 
 libldm_headers = [
@@ -31,6 +42,7 @@ libldm_main_includes = [
 ]
 
 libldm_dependencies = [
+    link_libenum,
     dep_glib2,
     dep_gio_unix,
     dep_udev,
@@ -51,6 +63,9 @@ libldm_main = shared_library(
 
 link_libldm_main = declare_dependency(
     link_with: libldm_main,
+    dependencies: [
+        link_libenum,
+    ],
     include_directories: libldm_main_includes,
 )
 
@@ -63,7 +78,7 @@ install_headers(
 # Generate .gir
 libldm_gir = gnome.generate_gir(
     libldm_main,
-    sources: libldm_main_sources + libldm_headers,
+    sources: libldm_main_sources + libldm_headers + libldm_enums,
     namespace: 'Ldm',
     nsversion: '1.0',
     dependencies: libldm_dependencies,
