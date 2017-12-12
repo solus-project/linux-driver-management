@@ -18,6 +18,37 @@ G_BEGIN_DECLS
 typedef struct _LdmDevice LdmDevice;
 typedef struct _LdmDeviceClass LdmDeviceClass;
 
+/**
+ * LdmDeviceType:
+ * @LDM_DEVICE_TYPE_ANY: Placeholder value
+ * @LDM_DEVICE_TYPE_AUDIO: Audio device
+ * @LDM_DEVICE_TYPE_GPU: A graphics device (onboard, NVIDIA, etc.)
+ * @LDM_DEVICE_TYPE_HID: Human interface device (mouse, keyboard, etc.)
+ * @LDM_DEVICE_TYPE_IMAGE: Imaging device such as a camera
+ * @LDM_DEVICE_TYPE_PRINTER: Printer
+ * @LDM_DEVICE_TYPE_VIDEO: Video device, perhaps a webcam
+ * @LDM_DEVICE_TYPE_WIRELESS: A wireless device, i.e. dongle or mouse
+ *
+ * Any device known to LDM may have one or more "types", defining the primary
+ * use-case for these devices. Simple devices will tend to have a single distinct
+ * type, such as "GPU". Composite devices, such as a USB camera, may have multiple
+ * types, such s HID|IMAGE.
+ *
+ * As such - each #LdmDevice stores a composite type which may be queried by
+ * the API.
+ */
+typedef enum {
+        LDM_DEVICE_TYPE_ANY = 0,
+        LDM_DEVICE_TYPE_AUDIO = 1 << 0,
+        LDM_DEVICE_TYPE_GPU = 1 << 1,
+        LDM_DEVICE_TYPE_HID = 1 << 2,
+        LDM_DEVICE_TYPE_IMAGE = 1 << 3,
+        LDM_DEVICE_TYPE_PRINTER = 1 << 4,
+        LDM_DEVICE_TYPE_VIDEO = 1 << 5,
+        LDM_DEVICE_TYPE_WIRELESS = 1 << 6,
+        LDM_DEVICE_TYPE_MAX = 1 << 7,
+} LdmDeviceType;
+
 #define LDM_TYPE_DEVICE ldm_device_get_type()
 #define LDM_DEVICE(o) (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_DEVICE, LdmDevice))
 #define LDM_IS_DEVICE(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), LDM_TYPE_DEVICE))
