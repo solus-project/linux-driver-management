@@ -21,12 +21,15 @@
  */
 typedef struct udev udev_connection;
 typedef struct udev_hwdb udev_hwdb;
+typedef struct udev_device udev_device;
 typedef struct udev_enumerate udev_enum;
 typedef struct udev_list_entry udev_list;
 
+DEF_AUTOFREE(udev_device, udev_device_unref)
 DEF_AUTOFREE(udev_enum, udev_enumerate_unref)
 
 static void ldm_manager_init_udev(LdmManager *self);
+static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
 
 struct _LdmManagerClass {
         GObjectClass parent_class;
@@ -136,9 +139,29 @@ static void ldm_manager_init_udev(LdmManager *self)
         /* Walk said list */
         udev_list_entry_foreach(entry, list)
         {
-                const char *sysfs = udev_list_entry_get_name(entry);
-                g_message("Device: %s", sysfs);
+                ldm_manager_push_sysfs(self, udev_list_entry_get_name(entry));
         }
+}
+
+/**
+ * ldm_manager_push_sysfs:
+ * @sysfs_path: Path within the sysfs for the new device
+ *
+ * Attempt to add a new udev device to our state from a sysfs path
+ */
+static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
+{
+        const char *modalias = NULL;
+        autofree(udev_device) *device = NULL;
+
+        /* We only want stuff with a modalias. */
+        device = udev_device_new_from_syspath(self->udev, sysfs_path);
+        modalias = udev_device_get_sysattr_value(device, "modalias");
+        if (!modalias) {
+                return;
+        }
+
+        g_message("Device: %s", sysfs_path);
 }
 
 /**
