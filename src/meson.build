@@ -1,4 +1,4 @@
-subdir('lib')
+subdir('legacy-lib')
 subdir('cli')
 
 if with_ldm_monitor == true

@@ -16,7 +16,7 @@ libldm_includes = [
 ]
 
 libldm = static_library(
-    'ldm',
+    'ldm-legacy',
     sources: lib_sources,
     include_directories: libldm_includes,
     dependencies: [
