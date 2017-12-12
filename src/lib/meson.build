@@ -2,10 +2,12 @@ gnome = import('gnome')
 pkgconfig = import('pkgconfig')
 
 libldm_main_sources = [
+    'device.c',
     'manager.c',
 ]
 
 libldm_headers = [
+    'device.h',
     'manager.h',
     'ldm.h',
 ]
