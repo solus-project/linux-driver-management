@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <device.h>
 #include <manager.h>
 
 /*
