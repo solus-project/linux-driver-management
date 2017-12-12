@@ -63,6 +63,7 @@ glib_min_version = '>= 2.54.0'
 dep_glib2 = dependency('glib-2.0', version: glib_min_version)
 dep_gio_unix = dependency('gio-unix-2.0', version: glib_min_version)
 dep_gudev = dependency('gudev-1.0', version: '>= 230')
+dep_udev = dependency('libudev', version: '>= 215')
 
 # Sort out compatibility stuff
 with_gl_driver_switch_compat = get_option('with-gl-driver-switch-compat')

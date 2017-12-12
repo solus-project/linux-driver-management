@@ -20,6 +20,7 @@ libldm_main_includes = [
 libldm_dependencies = [
     dep_glib2,
     dep_gio_unix,
+    dep_udev,
 ]
 
 # Manually maintained symbol list.

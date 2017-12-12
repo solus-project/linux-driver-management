@@ -11,9 +11,10 @@
 
 #define _GNU_SOURCE
 
-#include "util.h"
+#include <libudev.h>
 
 #include "manager.h"
+#include "util.h"
 
 struct _LdmManagerClass {
         GObjectClass parent_class;
@@ -28,6 +29,10 @@ struct _LdmManagerClass {
 struct _LdmManager {
         GObject parent;
         GHashTable *devices;
+
+        /* Udev */
+        struct udev *udev;
+        struct udev_hwdb *hwdb;
 };
 
 G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
@@ -40,6 +45,9 @@ G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
 static void ldm_manager_dispose(GObject *obj)
 {
         LdmManager *self = LDM_MANAGER(obj);
+
+        g_clear_pointer(&self->hwdb, udev_hwdb_unref);
+        g_clear_pointer(&self->udev, udev_unref);
 
         /* clean ourselves up */
         g_clear_pointer(&self->devices, g_hash_table_unref);
@@ -69,6 +77,12 @@ static void ldm_manager_init(LdmManager *self)
 {
         /* Device table is a mapping of sysfs name to LdmDevice */
         self->devices = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
+
+        /* Get udev going */
+        self->udev = udev_new();
+        g_assert(self->udev != NULL);
+        self->hwdb = udev_hwdb_new(self->udev);
+        g_assert(self->hwdb != NULL);
 }
 
 /**
