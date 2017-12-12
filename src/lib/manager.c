@@ -31,6 +31,7 @@ DEF_AUTOFREE(gchar, g_free)
 
 static void ldm_manager_init_udev(LdmManager *self);
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
+static void ldm_manager_push_device(LdmManager *self, udev_device *device);
 
 struct _LdmManagerClass {
         GObjectClass parent_class;
@@ -148,22 +149,36 @@ static void ldm_manager_init_udev(LdmManager *self)
  * ldm_manager_push_sysfs:
  * @sysfs_path: Path within the sysfs for the new device
  *
- * Attempt to add a new udev device to our state from a sysfs path
+ * Potentially add a device from the sysfs name if it happens to have a modalias
  */
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 {
-        const char *modalias = NULL;
-        udev_list *list = NULL, *entry = NULL;
         autofree(udev_device) *device = NULL;
-        autofree(gchar) *vendor = NULL;
-        autofree(gchar) *name = NULL;
 
         /* We only want stuff with a modalias. */
         device = udev_device_new_from_syspath(self->udev, sysfs_path);
-        modalias = udev_device_get_sysattr_value(device, "modalias");
-        if (!modalias) {
+
+        if (!udev_device_get_sysattr_value(device, "modalias")) {
                 return;
         }
+
+        ldm_manager_push_device(self, device);
+}
+
+/**
+ * ldm_manager_push_device:
+ * @device: The udev device to add
+ *
+ * This will handle the real work of adding a new device to the manager
+ */
+static void ldm_manager_push_device(LdmManager *self, udev_device *device)
+{
+        const char *modalias = NULL;
+        autofree(gchar) *vendor = NULL;
+        autofree(gchar) *name = NULL;
+        udev_list *list = NULL, *entry = NULL;
+
+        modalias = udev_device_get_sysattr_value(device, "modalias");
 
         /* Look up the hwdb information */
         list = udev_hwdb_get_properties_list_entry(self->hwdb, modalias, 0);
@@ -189,7 +204,7 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
                 }
         }
 
-        g_message("Device '%s' (%s) @ %s", name, vendor, sysfs_path);
+        g_message("Device '%s' (%s) @ %s", name, vendor, udev_device_get_syspath(device));
 }
 
 /**
