@@ -49,6 +49,13 @@ static void ldm_manager_init(__ldm_unused__ LdmManager *self)
 {
 }
 
+/**
+ * ldm_manager_new:
+ *
+ * Construct a new LdmManager
+ *
+ * Returns: (transfer full): A newly created #BudgiePopover
+ */
 LdmManager *ldm_manager_new()
 {
         return g_object_new(LDM_TYPE_MANAGER, NULL);

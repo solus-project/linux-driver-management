@@ -24,8 +24,10 @@ struct _LdmManagerClass {
         gpointer padding[12];
 };
 
-/**
- * LdmManager is the main library portion of libldm and is used to introspect
+/*
+ * LdmManager
+ *
+ * The manager is the main library portion of libldm and is used to introspect
  * devices on the system.
  */
 struct _LdmManager {
@@ -41,9 +43,6 @@ struct _LdmManager {
 
 GType ldm_manager_get_type(void);
 
-/**
- * Construct a new LdmManager
- */
 LdmManager *ldm_manager_new(void);
 
 G_END_DECLS
