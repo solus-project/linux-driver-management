@@ -15,6 +15,9 @@
 #include "ldm-private.h"
 #include "util.h"
 
+#define HWDB_LOOKUP_PRODUCT_NAME "ID_MODEL_FROM_DATABASE"
+#define HWDB_LOOKUP_PRODUCT_VENDOR "ID_VENDOR_FROM_DATABASE"
+
 static void ldm_device_init_pci(LdmDevice *self, udev_device *device);
 
 struct _LdmDeviceClass {
@@ -266,14 +269,14 @@ LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
         }
 
         /* Set vendor from hwdb information */
-        lookup = g_hash_table_lookup(self->hwdb_info, "ID_VENDOR_FROM_DATABASE");
+        lookup = g_hash_table_lookup(self->hwdb_info, HWDB_LOOKUP_PRODUCT_VENDOR);
         if (lookup) {
                 self->vendor = g_strdup(lookup);
                 lookup = NULL;
         }
 
         /* Set name from hwdb information. TODO: Add fallback name! */
-        lookup = g_hash_table_lookup(self->hwdb_info, "ID_MODEL_FROM_DATABASE");
+        lookup = g_hash_table_lookup(self->hwdb_info, HWDB_LOOKUP_PRODUCT_NAME);
         if (lookup) {
                 self->name = g_strdup(lookup);
                 lookup = NULL;
