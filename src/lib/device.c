@@ -39,6 +39,7 @@ struct _LdmDevice {
                 gchar *sysfs_path;
                 gchar *modalias;
                 GHashTable *hwdb_info;
+                guint devtype;
         } os;
 
         /* Identification */
@@ -289,7 +290,10 @@ post_hwdb:
         /* We might need to populate more information per device type */
         subsystem = udev_device_get_subsystem(device);
         if (g_str_equal(subsystem, "pci")) {
+                self->os.devtype = LDM_DEVICE_TYPE_PCI;
                 ldm_device_init_pci(self, device);
+        } else if (g_str_equal(subsystem, "usb")) {
+                self->os.devtype = LDM_DEVICE_TYPE_USB;
         }
 
         return self;
@@ -310,6 +314,24 @@ static void ldm_device_init_pci(LdmDevice *self, udev_device *device)
         if (sysattr && g_str_equal(sysattr, "1")) {
                 self->pci.boot_vga = TRUE;
         }
+}
+
+/**
+ * ldm_device_has_type:
+ * @mask: Bitwise OR combination of #LdmDeviceType
+ *
+ * Test whether this device has the given type(s) by testing the mask against
+ * our known types.
+ */
+gboolean ldm_device_has_type(LdmDevice *self, guint mask)
+{
+        g_return_val_if_fail(self != NULL, FALSE);
+
+        if ((self->os.devtype & mask) == mask) {
+                return TRUE;
+        }
+
+        return FALSE;
 }
 
 /*

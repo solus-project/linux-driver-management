@@ -25,8 +25,10 @@ typedef struct _LdmDeviceClass LdmDeviceClass;
  * @LDM_DEVICE_TYPE_GPU: A graphics device (onboard, NVIDIA, etc.)
  * @LDM_DEVICE_TYPE_HID: Human interface device (mouse, keyboard, etc.)
  * @LDM_DEVICE_TYPE_IMAGE: Imaging device such as a camera
+ * @LDM_DEVICE_TYPE_PCI: The device is connected via PCI
  * @LDM_DEVICE_TYPE_PRINTER: Printer
  * @LDM_DEVICE_TYPE_VIDEO: Video device, perhaps a webcam
+ * @LDM_DEVICE_TYPE_USB: The device is connected via USB
  * @LDM_DEVICE_TYPE_WIRELESS: A wireless device, i.e. dongle or mouse
  *
  * Any device known to LDM may have one or more "types", defining the primary
@@ -43,10 +45,12 @@ typedef enum {
         LDM_DEVICE_TYPE_GPU = 1 << 1,
         LDM_DEVICE_TYPE_HID = 1 << 2,
         LDM_DEVICE_TYPE_IMAGE = 1 << 3,
-        LDM_DEVICE_TYPE_PRINTER = 1 << 4,
-        LDM_DEVICE_TYPE_VIDEO = 1 << 5,
-        LDM_DEVICE_TYPE_WIRELESS = 1 << 6,
-        LDM_DEVICE_TYPE_MAX = 1 << 7,
+        LDM_DEVICE_TYPE_PCI = 1 << 4,
+        LDM_DEVICE_TYPE_PRINTER = 1 << 5,
+        LDM_DEVICE_TYPE_VIDEO = 1 << 6,
+        LDM_DEVICE_TYPE_WIRELESS = 1 << 7,
+        LDM_DEVICE_TYPE_USB = 1 << 8,
+        LDM_DEVICE_TYPE_MAX = 1 << 9,
 } LdmDeviceType;
 
 #define LDM_TYPE_DEVICE ldm_device_get_type()
@@ -63,6 +67,8 @@ const gchar *ldm_device_get_modalias(LdmDevice *device);
 const gchar *ldm_device_get_name(LdmDevice *device);
 const gchar *ldm_device_get_path(LdmDevice *device);
 const gchar *ldm_device_get_vendor(LdmDevice *device);
+
+gboolean ldm_device_has_type(LdmDevice *device, guint mask);
 
 G_END_DECLS
 
