@@ -15,6 +15,20 @@
 
 #include "manager.h"
 
+struct _LdmManagerClass {
+        GObjectClass parent_class;
+};
+
+/*
+ * LdmManager
+ *
+ * The manager is the main library portion of libldm and is used to introspect
+ * devices on the system.
+ */
+struct _LdmManager {
+        GObject parent;
+};
+
 G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
 
 /**

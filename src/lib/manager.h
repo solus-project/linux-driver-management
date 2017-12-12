@@ -18,22 +18,6 @@ G_BEGIN_DECLS
 typedef struct _LdmManager LdmManager;
 typedef struct _LdmManagerClass LdmManagerClass;
 
-struct _LdmManagerClass {
-        GObjectClass parent_class;
-
-        gpointer padding[12];
-};
-
-/*
- * LdmManager
- *
- * The manager is the main library portion of libldm and is used to introspect
- * devices on the system.
- */
-struct _LdmManager {
-        GObject parent;
-};
-
 #define LDM_TYPE_MANAGER ldm_manager_get_type()
 #define LDM_MANAGER(o) (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_MANAGER, LdmManager))
 #define LDM_IS_MANAGER(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), LDM_TYPE_MANAGER))
