@@ -16,6 +16,18 @@
 #include "manager.h"
 #include "util.h"
 
+/*
+ * Sanity helpers for dealing with udev.
+ */
+typedef struct udev udev_connection;
+typedef struct udev_hwdb udev_hwdb;
+typedef struct udev_enumerate udev_enum;
+typedef struct udev_list_entry udev_list;
+
+DEF_AUTOFREE(udev_enum, udev_enumerate_unref)
+
+static void ldm_manager_init_udev(LdmManager *self);
+
 struct _LdmManagerClass {
         GObjectClass parent_class;
 };
@@ -31,8 +43,8 @@ struct _LdmManager {
         GHashTable *devices;
 
         /* Udev */
-        struct udev *udev;
-        struct udev_hwdb *hwdb;
+        udev_connection *udev;
+        udev_hwdb *hwdb;
 };
 
 G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
@@ -83,6 +95,50 @@ static void ldm_manager_init(LdmManager *self)
         g_assert(self->udev != NULL);
         self->hwdb = udev_hwdb_new(self->udev);
         g_assert(self->hwdb != NULL);
+
+        ldm_manager_init_udev(self);
+}
+
+/**
+ * ldm_manager_init_udev:
+ *
+ * Set up udev and get some devices going.
+ */
+static void ldm_manager_init_udev(LdmManager *self)
+{
+        autofree(udev_enum) *ue = NULL;
+        udev_list *list = NULL, *entry = NULL;
+        static const char *subsystems[] = {
+                "usb",
+                "pci",
+        };
+
+        /* Set up the enumerator */
+        ue = udev_enumerate_new(self->udev);
+        g_assert(ue != NULL);
+
+        for (size_t i = 0; i < G_N_ELEMENTS(subsystems); i++) {
+                const char *sub = subsystems[i];
+                if (udev_enumerate_add_match_subsystem(ue, sub) != 0) {
+                        g_warning("Failed to add subsystem match: %s", sub);
+                }
+        }
+
+        /* Request we can */
+        if (udev_enumerate_scan_devices(ue) != 0) {
+                g_warning("Failed to enumerate devices");
+                return;
+        }
+
+        /* Grab head */
+        list = udev_enumerate_get_list_entry(ue);
+
+        /* Walk said list */
+        udev_list_entry_foreach(entry, list)
+        {
+                const char *sysfs = udev_list_entry_get_name(entry);
+                g_message("Device: %s", sysfs);
+        }
 }
 
 /**
