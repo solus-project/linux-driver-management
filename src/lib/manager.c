@@ -14,21 +14,9 @@
 #include <libudev.h>
 
 #include "device.h"
+#include "ldm-private.h"
 #include "manager.h"
 #include "util.h"
-
-/*
- * Sanity helpers for dealing with udev.
- */
-typedef struct udev udev_connection;
-typedef struct udev_hwdb udev_hwdb;
-typedef struct udev_device udev_device;
-typedef struct udev_enumerate udev_enum;
-typedef struct udev_list_entry udev_list;
-
-DEF_AUTOFREE(udev_device, udev_device_unref)
-DEF_AUTOFREE(udev_enum, udev_enumerate_unref)
-DEF_AUTOFREE(gchar, g_free)
 
 static void ldm_manager_init_udev(LdmManager *self);
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
