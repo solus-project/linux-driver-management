@@ -12,6 +12,7 @@
 #pragma once
 
 #include <device.h>
+#include <ldm-enums.h>
 #include <manager.h>
 
 /*

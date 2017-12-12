@@ -1,9 +1,22 @@
 gnome = import('gnome')
 pkgconfig = import('pkgconfig')
 
+# Generate enums for gobject typing
+libldm_enums = gnome.mkenums(
+    'ldm-enums',
+    sources: [
+        'device.h',
+    ],
+    c_template: 'ldm-enums.c.template',
+    h_template: 'ldm-enums.h.template',
+    install_header: true,
+    install_dir: join_paths(get_option('includedir'), 'budgie-desktop'),
+)
+
 libldm_main_sources = [
     'device.c',
     'manager.c',
+    libldm_enums,
 ]
 
 libldm_headers = [
