@@ -28,6 +28,14 @@ struct _LdmDeviceClass {
  */
 struct _LdmDevice {
         GObject parent;
+
+        /* OS Specifics */
+        gchar *sysfs_path;
+        gchar *modalias;
+
+        /* Display */
+        gchar *name;
+        gchar *vendor;
 };
 
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
@@ -39,6 +47,13 @@ G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
  */
 static void ldm_device_dispose(GObject *obj)
 {
+        LdmDevice *self = LDM_DEVICE(obj);
+
+        g_clear_pointer(&self->sysfs_path, g_free);
+        g_clear_pointer(&self->modalias, g_free);
+        g_clear_pointer(&self->name, g_free);
+        g_clear_pointer(&self->vendor, g_free);
+
         G_OBJECT_CLASS(ldm_device_parent_class)->dispose(obj);
 }
 
@@ -62,6 +77,62 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
  */
 static void ldm_device_init(__ldm_unused__ LdmDevice *self)
 {
+}
+
+/**
+ * ldm_device_get_modalias:
+ *
+ * The modalias is unique to the device and is used in identifying potential
+ * driver candidates.
+ *
+ * Returns: (transfer none): The modalias of the device
+ */
+const gchar *ldm_device_get_modalias(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->modalias;
+}
+
+/**
+ * ldm_device_get_name:
+ *
+ * This function will return the name (model) of this device, suitable
+ * for presentation to a user.
+ *
+ * Returns: (transfer none): The name of the device
+ */
+const gchar *ldm_device_get_name(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->name;
+}
+
+/**
+ * ldm_device_get_path:
+ *
+ * This function will return the system-specific path for this device.
+ * On Linux this is the sysfs path.
+ *
+ * Returns: (transfer none): The path of the device
+ */
+const gchar *ldm_device_get_path(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->sysfs_path;
+}
+
+/**
+ * ldm_device_get_vendor:
+ *
+ * This function will return the vendor (manufacturer) of this device,
+ * suitable for presentation to a user.
+ *
+ * Returns: (transfer none): The vendor of the device
+ */
+const gchar *ldm_device_get_vendor(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->vendor;
 }
 
 /*

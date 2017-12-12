@@ -27,6 +27,7 @@ struct _LdmManagerClass {
  */
 struct _LdmManager {
         GObject parent;
+        GHashTable *devices;
 };
 
 G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
@@ -38,6 +39,11 @@ G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
  */
 static void ldm_manager_dispose(GObject *obj)
 {
+        LdmManager *self = LDM_MANAGER(obj);
+
+        /* clean ourselves up */
+        g_clear_pointer(&self->devices, g_hash_table_unref);
+
         G_OBJECT_CLASS(ldm_manager_parent_class)->dispose(obj);
 }
 
@@ -59,8 +65,10 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
  *
  * Handle construction of the LdmManager
  */
-static void ldm_manager_init(__ldm_unused__ LdmManager *self)
+static void ldm_manager_init(LdmManager *self)
 {
+        /* Device table is a mapping of sysfs name to LdmDevice */
+        self->devices = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
 }
 
 /**

@@ -27,6 +27,12 @@ typedef struct _LdmDeviceClass LdmDeviceClass;
 
 GType ldm_device_get_type(void);
 
+/* API */
+const gchar *ldm_device_get_modalias(LdmDevice *device);
+const gchar *ldm_device_get_name(LdmDevice *device);
+const gchar *ldm_device_get_path(LdmDevice *device);
+const gchar *ldm_device_get_vendor(LdmDevice *device);
+
 G_END_DECLS
 
 /*
