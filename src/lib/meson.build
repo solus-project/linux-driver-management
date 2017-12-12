@@ -10,7 +10,7 @@ libldm_enums = gnome.mkenums(
     c_template: 'ldm-enums.c.template',
     h_template: 'ldm-enums.h.template',
     install_header: true,
-    install_dir: join_paths(get_option('includedir'), 'budgie-desktop'),
+    install_dir: join_paths(get_option('includedir'), meson.project_name()),
 )
 
 # Fight meson race conditions..
