@@ -27,6 +27,7 @@ typedef struct udev_list_entry udev_list;
 
 DEF_AUTOFREE(udev_device, udev_device_unref)
 DEF_AUTOFREE(udev_enum, udev_enumerate_unref)
+DEF_AUTOFREE(gchar, g_free)
 
 static void ldm_manager_init_udev(LdmManager *self);
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
@@ -152,7 +153,10 @@ static void ldm_manager_init_udev(LdmManager *self)
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 {
         const char *modalias = NULL;
+        udev_list *list = NULL, *entry = NULL;
         autofree(udev_device) *device = NULL;
+        autofree(gchar) *vendor = NULL;
+        autofree(gchar) *name = NULL;
 
         /* We only want stuff with a modalias. */
         device = udev_device_new_from_syspath(self->udev, sysfs_path);
@@ -161,7 +165,31 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
                 return;
         }
 
-        g_message("Device: %s", sysfs_path);
+        /* Look up the hwdb information */
+        list = udev_hwdb_get_properties_list_entry(self->hwdb, modalias, 0);
+
+        /* Let's walk the hwdb for this guy. */
+        udev_list_entry_foreach(entry, list)
+        {
+                const char *prop_id = NULL;
+                const char *value = NULL;
+
+                prop_id = udev_list_entry_get_name(entry);
+                value = udev_list_entry_get_value(entry);
+
+                if (g_str_equal(prop_id, "ID_VENDOR_FROM_DATABASE")) {
+                        vendor = g_strdup(value);
+                } else if (g_str_equal(prop_id, "ID_MODEL_FROM_DATABASE")) {
+                        name = g_strdup(value);
+                }
+
+                /* Temp */
+                if (vendor && name) {
+                        break;
+                }
+        }
+
+        g_message("Device '%s' (%s) @ %s", name, vendor, sysfs_path);
 }
 
 /**
