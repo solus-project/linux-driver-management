@@ -7,6 +7,7 @@ libldm_main_sources = [
 
 libldm_headers = [
     'manager.h',
+    'ldm.h',
 ]
 
 libldm_main_includes = [
@@ -55,6 +56,7 @@ libldm_gir = gnome.generate_gir(
     install: true,
     extra_args: [
         '--warn-all',
+        '--c-include', 'ldm.h',
     ],
 )
 
