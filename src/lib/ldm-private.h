@@ -32,6 +32,9 @@ DEF_AUTOFREE(udev_device, udev_device_unref)
 DEF_AUTOFREE(udev_enum, udev_enumerate_unref)
 DEF_AUTOFREE(gchar, g_free)
 
+/* Private device API */
+LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

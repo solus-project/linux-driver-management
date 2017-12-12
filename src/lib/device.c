@@ -11,9 +11,9 @@
 
 #define _GNU_SOURCE
 
-#include "util.h"
-
 #include "device.h"
+#include "ldm-private.h"
+#include "util.h"
 
 struct _LdmDeviceClass {
         GObjectClass parent_class;
@@ -28,6 +28,9 @@ struct _LdmDeviceClass {
  */
 struct _LdmDevice {
         GObject parent;
+
+        /* udev hwdb properties */
+        GHashTable *hwdb_info;
 
         /* OS Specifics */
         gchar *sysfs_path;
@@ -46,8 +49,6 @@ static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
 
-static void ldm_device_set_property(GObject *object, guint id, const GValue *value,
-                                    GParamSpec *spec);
 static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
 
 /**
@@ -59,6 +60,7 @@ static void ldm_device_dispose(GObject *obj)
 {
         LdmDevice *self = LDM_DEVICE(obj);
 
+        g_clear_pointer(&self->hwdb_info, g_hash_table_unref);
         g_clear_pointer(&self->sysfs_path, g_free);
         g_clear_pointer(&self->modalias, g_free);
         g_clear_pointer(&self->name, g_free);
@@ -79,7 +81,6 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
         /* gobject vtable hookup */
         obj_class->dispose = ldm_device_dispose;
         obj_class->get_property = ldm_device_get_property;
-        obj_class->set_property = ldm_device_set_property;
 
         /**
          * LdmDevice::path
@@ -90,19 +91,18 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                         "The device path",
                                                         "System path for this device",
                                                         NULL,
-                                                        G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+                                                        G_PARAM_READABLE);
 
         /**
          * LdmDevice::modalias
          *
          * The modalias reported by the kernel for this device.
          */
-        obj_properties[PROP_MODALIAS] =
-            g_param_spec_string("modalias",
-                                "The device modalias",
-                                "System modalias for this device",
-                                NULL,
-                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+        obj_properties[PROP_MODALIAS] = g_param_spec_string("modalias",
+                                                            "The device modalias",
+                                                            "System modalias for this device",
+                                                            NULL,
+                                                            G_PARAM_READABLE);
 
         /**
          * LdmDevice::name
@@ -113,7 +113,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                         "The device name",
                                                         "Display name (model) for this device",
                                                         NULL,
-                                                        G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+                                                        G_PARAM_READABLE);
 
         /**
          * LdmDevice::vendor
@@ -125,37 +125,9 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                 "The device vendor",
                                 "The vendor (manufacturer) for this device",
                                 NULL,
-                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+                                G_PARAM_READABLE);
 
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
-}
-
-static void ldm_device_set_property(GObject *object, guint id, const GValue *value,
-                                    GParamSpec *spec)
-{
-        LdmDevice *self = LDM_DEVICE(object);
-
-        switch (id) {
-        case PROP_PATH:
-                g_clear_pointer(&self->sysfs_path, g_free);
-                self->sysfs_path = g_value_dup_string(value);
-                break;
-        case PROP_MODALIAS:
-                g_clear_pointer(&self->modalias, g_free);
-                self->modalias = g_value_dup_string(value);
-                break;
-        case PROP_NAME:
-                g_clear_pointer(&self->name, g_free);
-                self->name = g_value_dup_string(value);
-                break;
-        case PROP_VENDOR:
-                g_clear_pointer(&self->vendor, g_free);
-                self->vendor = g_value_dup_string(value);
-                break;
-        default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
-                break;
-        }
 }
 
 static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec)
@@ -186,8 +158,10 @@ static void ldm_device_get_property(GObject *object, guint id, GValue *value, GP
  *
  * Handle construction of the LdmDevice
  */
-static void ldm_device_init(__ldm_unused__ LdmDevice *self)
+static void ldm_device_init(LdmDevice *self)
 {
+        /* Just set up the table for our properties */
+        self->hwdb_info = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 }
 
 /**
@@ -244,6 +218,59 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
 {
         g_return_val_if_fail(self != NULL, NULL);
         return (const gchar *)self->vendor;
+}
+
+/**
+ * ldm_devide_new_from_udev:
+ * @device: Associated udev device
+ * @hwinfo: If set, the hwdb entry for this device.
+ *
+ * Construct a new LdmDevice from the given udev device and hwdb information.
+ * This is private API between the manager and the device.
+ */
+LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
+{
+        udev_list *entry = NULL;
+        LdmDevice *self = NULL;
+        gchar *lookup = NULL;
+
+        self = g_object_new(LDM_TYPE_DEVICE, NULL);
+
+        /* Set the absolute basics */
+        self->sysfs_path = g_strdup(udev_device_get_syspath(device));
+        self->modalias = g_strdup(udev_device_get_sysattr_value(device, "modalias"));
+
+        if (!hwinfo) {
+                return self;
+        }
+
+        /* Duplicate the hardware data into a private table */
+        udev_list_entry_foreach(entry, hwinfo)
+        {
+                const char *prop_id = NULL;
+                const char *value = NULL;
+
+                prop_id = udev_list_entry_get_name(entry);
+                value = udev_list_entry_get_value(entry);
+
+                g_hash_table_insert(self->hwdb_info, g_strdup(prop_id), g_strdup(value));
+        }
+
+        /* Set vendor from hwdb information */
+        lookup = g_hash_table_lookup(self->hwdb_info, "ID_VENDOR_FROM_DATABASE");
+        if (lookup) {
+                self->vendor = g_strdup(lookup);
+                lookup = NULL;
+        }
+
+        /* Set name from hwdb information. TODO: Add fallback name! */
+        lookup = g_hash_table_lookup(self->hwdb_info, "ID_MODEL_FROM_DATABASE");
+        if (lookup) {
+                self->name = g_strdup(lookup);
+                lookup = NULL;
+        }
+
+        return self;
 }
 
 /*

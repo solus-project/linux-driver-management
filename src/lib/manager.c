@@ -163,12 +163,10 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 static void ldm_manager_push_device(LdmManager *self, udev_device *device)
 {
         const char *modalias = NULL;
-        autofree(gchar) *vendor = NULL;
-        autofree(gchar) *name = NULL;
-        udev_list *list = NULL, *entry = NULL;
         LdmDevice *ldm_device = NULL;
         const char *sysfs_path = NULL;
         const char *subsystem = NULL;
+        udev_list *hwdb_info = NULL;
 
         sysfs_path = udev_device_get_syspath(device);
 
@@ -177,46 +175,15 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
                 return;
         }
 
+        /* Get our basic information */
         modalias = udev_device_get_sysattr_value(device, "modalias");
         subsystem = udev_device_get_subsystem(device);
+        hwdb_info = udev_hwdb_get_properties_list_entry(self->hwdb, modalias, 0);
 
-        /* Look up the hwdb information */
-        list = udev_hwdb_get_properties_list_entry(self->hwdb, modalias, 0);
+        /* Build the actual device now */
+        ldm_device = ldm_device_new_from_udev(device, hwdb_info);
 
-        /* Let's walk the hwdb for this guy. */
-        udev_list_entry_foreach(entry, list)
-        {
-                const char *prop_id = NULL;
-                const char *value = NULL;
-
-                prop_id = udev_list_entry_get_name(entry);
-                value = udev_list_entry_get_value(entry);
-
-                if (g_str_equal(prop_id, "ID_VENDOR_FROM_DATABASE")) {
-                        vendor = g_strdup(value);
-                } else if (g_str_equal(prop_id, "ID_MODEL_FROM_DATABASE")) {
-                        name = g_strdup(value);
-                }
-
-                /* Temp */
-                if (vendor && name) {
-                        break;
-                }
-        }
-
-        /* Chuck this guy in now */
-        ldm_device = g_object_new(LDM_TYPE_DEVICE,
-                                  "name",
-                                  name,
-                                  "vendor",
-                                  vendor,
-                                  "modalias",
-                                  modalias,
-                                  "path",
-                                  sysfs_path,
-                                  NULL);
-
-        g_message("ldm_manager_push_device(%s): %s", subsystem, name ? name : vendor);
+        g_message("ldm_manager_push_device(%s): %s", subsystem, ldm_device_get_name(ldm_device));
 
         /* TODO: Emit signal for the device. */
         g_hash_table_insert(self->devices, g_strdup(sysfs_path), ldm_device);
