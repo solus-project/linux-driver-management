@@ -1,5 +1,6 @@
 LIBLDM_0 {
   global:
+    ldm_device_get_device_type;
     ldm_device_get_type;
     ldm_device_get_modalias;
     ldm_device_get_name;

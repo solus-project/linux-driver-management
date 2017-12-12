@@ -12,6 +12,7 @@
 #define _GNU_SOURCE
 
 #include "device.h"
+#include "ldm-enums.h"
 #include "ldm-private.h"
 #include "util.h"
 
@@ -56,7 +57,7 @@ struct _LdmDevice {
 
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 
-enum { PROP_PATH = 1, PROP_MODALIAS, PROP_NAME, PROP_VENDOR, N_PROPS };
+enum { PROP_PATH = 1, PROP_MODALIAS, PROP_NAME, PROP_VENDOR, PROP_DEV_TYPE, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -140,6 +141,19 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                 NULL,
                                 G_PARAM_READABLE);
 
+        /**
+         * LdmDevice::device-type
+         *
+         * The composite type of this device, which is a bitwise combination
+         * of multiple device types (such as PCI|GPU)
+         */
+        obj_properties[PROP_DEV_TYPE] = g_param_spec_flags("device-type",
+                                                           "Device type",
+                                                           "Composite type for this device",
+                                                           LDM_TYPE_DEVICE_TYPE,
+                                                           LDM_DEVICE_TYPE_ANY,
+                                                           G_PARAM_READABLE);
+
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -159,6 +173,9 @@ static void ldm_device_get_property(GObject *object, guint id, GValue *value, GP
                 break;
         case PROP_VENDOR:
                 g_value_set_string(value, self->id.vendor);
+                break;
+        case PROP_DEV_TYPE:
+                g_value_set_flags(value, self->os.devtype);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -314,6 +331,17 @@ static void ldm_device_init_pci(LdmDevice *self, udev_device *device)
         if (sysattr && g_str_equal(sysattr, "1")) {
                 self->pci.boot_vga = TRUE;
         }
+}
+
+/**
+ * ldm_device_get_device_type:
+ *
+ * Return the device type (bitwise field)
+ */
+guint ldm_device_get_device_type(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, LDM_DEVICE_TYPE_ANY);
+        return self->os.devtype;
 }
 
 /**
