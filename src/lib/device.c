@@ -15,6 +15,8 @@
 #include "ldm-private.h"
 #include "util.h"
 
+static void ldm_device_init_pci(LdmDevice *self, udev_device *device);
+
 struct _LdmDeviceClass {
         GObjectClass parent_class;
 };
@@ -39,6 +41,11 @@ struct _LdmDevice {
         /* Display */
         gchar *name;
         gchar *vendor;
+
+        /* PCI specific information */
+        struct {
+                gboolean boot_vga;
+        } pci;
 };
 
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
@@ -233,6 +240,7 @@ LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
         udev_list *entry = NULL;
         LdmDevice *self = NULL;
         gchar *lookup = NULL;
+        const char *subsystem = NULL;
 
         self = g_object_new(LDM_TYPE_DEVICE, NULL);
 
@@ -240,8 +248,9 @@ LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
         self->sysfs_path = g_strdup(udev_device_get_syspath(device));
         self->modalias = g_strdup(udev_device_get_sysattr_value(device, "modalias"));
 
+        /* Shouldn't happen, but is definitely possible.. */
         if (!hwinfo) {
-                return self;
+                goto post_hwdb;
         }
 
         /* Duplicate the hardware data into a private table */
@@ -270,7 +279,32 @@ LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
                 lookup = NULL;
         }
 
+post_hwdb:
+
+        /* We might need to populate more information per device type */
+        subsystem = udev_device_get_subsystem(device);
+        if (g_str_equal(subsystem, "pci")) {
+                ldm_device_init_pci(self, device);
+        }
+
         return self;
+}
+
+/**
+ * ldm_device_init_pci:
+ * @device: The udev device that we're being created from
+ *
+ * Handle PCI specific initialisation
+ */
+static void ldm_device_init_pci(LdmDevice *self, udev_device *device)
+{
+        const char *sysattr = NULL;
+
+        /* Are we boot_vga ? */
+        sysattr = udev_device_get_sysattr_value(device, "boot_vga");
+        if (sysattr && g_str_equal(sysattr, "1")) {
+                self->pci.boot_vga = TRUE;
+        }
 }
 
 /*
