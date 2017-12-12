@@ -13,6 +13,7 @@
 
 #include <libudev.h>
 
+#include "device.h"
 #include "manager.h"
 #include "util.h"
 
@@ -177,8 +178,19 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
         autofree(gchar) *vendor = NULL;
         autofree(gchar) *name = NULL;
         udev_list *list = NULL, *entry = NULL;
+        LdmDevice *ldm_device = NULL;
+        const char *sysfs_path = NULL;
+        const char *subsystem = NULL;
+
+        sysfs_path = udev_device_get_syspath(device);
+
+        /* Don't dupe these guys. */
+        if (g_hash_table_contains(self->devices, sysfs_path)) {
+                return;
+        }
 
         modalias = udev_device_get_sysattr_value(device, "modalias");
+        subsystem = udev_device_get_subsystem(device);
 
         /* Look up the hwdb information */
         list = udev_hwdb_get_properties_list_entry(self->hwdb, modalias, 0);
@@ -204,7 +216,22 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
                 }
         }
 
-        g_message("Device '%s' (%s) @ %s", name, vendor, udev_device_get_syspath(device));
+        /* Chuck this guy in now */
+        ldm_device = g_object_new(LDM_TYPE_DEVICE,
+                                  "name",
+                                  name,
+                                  "vendor",
+                                  vendor,
+                                  "modalias",
+                                  modalias,
+                                  "path",
+                                  sysfs_path,
+                                  NULL);
+
+        g_message("ldm_manager_push_device(%s): %s", subsystem, name);
+
+        /* TODO: Emit signal for the device. */
+        g_hash_table_insert(self->devices, g_strdup(sysfs_path), ldm_device);
 }
 
 /**
