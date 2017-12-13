@@ -49,11 +49,6 @@ struct _LdmDevice {
                 gchar *name;
                 gchar *vendor;
         } id;
-
-        /* PCI data */
-        struct {
-                gboolean boot_vga;
-        } pci;
 };
 
 /*

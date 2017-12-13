@@ -319,7 +319,7 @@ static void ldm_device_init_pci(LdmDevice *self, udev_device *device)
         /* Are we boot_vga ? */
         sysattr = udev_device_get_sysattr_value(device, "boot_vga");
         if (sysattr && g_str_equal(sysattr, "1")) {
-                self->pci.boot_vga = TRUE;
+                self->os.devtype |= LDM_DEVICE_TYPE_BOOT_VGA;
         }
 }
 

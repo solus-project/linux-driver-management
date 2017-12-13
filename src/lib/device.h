@@ -22,6 +22,7 @@ typedef struct _LdmDeviceClass LdmDeviceClass;
  * LdmDeviceType:
  * @LDM_DEVICE_TYPE_ANY: Placeholder value
  * @LDM_DEVICE_TYPE_AUDIO: Audio device
+ * @LDM_DEVICE_TYPE_BOOT_VGA: Special attribute marking the GPU used to boot the system
  * @LDM_DEVICE_TYPE_GPU: A graphics device (onboard, NVIDIA, etc.)
  * @LDM_DEVICE_TYPE_HID: Human interface device (mouse, keyboard, etc.)
  * @LDM_DEVICE_TYPE_IMAGE: Imaging device such as a camera
@@ -42,15 +43,16 @@ typedef struct _LdmDeviceClass LdmDeviceClass;
 typedef enum {
         LDM_DEVICE_TYPE_ANY = 0,
         LDM_DEVICE_TYPE_AUDIO = 1 << 0,
-        LDM_DEVICE_TYPE_GPU = 1 << 1,
-        LDM_DEVICE_TYPE_HID = 1 << 2,
-        LDM_DEVICE_TYPE_IMAGE = 1 << 3,
-        LDM_DEVICE_TYPE_PCI = 1 << 4,
-        LDM_DEVICE_TYPE_PRINTER = 1 << 5,
-        LDM_DEVICE_TYPE_VIDEO = 1 << 6,
-        LDM_DEVICE_TYPE_WIRELESS = 1 << 7,
-        LDM_DEVICE_TYPE_USB = 1 << 8,
-        LDM_DEVICE_TYPE_MAX = 1 << 9,
+        LDM_DEVICE_TYPE_BOOT_VGA = 1 << 1,
+        LDM_DEVICE_TYPE_GPU = 1 << 2,
+        LDM_DEVICE_TYPE_HID = 1 << 3,
+        LDM_DEVICE_TYPE_IMAGE = 1 << 4,
+        LDM_DEVICE_TYPE_PCI = 1 << 5,
+        LDM_DEVICE_TYPE_PRINTER = 1 << 6,
+        LDM_DEVICE_TYPE_VIDEO = 1 << 7,
+        LDM_DEVICE_TYPE_WIRELESS = 1 << 8,
+        LDM_DEVICE_TYPE_USB = 1 << 9,
+        LDM_DEVICE_TYPE_MAX = 1 << 10,
 } LdmDeviceType;
 
 #define LDM_TYPE_DEVICE ldm_device_get_type()
