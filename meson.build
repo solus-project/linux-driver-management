@@ -38,6 +38,15 @@ path_mandir = join_paths(path_prefix, get_option('mandir'))
 path_datadir = join_paths(path_prefix, get_option('datadir'))
 path_bindir = join_paths(path_prefix, get_option('bindir'))
 
+warn_modalias = false
+with_modalias_dir = get_option('with-modalias-dir')
+if with_modalias_dir != ''
+    path_modalias_dir = join_paths(path_prefix, with_modalias_dir)
+else
+    path_modalias_dir = join_paths(path_datadir, 'doflicky', 'modaliases')
+    warn_modalias = true
+endif
+
 # Get configuration bits together
 cdata = configuration_data()
 cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
@@ -47,6 +56,7 @@ if get_option('with-emul32') == true
     cdata.set('WITH_EMUL32', '1')
     cdata.set_quoted('EMUL32LIBDIR', get_option('emul32-libdir'))
 endif
+cdata.set_quoted('MODALIAS_DIR', path_modalias_dir)
 
 # Write config.h now
 config_h = configure_file(
@@ -94,6 +104,7 @@ report = [
     '    sysconfdir:                             @0@'.format(path_sysconfdir),
     '    mandir:                                 @0@'.format(path_mandir),
     '    bindir:                                 @0@'.format(path_bindir),
+    '    modaliasdir:                            @0@'.format(path_modalias_dir),
     '',
     '    Extra modules:',
     '    ==============',
@@ -101,6 +112,18 @@ report = [
     '    gl-driver-switch-compat:                @0@'.format(with_gl_driver_switch_compat),
     '    hardware plug monitor:                  @0@'.format(with_ldm_monitor),
 ]
+
+if warn_modalias == true
+report += [
+    '', '',
+    '    Warning:',
+    '    ========',
+    '    default modalias directory selected. Verify this is correct.',
+    '    The modalias directory contains modalias definitions required',
+    '    for driver detection and should be provided by the driver',
+    '    packages in your distribution.',
+]
+endif
 
 # Output some stuff to validate the build config
 message('\n\n\n' + '\n'.join(report) + '\n\n')
