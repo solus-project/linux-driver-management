@@ -26,6 +26,9 @@ struct _LdmModaliasDriverClass {
  */
 struct _LdmModaliasDriver {
         LdmDriver parent;
+
+        /* Our known modalias implementations */
+        GHashTable *modaliases;
 };
 
 G_DEFINE_TYPE(LdmModaliasDriver, ldm_modalias_driver, LDM_TYPE_DRIVER)
@@ -58,8 +61,30 @@ static void ldm_modalias_driver_class_init(LdmModaliasDriverClass *klazz)
  *
  * Handle construction of the LdmModaliasDriver
  */
-static void ldm_modalias_driver_init(__ldm_unused__ LdmModaliasDriver *self)
+static void ldm_modalias_driver_init(LdmModaliasDriver *self)
 {
+        /* Map name to modalias */
+        self->modaliases = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
+}
+
+/**
+ * ldm_modalias_driver_add_modalias:
+ * @modalias: (transfer full): Modalias object to add to the table
+ *
+ * Add a new modalias object to the driver table. This method will take a new
+ * reference to the modalias.
+ */
+void ldm_modalias_driver_add_modalias(LdmModaliasDriver *self, LdmModalias *modalias)
+{
+        const gchar *id = NULL;
+
+        g_return_if_fail(self != NULL);
+        g_return_if_fail(modalias != NULL);
+
+        id = ldm_modalias_get_match(modalias);
+        g_assert(id != NULL);
+
+        g_hash_table_replace(self->modaliases, g_strdup(id), g_object_ref(modalias));
 }
 
 /*

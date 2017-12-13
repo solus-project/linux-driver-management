@@ -14,6 +14,7 @@
 #include <glib-object.h>
 
 #include <driver.h>
+#include <modalias.h>
 
 G_BEGIN_DECLS
 
@@ -31,6 +32,10 @@ typedef struct _LdmModaliasDriverClass LdmModaliasDriverClass;
         (G_TYPE_INSTANCE_GET_CLASS((o), LDM_TYPE_MODALIAS_DRIVER, LdmModaliasDriverClass))
 
 GType ldm_modalias_driver_get_type(void);
+
+/* API */
+
+void ldm_modalias_driver_add_modalias(LdmModaliasDriver *driver, LdmModalias *modalias);
 
 G_END_DECLS
 
