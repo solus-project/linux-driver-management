@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ldm-private.h"
 #include "ldm.h"
 #include "util.h"
 
@@ -25,6 +26,29 @@
 
 #define GLX_MATCH "pci:v000010DEd00001C60sv*sd*bc03sc*i*"
 #define GLX_NO_MATCH "pci:v000010DEd00001B84sv*sd*bc03sc*i*"
+
+/**
+ * Abuse the private API to construct a fake LdmDevice with the given name, vendor, and modalias
+ *
+ * This allows us to test the devices against various match mechanisms.
+ */
+static LdmDevice *create_fake_device(const char *name, const char *vendor, const char *modalias)
+{
+        LdmDevice *ret = NULL;
+
+        ret = g_object_new(LDM_TYPE_DEVICE, NULL);
+        ck_assert(ret != NULL);
+
+        ret->id.name = g_strdup(name);
+        ret->id.vendor = g_strdup(vendor);
+        if (modalias) {
+                ret->os.modalias = g_strdup(modalias);
+        }
+        /* Deliberately fakey sysfs path */
+        ret->os.sysfs_path = g_strdup_printf("/fake/path/%s/%s", name, vendor);
+
+        return ret;
+}
 
 /**
  * Very simple test, let's make sure that our basic modalias matching is
@@ -41,6 +65,23 @@ START_TEST(test_modalias_simple)
         fail_if(!ldm_modalias_matches(should_match, NVIDIA_MODALIAS),
                 "Failed to correctly match NVIDIA driver");
         fail_if(ldm_modalias_matches(shouldnt_match, NVIDIA_MODALIAS),
+                "Second modalias should NOT match");
+}
+END_TEST
+
+START_TEST(test_modalias_device)
+{
+        g_autoptr(LdmDevice) fake_device = NULL;
+        g_autoptr(LdmModalias) should_match = NULL;
+        g_autoptr(LdmModalias) shouldnt_match = NULL;
+
+        should_match = ldm_modalias_new(GLX_MATCH, "nvidia", "nvidia-glx-driver");
+        shouldnt_match = ldm_modalias_new(GLX_NO_MATCH, "nvidia", "nvidia-glx-driver");
+        fake_device = create_fake_device("GTX 1060", "NVIDIA", NVIDIA_MODALIAS);
+
+        fail_if(!ldm_modalias_matches_device(should_match, fake_device),
+                "Failed to correctly match NVIDIA driver");
+        fail_if(ldm_modalias_matches_device(shouldnt_match, fake_device),
                 "Second modalias should NOT match");
 }
 END_TEST
@@ -71,6 +112,7 @@ static Suite *test_create(void)
         suite_add_tcase(s, tc);
 
         tcase_add_test(tc, test_modalias_simple);
+        tcase_add_test(tc, test_modalias_device);
 
         return s;
 }
