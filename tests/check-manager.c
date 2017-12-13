@@ -39,7 +39,7 @@ START_TEST(test_manager_simple)
         manager = ldm_manager_new();
         fail_if(!manager, "Failed to get the LdmManager");
 
-        devices = ldm_manager_get_devices(manager);
+        devices = ldm_manager_get_devices(manager, 0);
         fail_if(!devices, "Failed to obtain devices");
         fail_if(g_list_length(devices) != 2, "Invalid device set");
 
@@ -80,7 +80,7 @@ START_TEST(test_manager_optimus)
         manager = ldm_manager_new();
         fail_if(!manager, "Failed to get the LdmManager");
 
-        devices = ldm_manager_get_devices(manager);
+        devices = ldm_manager_get_devices(manager, 0);
         fail_if(!devices, "Failed to obtain devices");
         fail_if(g_list_length(devices) != 3, "Invalid device set");
 

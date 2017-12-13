@@ -118,6 +118,7 @@ libldm_vapi = gnome.generate_vapi(
         'glib-2.0',
         'gio-unix-2.0',
     ],
+    metadata_dirs: meson.current_source_dir(),
     install: true,
 )
 

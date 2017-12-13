@@ -200,23 +200,7 @@ LdmManager *ldm_manager_new()
 
 /**
  * ldm_manager_get_devices:
- *
- * Return a list of all known devices. These devices are owned by the
- * manager and should not be freed. The returned list should be freed,
- * however.
- *
- * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices
- */
-GList *ldm_manager_get_devices(LdmManager *self)
-{
-        g_return_val_if_fail(self != NULL, NULL);
-
-        return g_hash_table_get_values(self->devices);
-}
-
-/**
- * ldm_manager_find_devices:
- * @classmask Bitwise mask of LdmDeviceType
+ * @class_mask: Bitwise mask of LdmDeviceType
  *
  * Return a subset of the devices known to this manager that happen to
  * match the given classmask. As an example you might call this function
@@ -225,7 +209,7 @@ GList *ldm_manager_get_devices(LdmManager *self)
  *
  * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices
  */
-GList *ldm_manager_find_devices(LdmManager *self, guint classmask)
+GList *ldm_manager_get_devices(LdmManager *self, guint class_mask)
 {
         GHashTableIter iter = { 0 };
         __ldm_unused__ gpointer key = NULL;
@@ -236,7 +220,7 @@ GList *ldm_manager_find_devices(LdmManager *self, guint classmask)
 
         g_hash_table_iter_init(&iter, self->devices);
         while (g_hash_table_iter_next(&iter, &key, (void **)&dev)) {
-                if (!ldm_device_has_type(dev, classmask)) {
+                if (!ldm_device_has_type(dev, class_mask)) {
                         continue;
                 }
                 ret = g_list_append(ret, dev);
