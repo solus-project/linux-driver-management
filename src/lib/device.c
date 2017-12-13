@@ -221,6 +221,23 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
 }
 
 /**
+ * ldm_device_hwinfo_is:
+ *
+ * Allow testing a key/value to verify it is one we expect.
+ */
+static gboolean ldm_device_hwinfo_is(LdmDevice *self, const gchar *key, const gchar *expect)
+{
+        const gchar *lookup = NULL;
+
+        lookup = g_hash_table_lookup(self->os.hwdb_info, key);
+        if (!lookup) {
+                return FALSE;
+        }
+
+        return g_str_equal(lookup, expect);
+}
+
+/**
  * ldm_device_new_from_udev:
  * @device: Associated udev device
  * @hwinfo: If set, the hwdb entry for this device.
@@ -272,15 +289,26 @@ LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
                 lookup = NULL;
         }
 
+        /* Is this looking like a GPU? */
+        if (ldm_device_hwinfo_is(self,
+                                 "ID_PCI_SUBCLASS_FROM_DATABASE",
+                                 "VGA compatible controller")) {
+                if (ldm_device_hwinfo_is(self,
+                                         "ID_PCI_CLASS_FROM_DATABASE",
+                                         "Display controller")) {
+                        self->os.devtype |= LDM_DEVICE_TYPE_GPU;
+                }
+        }
+
 post_hwdb:
 
         /* We might need to populate more information per device type */
         subsystem = udev_device_get_subsystem(device);
         if (g_str_equal(subsystem, "pci")) {
-                self->os.devtype = LDM_DEVICE_TYPE_PCI;
+                self->os.devtype |= LDM_DEVICE_TYPE_PCI;
                 ldm_device_init_pci(self, device);
         } else if (g_str_equal(subsystem, "usb")) {
-                self->os.devtype = LDM_DEVICE_TYPE_USB;
+                self->os.devtype |= LDM_DEVICE_TYPE_USB;
         }
 
         return self;
