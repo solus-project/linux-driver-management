@@ -14,6 +14,7 @@ LIBLDM_0 {
     ldm_driver_set_name;
     ldm_driver_set_priority;
     ldm_manager_new;
+    ldm_manager_find_devices;
     ldm_manager_get_devices;
     ldm_manager_get_type;
     ldm_modalias_get_driver;

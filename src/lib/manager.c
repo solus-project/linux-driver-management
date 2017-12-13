@@ -214,6 +214,37 @@ GList *ldm_manager_get_devices(LdmManager *self)
         return g_hash_table_get_values(self->devices);
 }
 
+/**
+ * ldm_manager_find_devices:
+ * @classmask Bitwise mask of LdmDeviceType
+ *
+ * Return a subset of the devices known to this manager that happen to
+ * match the given classmask. As an example you might call this function
+ * with LDM_DEVICE_TYPE_GPU|LDM_DEVICE_TYPE_PCI to find all PCI GPUs on
+ * the system.
+ *
+ * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices
+ */
+GList *ldm_manager_find_devices(LdmManager *self, guint classmask)
+{
+        GHashTableIter iter = { 0 };
+        __ldm_unused__ gpointer key = NULL;
+        LdmDevice *dev = NULL;
+        GList *ret = NULL;
+
+        g_return_val_if_fail(self != NULL, NULL);
+
+        g_hash_table_iter_init(&iter, self->devices);
+        while (g_hash_table_iter_next(&iter, &key, (void **)&dev)) {
+                if (!ldm_device_has_type(dev, classmask)) {
+                        continue;
+                }
+                ret = g_list_append(ret, dev);
+        }
+
+        return ret;
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
