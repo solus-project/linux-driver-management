@@ -23,6 +23,7 @@
 DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 
 #define NV_MOCKDEV_FILE TEST_DATA_ROOT "/nvidia1060.umockdev"
+#define OPTIMUS_MOCKDEV_FILE TEST_DATA_ROOT "/optimus765m.umockdev"
 
 START_TEST(test_manager_simple)
 {
@@ -60,6 +61,59 @@ START_TEST(test_manager_simple)
 END_TEST
 
 /**
+ * Much like the simple test but will ensure we actually find the GPU parts
+ * for an optimus system.
+ */
+START_TEST(test_manager_optimus)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GList) devices = NULL;
+        LdmDevice *igpu = NULL;
+        LdmDevice *dgpu = NULL;
+        const gchar *vendor = NULL;
+
+        bed = umockdev_testbed_new();
+        fail_if(!umockdev_testbed_add_from_file(bed, OPTIMUS_MOCKDEV_FILE, NULL),
+                "Failed to create Optimus device");
+        manager = ldm_manager_new();
+        fail_if(!manager, "Failed to get the LdmManager");
+
+        devices = ldm_manager_get_devices(manager);
+        fail_if(!devices, "Failed to obtain devices");
+        fail_if(g_list_length(devices) != 3, "Invalid device set");
+
+        /* Check the dGPU data is correct */
+        dgpu = g_list_nth_data(devices, 2);
+        vendor = ldm_device_get_vendor(dgpu);
+        fail_if(!vendor, "No vendor set on dGPU!");
+        fail_if(!g_str_equal(vendor, "NVIDIA Corporation"),
+                "Expected vendor '%s', instead got '%s'",
+                "NVIDIA Corporation",
+                vendor);
+        vendor = NULL;
+
+        /* Check the iGPU data is correct */
+        igpu = g_list_nth_data(devices, 1);
+        vendor = ldm_device_get_vendor(igpu);
+        fail_if(!vendor, "No vendor set on iGPU!");
+        fail_if(!g_str_equal(vendor, "Intel Corporation"),
+                "Expected vendor '%s', instead got '%s'",
+                "Intel Corporation",
+                vendor);
+        vendor = NULL;
+
+        /* Does iGPU have PCI/GPU? */
+        fail_if(!ldm_device_has_type(igpu, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU),
+                "iGPU has invalid classification");
+
+        /* Does dGPU have PCI/GPU? */
+        fail_if(!ldm_device_has_type(dgpu, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU),
+                "dGPU has invalid classification");
+}
+END_TEST
+
+/**
  * Standard helper for running a test suite
  */
 static int ldm_test_run(Suite *suite)
@@ -85,6 +139,7 @@ static Suite *test_create(void)
         suite_add_tcase(s, tc);
 
         tcase_add_test(tc, test_manager_simple);
+        tcase_add_test(tc, test_manager_optimus);
 
         return s;
 }
