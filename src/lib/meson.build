@@ -74,6 +74,8 @@ link_libldm_main = declare_dependency(
     link_with: libldm_main,
     dependencies: [
         link_libenum,
+        dep_glib2,
+        dep_gio_unix,
     ],
     include_directories: libldm_main_includes,
 )
