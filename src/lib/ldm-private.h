@@ -26,6 +26,36 @@ typedef struct udev_enumerate udev_enum;
 typedef struct udev_list_entry udev_list;
 
 /*
+ * LdmDevice
+ *
+ * An LdmDevice is an opaque representation of an available device on
+ * the system, and provides introspection opportunities to discover
+ * capabilities, drivers, etc.
+ */
+struct _LdmDevice {
+        GObject parent;
+
+        /* OS Data */
+        struct {
+                gchar *sysfs_path;
+                gchar *modalias;
+                GHashTable *hwdb_info;
+                guint devtype;
+        } os;
+
+        /* Identification */
+        struct {
+                gchar *name;
+                gchar *vendor;
+        } id;
+
+        /* PCI data */
+        struct {
+                gboolean boot_vga;
+        } pci;
+};
+
+/*
  * Common autofree helpers.
  */
 DEF_AUTOFREE(udev_device, udev_device_unref)

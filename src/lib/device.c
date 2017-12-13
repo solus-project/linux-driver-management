@@ -25,36 +25,6 @@ struct _LdmDeviceClass {
         GObjectClass parent_class;
 };
 
-/*
- * LdmDevice
- *
- * An LdmDevice is an opaque representation of an available device on
- * the system, and provides introspection opportunities to discover
- * capabilities, drivers, etc.
- */
-struct _LdmDevice {
-        GObject parent;
-
-        /* OS Data */
-        struct {
-                gchar *sysfs_path;
-                gchar *modalias;
-                GHashTable *hwdb_info;
-                guint devtype;
-        } os;
-
-        /* Identification */
-        struct {
-                gchar *name;
-                gchar *vendor;
-        } id;
-
-        /* PCI data */
-        struct {
-                gboolean boot_vga;
-        } pci;
-};
-
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 
 enum { PROP_PATH = 1, PROP_MODALIAS, PROP_NAME, PROP_VENDOR, PROP_DEV_TYPE, N_PROPS };
