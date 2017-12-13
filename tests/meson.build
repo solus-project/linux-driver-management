@@ -24,5 +24,5 @@ foreach test : required_tests
         dependencies: test_dependencies,
         install: false,
     )
-    test(test, t)
+    test(test, run_umockdev, args: [t.full_path()])
 endforeach

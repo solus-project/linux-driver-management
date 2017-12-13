@@ -84,8 +84,9 @@ if with_tests != 'no'
 
     dep_check = dependency('check', version: '>= 0.12.0', required: required_test)
     dep_umockdev = dependency('umockdev-1.0', version: '>= 0.9.0', required: required_test)
+    run_umockdev = find_program('umockdev-wrapper', required: required_test)
 
-    if dep_check.found() and dep_umockdev.found()
+    if dep_check.found() and dep_umockdev.found() and run_umockdev.found()
         enable_tests = true
     endif
 endif
