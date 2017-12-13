@@ -198,6 +198,22 @@ LdmManager *ldm_manager_new()
         return g_object_new(LDM_TYPE_MANAGER, NULL);
 }
 
+/**
+ * ldm_manager_get_devices:
+ *
+ * Return a list of all known devices. These devices are owned by the
+ * manager and should not be freed. The returned list should be freed,
+ * however.
+ *
+ * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices
+ */
+GList *ldm_manager_get_devices(LdmManager *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+
+        return g_hash_table_get_values(self->devices);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
