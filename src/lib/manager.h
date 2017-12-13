@@ -29,6 +29,8 @@ GType ldm_manager_get_type(void);
 
 LdmManager *ldm_manager_new(void);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmManager, g_object_unref)
+
 G_END_DECLS
 
 /*

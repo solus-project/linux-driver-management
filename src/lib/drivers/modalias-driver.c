@@ -11,6 +11,8 @@
 
 #define _GNU_SOURCE
 
+#include <string.h>
+
 #include "modalias-driver.h"
 #include "util.h"
 
@@ -82,7 +84,7 @@ LdmDriver *ldm_modalias_driver_new(const gchar *name)
 
 /**
  * ldm_modalias_driver_new_from_file:
- * @filename: A valid GFile
+ * @file: A valid GFile
  *
  * Create a new LdmDriver for modalias detection, which is seeded with all
  * the modalias definitions referenced in the given file.
@@ -91,15 +93,101 @@ LdmDriver *ldm_modalias_driver_new(const gchar *name)
  */
 LdmDriver *ldm_modalias_driver_new_from_file(GFile *file)
 {
+        g_autoptr(GFileInputStream) fis = NULL;
+        g_autoptr(GDataInputStream) dis = NULL;
+        g_autoptr(GError) error = NULL;
+        g_autofree gchar *filename = NULL;
+        gchar *line = NULL;
+        gsize len = 0;
+        LdmDriver *ret = NULL;
+
         g_return_val_if_fail(file != NULL, NULL);
 
         if (!g_file_query_exists(file, NULL)) {
                 return NULL;
         }
 
-        g_warning("new_from_file not yet implemented fully");
+        filename = g_file_get_basename(file);
 
-        return ldm_modalias_driver_new(NULL);
+        fis = g_file_read(file, NULL, &error);
+        if (!fis) {
+                goto failed;
+        }
+        dis = g_data_input_stream_new(G_INPUT_STREAM(fis));
+        if (!dis) {
+                goto failed;
+        }
+
+        /* Strip suffix if set */
+        if (g_str_has_suffix(filename, ".modaliases")) {
+                filename[strlen(filename) - strlen(".modaliases")] = '\0';
+        }
+
+        ret = ldm_modalias_driver_new(filename);
+
+        while ((line = g_data_input_stream_read_line_utf8(dis, &len, NULL, &error)) != NULL) {
+                gchar *work = g_strstrip(line);
+                gchar **splits = NULL;
+                g_autoptr(LdmModalias) alias = NULL;
+
+                /* Skip blank lines */
+                if (len < 1) {
+                        goto next_line;
+                }
+
+                /* Comment? */
+                if (g_str_has_prefix(work, "#")) {
+                        goto next_line;
+                }
+
+                splits = g_strsplit(work, " ", 4);
+                if (!splits || g_strv_length(splits) != 4) {
+                        goto next_line;
+                }
+
+                if (!g_str_equal(splits[0], "alias")) {
+                        g_warning("unknown directive '%s'", splits[0]);
+                        goto next_line;
+                }
+
+                alias = ldm_modalias_new(splits[1], splits[2], splits[3]);
+                if (!alias) {
+                        g_warning("invalid alias '%s'", work);
+                        goto next_line;
+                }
+
+                /* Add modalias. */
+                ldm_modalias_driver_add_modalias(LDM_MODALIAS_DRIVER(ret), alias);
+
+        next_line:
+                if (splits) {
+                        g_strfreev(splits);
+                }
+                g_free(line);
+                line = NULL;
+        }
+
+        if (line) {
+                g_free(line);
+        }
+
+        if (error) {
+                goto failed;
+        }
+
+        return ret;
+
+failed:
+        if (error) {
+                g_printerr("ldm_modalias_driver_new_from_file(): %s", error->message);
+        }
+
+        if (ret) {
+                g_object_unref(ret);
+                ret = NULL;
+        }
+
+        return NULL;
 }
 
 /**
@@ -119,6 +207,7 @@ LdmDriver *ldm_modalias_driver_new_from_filename(const gchar *filename)
         if (!file) {
                 return NULL;
         }
+
         return ldm_modalias_driver_new_from_file(file);
 }
 

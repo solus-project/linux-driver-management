@@ -19,7 +19,7 @@ struct _LdmDriverPrivate {
         gint priority;
 };
 
-G_DEFINE_TYPE(LdmDriver, ldm_driver, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE(LdmDriver, ldm_driver, G_TYPE_OBJECT)
 
 enum { PROP_NAME = 1, PROP_PRIORITY, N_PROPS };
 

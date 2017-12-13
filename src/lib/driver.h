@@ -55,6 +55,8 @@ void ldm_driver_set_name(LdmDriver *driver, const gchar *name);
 gint ldm_driver_get_priority(LdmDriver *driver);
 void ldm_driver_set_priority(LdmDriver *driver, gint priority);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDriver, g_object_unref)
+
 G_END_DECLS
 
 /*

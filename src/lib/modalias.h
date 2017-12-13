@@ -39,6 +39,8 @@ const gchar *ldm_modalias_get_package(LdmModalias *modalias);
 gboolean ldm_modalias_matches(LdmModalias *modalias, const gchar *match_string);
 gboolean ldm_modalias_matches_device(LdmModalias *modalias, LdmDevice *match_device);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmModalias, g_object_unref)
+
 G_END_DECLS
 
 /*

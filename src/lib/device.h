@@ -71,6 +71,8 @@ guint ldm_device_get_device_type(LdmDevice *device);
 
 gboolean ldm_device_has_type(LdmDevice *device, guint mask);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDevice, g_object_unref)
+
 G_END_DECLS
 
 /*
