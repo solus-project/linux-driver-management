@@ -18,9 +18,30 @@
 #include "ldm.h"
 #include "util.h"
 
+/**
+ * My NVIDIA GPU, useful for testing.
+ */
+#define NVIDIA_MODALIAS "pci:v000010DEd00001C60sv00001558sd000065A4bc03sc00i00"
+
+#define GLX_MATCH "pci:v000010DEd00001C60sv*sd*bc03sc*i*"
+#define GLX_NO_MATCH "pci:v000010DEd00001B84sv*sd*bc03sc*i*"
+
+/**
+ * Very simple test, let's make sure that our basic modalias matching is
+ * actually working.
+ */
 START_TEST(test_modalias_simple)
 {
-        fail_if(TRUE == TRUE, "Ermagahd. Write tests.");
+        g_autoptr(LdmModalias) should_match = NULL;
+        g_autoptr(LdmModalias) shouldnt_match = NULL;
+
+        should_match = ldm_modalias_new(GLX_MATCH, "nvidia", "nvidia-glx-driver");
+        shouldnt_match = ldm_modalias_new(GLX_NO_MATCH, "nvidia", "nvidia-glx-driver");
+
+        fail_if(!ldm_modalias_matches(should_match, NVIDIA_MODALIAS),
+                "Failed to correctly match NVIDIA driver");
+        fail_if(ldm_modalias_matches(shouldnt_match, NVIDIA_MODALIAS),
+                "Second modalias should NOT match");
 }
 END_TEST
 
