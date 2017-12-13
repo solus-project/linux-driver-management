@@ -28,6 +28,12 @@ typedef struct _LdmModaliasClass LdmModaliasClass;
 
 GType ldm_modalias_get_type(void);
 
+/* API */
+
+const gchar *ldm_modalias_get_driver(LdmModalias *modalias);
+const gchar *ldm_modalias_get_match(LdmModalias *modalias);
+const gchar *ldm_modalias_get_package(LdmModalias *modalias);
+
 G_END_DECLS
 
 /*

@@ -146,6 +146,48 @@ static void ldm_modalias_init(__ldm_unused__ LdmModalias *self)
 {
 }
 
+/**
+ * ldm_modalias_get_driver:
+ *
+ * This function will return the driver name (i.e "wl") associated with
+ * this particular modalias match.
+ *
+ * Returns: (transfer none): The driver name
+ */
+const gchar *ldm_modalias_get_driver(LdmModalias *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->driver;
+}
+
+/**
+ * ldm_modalias_get_match:
+ *
+ * This function will return the fnmatch-style match line used to check
+ * if this #LdmModalias matches a given hardware device on the system.
+ *
+ * Returns: (transfer none): The match line
+ */
+const gchar *ldm_modalias_get_match(LdmModalias *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->match;
+}
+
+/**
+ * ldm_modalias_get_package:
+ *
+ * This function will return the name of the package or bundle that contains
+ * the corresponding driver required to enable hardware support.
+ *
+ * Returns: (transfer none): The package or bundle name.
+ */
+const gchar *ldm_modalias_get_package(LdmModalias *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->package;
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
