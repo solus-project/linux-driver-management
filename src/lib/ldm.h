@@ -19,6 +19,11 @@
 
 #include <drivers/modalias-driver.h>
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDevice, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDriver, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmManager, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmModalias, g_object_unref)
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
