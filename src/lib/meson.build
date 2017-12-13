@@ -27,6 +27,7 @@ link_libenum = declare_dependency(
 
 libldm_main_sources = [
     'device.c',
+    'device-pci.c',
     'driver.c',
     'manager.c',
     'modalias.c',

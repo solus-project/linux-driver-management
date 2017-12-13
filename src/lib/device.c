@@ -19,10 +19,7 @@
 #define HWDB_LOOKUP_PRODUCT_NAME "ID_MODEL_FROM_DATABASE"
 #define HWDB_LOOKUP_PRODUCT_VENDOR "ID_VENDOR_FROM_DATABASE"
 
-static void ldm_device_init_pci(LdmDevice *self, udev_device *device);
-static void ldm_device_maybe_init_gpu(LdmDevice *self);
 static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
-static gboolean ldm_device_hwinfo_is(LdmDevice *self, const gchar *key, const gchar *expect);
 
 struct _LdmDeviceClass {
         GObjectClass parent_class;
@@ -244,23 +241,6 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
 }
 
 /**
- * ldm_device_hwinfo_is:
- *
- * Allow testing a key/value to verify it is one we expect.
- */
-static gboolean ldm_device_hwinfo_is(LdmDevice *self, const gchar *key, const gchar *expect)
-{
-        const gchar *lookup = NULL;
-
-        lookup = g_hash_table_lookup(self->os.hwdb_info, key);
-        if (!lookup) {
-                return FALSE;
-        }
-
-        return g_str_equal(lookup, expect);
-}
-
-/**
  * ldm_device_new_from_udev:
  * @device: Associated udev device
  * @hwinfo: If set, the hwdb entry for this device.
@@ -312,8 +292,6 @@ LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
                 lookup = NULL;
         }
 
-        ldm_device_maybe_init_gpu(self);
-
 post_hwdb:
 
         /* We might need to populate more information per device type */
@@ -326,50 +304,6 @@ post_hwdb:
         }
 
         return self;
-}
-
-/**
- * ldm_device_init_pci:
- * @device: The udev device that we're being created from
- *
- * Handle PCI specific initialisation
- */
-static void ldm_device_init_pci(LdmDevice *self, udev_device *device)
-{
-        const char *sysattr = NULL;
-
-        /* Are we boot_vga ? */
-        sysattr = udev_device_get_sysattr_value(device, "boot_vga");
-        if (sysattr && g_str_equal(sysattr, "1")) {
-                self->os.attributes |= LDM_DEVICE_ATTRIBUTE_BOOT_VGA;
-        }
-}
-
-/**
- * ldm_device_maybe_init_gpu:
- *
- * Which basically means "something that looks nice and PCI like.
- */
-static void ldm_device_maybe_init_gpu(LdmDevice *self)
-{
-        const gchar *subclass = NULL;
-
-        /* At minimum. */
-        if (!ldm_device_hwinfo_is(self, "ID_PCI_CLASS_FROM_DATABASE", "Display controller")) {
-                return;
-        }
-
-        subclass = g_hash_table_lookup(self->os.hwdb_info, "ID_PCI_SUBCLASS_FROM_DATABASE");
-        if (!subclass) {
-                return;
-        }
-
-        if (!g_str_equal(subclass, "VGA compatible controller") &&
-            !g_str_equal(subclass, "3D controller")) {
-                return;
-        }
-
-        self->os.devtype |= LDM_DEVICE_TYPE_GPU;
 }
 
 /**

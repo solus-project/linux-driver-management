@@ -62,6 +62,8 @@ DEF_AUTOFREE(gchar, g_free)
 /* Private device API */
 LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo);
 
+void ldm_device_init_pci(LdmDevice *self, udev_device *device);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
