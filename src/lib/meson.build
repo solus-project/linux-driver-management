@@ -34,6 +34,7 @@ libldm_main_sources = [
 libldm_headers = [
     'device.h',
     'manager.h',
+    'modalias.h',
     'ldm.h',
 ]
 

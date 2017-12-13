@@ -14,6 +14,7 @@
 #include <device.h>
 #include <ldm-enums.h>
 #include <manager.h>
+#include <modalias.h>
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
