@@ -74,12 +74,20 @@ dep_glib2 = dependency('glib-2.0', version: glib_min_version)
 dep_gio_unix = dependency('gio-unix-2.0', version: glib_min_version)
 dep_udev = dependency('libudev', version: '>= 215')
 
-# Testing
-dep_check = dependency('check', version: '>= 0.12.0', required: false)
-if dep_check.found()
-   with_tests = true
-else
-   with_tests = false
+with_tests = get_option('with-tests')
+enable_tests = false
+if with_tests != 'no'
+    required_test = false
+    if with_tests == 'yes'
+        required_test = true
+    endif
+
+    dep_check = dependency('check', version: '>= 0.12.0', required: required_test)
+    dep_umockdev = dependency('umockdev-1.0', version: '>= 0.9.0', required: required_test)
+
+    if dep_check.found() and dep_umockdev.found()
+        enable_tests = true
+    endif
 endif
 
 # Sort out compatibility stuff
@@ -104,7 +112,7 @@ subdir('compat')
 subdir('src')
 
 # Maybe test, maybe not.
-if with_tests == true
+if enable_tests == true
     subdir('tests')
 endif
 
@@ -125,7 +133,7 @@ report = [
     '    gl-driver-switch-compat:                @0@'.format(with_gl_driver_switch_compat),
     '    hardware plug monitor:                  @0@'.format(with_ldm_monitor),
     '',
-    '    enable tests:                           @0@'.format(with_tests),
+    '    enable tests:                           @0@'.format(enable_tests),
 ]
 
 if warn_modalias == true

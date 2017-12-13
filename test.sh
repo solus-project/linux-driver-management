@@ -8,7 +8,7 @@ fi
 
 jobCount=-j$(getconf _NPROCESSORS_ONLN)
 
-meson build --buildtype debugoptimized
+meson build --buildtype debugoptimized -Dwith-tests=yes
 ninja -C build $jobCount
 
 # Normal
