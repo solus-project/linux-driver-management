@@ -11,6 +11,8 @@
 
 #define _GNU_SOURCE
 
+#include <fnmatch.h>
+
 #include "modalias.h"
 #include "util.h"
 
@@ -234,6 +236,39 @@ const gchar *ldm_modalias_get_package(LdmModalias *self)
 {
         g_return_val_if_fail(self != NULL, NULL);
         return (const gchar *)self->package;
+}
+
+/**
+ * ldm_modalias_matches:
+ * @match_string: Device modalias to test against
+ *
+ * If the given match_string matches our own fnmatch style match, this function
+ * will return true, indicating compatibility.
+ *
+ * Returns: True if the match_string is indeed a match
+ */
+gboolean ldm_modalias_matches(LdmModalias *self, const gchar *match_string)
+{
+        g_return_val_if_fail(self != NULL, FALSE);
+        g_return_val_if_fail(self->match != NULL, FALSE);
+        g_return_val_if_fail(match_string != NULL, FALSE);
+
+        return fnmatch(self->match, match_string, 0) == 0 ? TRUE : FALSE;
+}
+
+/**
+ * ldm_modalias_matches_device:
+ * @match_device: An LdmDevice to test against
+ *
+ * This is a simple wrapper around ldm_modalias_matches, and will simply pass
+ * the device's modalias for testing.
+ *
+ * Returns: True if the match_device is indeed a match
+ */
+gboolean ldm_modalias_matches_device(LdmModalias *self, LdmDevice *match_device)
+{
+        g_return_val_if_fail(match_device != NULL, FALSE);
+        return ldm_modalias_matches(self, ldm_device_get_modalias(match_device));
 }
 
 /*

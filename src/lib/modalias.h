@@ -13,6 +13,8 @@
 
 #include <glib-object.h>
 
+#include <device.h>
+
 G_BEGIN_DECLS
 
 typedef struct _LdmModalias LdmModalias;
@@ -34,6 +36,8 @@ LdmModalias *ldm_modalias_new(const gchar *match, const gchar *driver, const cha
 const gchar *ldm_modalias_get_driver(LdmModalias *modalias);
 const gchar *ldm_modalias_get_match(LdmModalias *modalias);
 const gchar *ldm_modalias_get_package(LdmModalias *modalias);
+gboolean ldm_modalias_matches(LdmModalias *modalias, const gchar *match_string);
+gboolean ldm_modalias_matches_device(LdmModalias *modalias, LdmDevice *match_device);
 
 G_END_DECLS
 
