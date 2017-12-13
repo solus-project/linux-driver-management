@@ -48,6 +48,8 @@ static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
 
+static void ldm_modalias_set_property(GObject *object, guint id, const GValue *value,
+                                      GParamSpec *spec);
 static void ldm_modalias_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
 
 /**
@@ -78,17 +80,19 @@ static void ldm_modalias_class_init(LdmModaliasClass *klazz)
         /* gobject vtable hookup */
         obj_class->dispose = ldm_modalias_dispose;
         obj_class->get_property = ldm_modalias_get_property;
+        obj_class->set_property = ldm_modalias_set_property;
 
         /**
          * LdmModalias::match
          *
          * The fnmatch style string that would create a match
          */
-        obj_properties[PROP_MATCH] = g_param_spec_string("match",
-                                                         "The modalias match",
-                                                         "fnmatch style matching string",
-                                                         NULL,
-                                                         G_PARAM_READABLE);
+        obj_properties[PROP_MATCH] =
+            g_param_spec_string("match",
+                                "The modalias match",
+                                "fnmatch style matching string",
+                                NULL,
+                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
         /**
          * LdmModalias::driver
@@ -100,7 +104,7 @@ static void ldm_modalias_class_init(LdmModaliasClass *klazz)
                                 "The driver name",
                                 "Kernel driver associated with this modalias",
                                 NULL,
-                                G_PARAM_READABLE);
+                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
         /**
          * LdmModalias::package
@@ -112,9 +116,33 @@ static void ldm_modalias_class_init(LdmModaliasClass *klazz)
                                 "The package name",
                                 "Package or bundle containing this match",
                                 NULL,
-                                G_PARAM_READABLE);
+                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
+}
+
+static void ldm_modalias_set_property(GObject *object, guint id, const GValue *value,
+                                      GParamSpec *spec)
+{
+        LdmModalias *self = LDM_MODALIAS(object);
+
+        switch (id) {
+        case PROP_MATCH:
+                g_clear_pointer(&self->match, g_free);
+                self->match = g_value_dup_string(value);
+                break;
+        case PROP_DRIVER:
+                g_clear_pointer(&self->driver, g_free);
+                self->driver = g_value_dup_string(value);
+                break;
+        case PROP_PACKAGE:
+                g_clear_pointer(&self->package, g_free);
+                self->package = g_value_dup_string(value);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
 }
 
 static void ldm_modalias_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec)
