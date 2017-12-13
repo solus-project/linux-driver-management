@@ -68,6 +68,61 @@ static void ldm_modalias_driver_init(LdmModaliasDriver *self)
 }
 
 /**
+ * ldm_modalias_driver_new:
+ * @name: Name for this driver instance
+ *
+ * Create a new LdmDriver for modalias detection with the given name
+ *
+ * Returns: (transfer full): A newly initialised LdmModaliasDriver
+ */
+LdmDriver *ldm_modalias_driver_new(const gchar *name)
+{
+        return g_object_new(LDM_TYPE_MODALIAS_DRIVER, "name", name, "priority", 0, NULL);
+}
+
+/**
+ * ldm_modalias_driver_new_from_file:
+ * @filename: A valid GFile
+ *
+ * Create a new LdmDriver for modalias detection, which is seeded with all
+ * the modalias definitions referenced in the given file.
+ *
+ * Returns: (transfer full): A newly initialised LdmModaliasDriver
+ */
+LdmDriver *ldm_modalias_driver_new_from_file(GFile *file)
+{
+        g_return_val_if_fail(file != NULL, NULL);
+
+        if (!g_file_query_exists(file, NULL)) {
+                return NULL;
+        }
+
+        g_warning("new_from_file not yet implemented fully");
+
+        return ldm_modalias_driver_new(NULL);
+}
+
+/**
+ * ldm_modalias_driver_new_from_filename:
+ * @filename: Path to a modaliases file
+ *
+ * Create a new LdmDriver for modalias detection. The named file will be
+ * opened and the resulting driver will be seeded from that file.
+ *
+ * Returns: (transfer full): A newly initialised LdmModaliasDriver
+ */
+LdmDriver *ldm_modalias_driver_new_from_filename(const gchar *filename)
+{
+        g_autoptr(GFile) file = NULL;
+
+        file = g_file_new_for_path(filename);
+        if (!file) {
+                return NULL;
+        }
+        return ldm_modalias_driver_new_from_file(file);
+}
+
+/**
  * ldm_modalias_driver_add_modalias:
  * @modalias: (transfer full): Modalias object to add to the table
  *

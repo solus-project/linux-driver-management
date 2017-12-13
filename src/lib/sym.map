@@ -24,6 +24,9 @@ LIBLDM_0 {
     ldm_modalias_new;
     ldm_modalias_driver_add_modalias;
     ldm_modalias_driver_get_type;
+    ldm_modalias_driver_new;
+    ldm_modalias_driver_new_from_file;
+    ldm_modalias_driver_new_from_filename;
   local:
     *;
 };

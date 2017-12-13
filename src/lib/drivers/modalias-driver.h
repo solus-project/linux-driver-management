@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <gio/gio.h>
 #include <glib-object.h>
 
 #include <driver.h>
@@ -34,6 +35,10 @@ typedef struct _LdmModaliasDriverClass LdmModaliasDriverClass;
 GType ldm_modalias_driver_get_type(void);
 
 /* API */
+
+LdmDriver *ldm_modalias_driver_new(const gchar *name);
+LdmDriver *ldm_modalias_driver_new_from_file(GFile *file);
+LdmDriver *ldm_modalias_driver_new_from_filename(const gchar *filename);
 
 void ldm_modalias_driver_add_modalias(LdmModaliasDriver *driver, LdmModalias *modalias);
 

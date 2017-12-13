@@ -14,6 +14,7 @@
 #include <glib-object.h>
 #include <libudev.h>
 
+#include "device.h"
 #include "util.h"
 
 /*

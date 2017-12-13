@@ -27,6 +27,8 @@
 #define GLX_MATCH "pci:v000010DEd00001C60sv*sd*bc03sc*i*"
 #define GLX_NO_MATCH "pci:v000010DEd00001B84sv*sd*bc03sc*i*"
 
+#define NV_MODALIAS_FILE TEST_DATA_ROOT "/nvidia-glx-driver.modaliases"
+
 /**
  * Abuse the private API to construct a fake LdmDevice with the given name, vendor, and modalias
  *
@@ -87,6 +89,18 @@ START_TEST(test_modalias_device)
 END_TEST
 
 /**
+ * Test loading modalias driver from a modalias file
+ */
+START_TEST(test_modalias_file)
+{
+        g_autoptr(LdmDriver) driver = NULL;
+
+        driver = ldm_modalias_driver_new_from_filename(NV_MODALIAS_FILE);
+        fail_if(!driver, "Failed to construct driver from modalias file");
+}
+END_TEST
+
+/**
  * Standard helper for running a test suite
  */
 static int ldm_test_run(Suite *suite)
@@ -113,6 +127,7 @@ static Suite *test_create(void)
 
         tcase_add_test(tc, test_modalias_simple);
         tcase_add_test(tc, test_modalias_device);
+        tcase_add_test(tc, test_modalias_file);
 
         return s;
 }
