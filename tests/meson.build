@@ -1,11 +1,13 @@
 # Contains definitions for all of our tests
 required_tests = [
     'modalias',
+    'manager',
 ]
 
 test_dependencies = [
     link_libldm_main,
     dep_check,
+    dep_umockdev,
 ]
 
 test_data_root = join_paths(meson.current_source_dir(), 'data')

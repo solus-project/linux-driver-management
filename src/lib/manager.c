@@ -118,11 +118,8 @@ static void ldm_manager_init_udev(LdmManager *self)
                 }
         }
 
-        /* Request we can */
-        if (udev_enumerate_scan_devices(ue) != 0) {
-                g_warning("Failed to enumerate devices");
-                return;
-        }
+        /* Scan the devices. Due to umockdev we won't check this return. */
+        udev_enumerate_scan_devices(ue);
 
         /* Grab head */
         list = udev_enumerate_get_list_entry(ue);
