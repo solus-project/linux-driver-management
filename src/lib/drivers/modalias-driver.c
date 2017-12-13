@@ -18,6 +18,16 @@ struct _LdmModaliasDriverClass {
         LdmDriverClass parent_class;
 };
 
+/*
+ * LdmModaliasDriver
+ *
+ * The LdmModaliasDriver extends the base #LdmDriver and adds modalias-based
+ * hardware detection to it.
+ */
+struct _LdmModaliasDriver {
+        LdmDriver parent;
+};
+
 G_DEFINE_TYPE(LdmModaliasDriver, ldm_modalias_driver, LDM_TYPE_DRIVER)
 
 /**

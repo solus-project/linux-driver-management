@@ -20,20 +20,6 @@ G_BEGIN_DECLS
 typedef struct _LdmModaliasDriver LdmModaliasDriver;
 typedef struct _LdmModaliasDriverClass LdmModaliasDriverClass;
 
-/*
- * LdmModaliasDriver
- *
- * An LdmModaliasDriver is essentially a kind of plugin as far as LDM is concerned,
- * and is used to match hardware configurations to provide the potential for
- * automatic driver detection.
- *
- * The base LdmModaliasDriver implementation does nothing by itself, and must be
- * extended to be useful.
- */
-struct _LdmModaliasDriver {
-        LdmDriver parent;
-};
-
 #define LDM_TYPE_MODALIAS_DRIVER ldm_modalias_driver_get_type()
 #define LDM_MODALIAS_DRIVER(o)                                                                     \
         (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_MODALIAS_DRIVER, LdmModaliasDriver))
