@@ -28,12 +28,31 @@ START_TEST(test_manager_simple)
 {
         g_autoptr(LdmManager) manager = NULL;
         autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GList) devices = NULL;
+        LdmDevice *nvidia_device = NULL;
+        const gchar *vendor = NULL;
 
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, NV_MOCKDEV_FILE, NULL),
                 "Failed to create NVIDIA device");
         manager = ldm_manager_new();
         fail_if(!manager, "Failed to get the LdmManager");
+
+        devices = ldm_manager_get_devices(manager);
+        fail_if(!devices, "Failed to obtain devices");
+        fail_if(g_list_length(devices) != 2, "Invalid device set");
+
+        /* Grab the NVIDIA device */
+        nvidia_device = g_list_nth_data(devices, 1);
+        fail_if(!ldm_device_has_type(nvidia_device, LDM_DEVICE_TYPE_PCI),
+                "PCI GPU isn't classified as PCI!");
+
+        vendor = ldm_device_get_vendor(nvidia_device);
+        fail_if(!vendor, "No vendor set on GPU!");
+        fail_if(!g_str_equal(vendor, "NVIDIA Corporation"),
+                "Expected vendor '%s', instead got '%s'",
+                "NVIDIA Corporation",
+                vendor);
 }
 END_TEST
 
