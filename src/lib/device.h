@@ -82,11 +82,11 @@ const gchar *ldm_device_get_modalias(LdmDevice *device);
 const gchar *ldm_device_get_name(LdmDevice *device);
 const gchar *ldm_device_get_path(LdmDevice *device);
 const gchar *ldm_device_get_vendor(LdmDevice *device);
-guint ldm_device_get_device_type(LdmDevice *device);
-guint ldm_device_get_attributes(LdmDevice *device);
+LdmDeviceType ldm_device_get_device_type(LdmDevice *device);
+LdmDeviceAttribute ldm_device_get_attributes(LdmDevice *device);
 
-gboolean ldm_device_has_type(LdmDevice *device, guint mask);
-gboolean ldm_device_has_attribute(LdmDevice *device, guint mask);
+gboolean ldm_device_has_type(LdmDevice *device, LdmDeviceType mask);
+gboolean ldm_device_has_attribute(LdmDevice *device, LdmDeviceAttribute mask);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDevice, g_object_unref)
 

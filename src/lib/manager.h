@@ -28,7 +28,7 @@ typedef struct _LdmManagerClass LdmManagerClass;
 GType ldm_manager_get_type(void);
 
 LdmManager *ldm_manager_new(void);
-GList *ldm_manager_get_devices(LdmManager *manager, guint class_mask);
+GList *ldm_manager_get_devices(LdmManager *manager, LdmDeviceType class_mask);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmManager, g_object_unref)
 

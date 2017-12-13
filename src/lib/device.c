@@ -377,7 +377,7 @@ static void ldm_device_maybe_init_gpu(LdmDevice *self)
  *
  * Return the device type (bitwise field)
  */
-guint ldm_device_get_device_type(LdmDevice *self)
+LdmDeviceType ldm_device_get_device_type(LdmDevice *self)
 {
         g_return_val_if_fail(self != NULL, LDM_DEVICE_TYPE_ANY);
         return self->os.devtype;
@@ -390,7 +390,7 @@ guint ldm_device_get_device_type(LdmDevice *self)
  * Test whether this device has the given type(s) by testing the mask against
  * our known types.
  */
-gboolean ldm_device_has_type(LdmDevice *self, guint mask)
+gboolean ldm_device_has_type(LdmDevice *self, LdmDeviceType mask)
 {
         g_return_val_if_fail(self != NULL, FALSE);
 
@@ -406,7 +406,7 @@ gboolean ldm_device_has_type(LdmDevice *self, guint mask)
  *
  * Return the device type (bitwise field)
  */
-guint ldm_device_get_attributes(LdmDevice *self)
+LdmDeviceAttribute ldm_device_get_attributes(LdmDevice *self)
 {
         g_return_val_if_fail(self != NULL, LDM_DEVICE_ATTRIBUTE_NONE);
         return self->os.attributes;
@@ -419,7 +419,7 @@ guint ldm_device_get_attributes(LdmDevice *self)
  * Test whether this device has the given attribute(s) by testing the mask against
  * our known attributes
  */
-gboolean ldm_device_has_attribute(LdmDevice *self, guint mask)
+gboolean ldm_device_has_attribute(LdmDevice *self, LdmDeviceAttribute mask)
 {
         g_return_val_if_fail(self != NULL, FALSE);
 

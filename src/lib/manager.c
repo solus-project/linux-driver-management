@@ -209,7 +209,7 @@ LdmManager *ldm_manager_new()
  *
  * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices
  */
-GList *ldm_manager_get_devices(LdmManager *self, guint class_mask)
+GList *ldm_manager_get_devices(LdmManager *self, LdmDeviceType class_mask)
 {
         GHashTableIter iter = { 0 };
         __ldm_unused__ gpointer key = NULL;
