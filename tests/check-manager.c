@@ -51,6 +51,9 @@ START_TEST(test_manager_simple)
         fail_if(!ldm_device_has_type(nvidia_device, LDM_DEVICE_TYPE_GPU),
                 "PCI GPU isn't classified as GPU!");
 
+        fail_if(!ldm_device_has_attribute(nvidia_device, LDM_DEVICE_ATTRIBUTE_BOOT_VGA),
+                "PCI GPU lacks boot_vga attribute");
+
         vendor = ldm_device_get_vendor(nvidia_device);
         fail_if(!vendor, "No vendor set on GPU!");
         fail_if(!g_str_equal(vendor, "NVIDIA Corporation"),
@@ -109,6 +112,9 @@ START_TEST(test_manager_optimus)
                 "4th Gen Core Processor Integrated Graphics Controller",
                 name);
 
+        fail_if(!ldm_device_has_attribute(igpu, LDM_DEVICE_ATTRIBUTE_BOOT_VGA),
+                "iGPU has missing boot_vga attribute");
+
         /* Does iGPU have PCI/GPU? */
         fail_if(!ldm_device_has_type(igpu, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU),
                 "iGPU has missing PCI/GPU classification");
@@ -116,6 +122,9 @@ START_TEST(test_manager_optimus)
         /* Does dGPU have PCI/GPU? */
         fail_if(!ldm_device_has_type(dgpu, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU),
                 "dGPU has missing PCI/GPU classification");
+
+        fail_if(ldm_device_has_attribute(dgpu, LDM_DEVICE_ATTRIBUTE_BOOT_VGA),
+                "dGPU should not have boot_vga attribute");
 }
 END_TEST
 
