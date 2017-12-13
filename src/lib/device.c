@@ -30,7 +30,13 @@ struct _LdmDeviceClass {
 
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 
-enum { PROP_PATH = 1, PROP_MODALIAS, PROP_NAME, PROP_VENDOR, PROP_DEV_TYPE, N_PROPS };
+enum { PROP_PATH = 1,
+       PROP_MODALIAS,
+       PROP_NAME,
+       PROP_VENDOR,
+       PROP_DEV_TYPE,
+       PROP_ATTRIBUTES,
+       N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -125,6 +131,19 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                            LDM_DEVICE_TYPE_ANY,
                                                            G_PARAM_READABLE);
 
+        /**
+         * LdmDevice::attributes
+         *
+         * The composite attributes of this device, which is a bitwise combination
+         * of multiple attribute (such as BOOT_VGA)
+         */
+        obj_properties[PROP_ATTRIBUTES] = g_param_spec_flags("attributes",
+                                                             "Device attributes",
+                                                             "Composite attributes for this device",
+                                                             LDM_TYPE_DEVICE_ATTRIBUTE,
+                                                             LDM_DEVICE_ATTRIBUTE_NONE,
+                                                             G_PARAM_READABLE);
+
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -147,6 +166,9 @@ static void ldm_device_get_property(GObject *object, guint id, GValue *value, GP
                 break;
         case PROP_DEV_TYPE:
                 g_value_set_flags(value, self->os.devtype);
+                break;
+        case PROP_ATTRIBUTES:
+                g_value_set_flags(value, self->os.attributes);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -319,7 +341,7 @@ static void ldm_device_init_pci(LdmDevice *self, udev_device *device)
         /* Are we boot_vga ? */
         sysattr = udev_device_get_sysattr_value(device, "boot_vga");
         if (sysattr && g_str_equal(sysattr, "1")) {
-                self->os.devtype |= LDM_DEVICE_TYPE_BOOT_VGA;
+                self->os.attributes |= LDM_DEVICE_ATTRIBUTE_BOOT_VGA;
         }
 }
 
@@ -373,6 +395,35 @@ gboolean ldm_device_has_type(LdmDevice *self, guint mask)
         g_return_val_if_fail(self != NULL, FALSE);
 
         if ((self->os.devtype & mask) == mask) {
+                return TRUE;
+        }
+
+        return FALSE;
+}
+
+/**
+ * ldm_device_get_attributes:
+ *
+ * Return the device type (bitwise field)
+ */
+guint ldm_device_get_attributes(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, LDM_DEVICE_ATTRIBUTE_NONE);
+        return self->os.attributes;
+}
+
+/**
+ * ldm_device_has_attribute:
+ * @mask: Bitwise OR combination of #LdmDeviceAttribute
+ *
+ * Test whether this device has the given attribute(s) by testing the mask against
+ * our known attributes
+ */
+gboolean ldm_device_has_attribute(LdmDevice *self, guint mask)
+{
+        g_return_val_if_fail(self != NULL, FALSE);
+
+        if ((self->os.attributes & mask) == mask) {
                 return TRUE;
         }
 

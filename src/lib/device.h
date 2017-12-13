@@ -43,17 +43,30 @@ typedef struct _LdmDeviceClass LdmDeviceClass;
 typedef enum {
         LDM_DEVICE_TYPE_ANY = 0,
         LDM_DEVICE_TYPE_AUDIO = 1 << 0,
-        LDM_DEVICE_TYPE_BOOT_VGA = 1 << 1,
-        LDM_DEVICE_TYPE_GPU = 1 << 2,
-        LDM_DEVICE_TYPE_HID = 1 << 3,
-        LDM_DEVICE_TYPE_IMAGE = 1 << 4,
-        LDM_DEVICE_TYPE_PCI = 1 << 5,
-        LDM_DEVICE_TYPE_PRINTER = 1 << 6,
-        LDM_DEVICE_TYPE_VIDEO = 1 << 7,
-        LDM_DEVICE_TYPE_WIRELESS = 1 << 8,
-        LDM_DEVICE_TYPE_USB = 1 << 9,
-        LDM_DEVICE_TYPE_MAX = 1 << 10,
+        LDM_DEVICE_TYPE_GPU = 1 << 1,
+        LDM_DEVICE_TYPE_HID = 1 << 2,
+        LDM_DEVICE_TYPE_IMAGE = 1 << 3,
+        LDM_DEVICE_TYPE_PCI = 1 << 4,
+        LDM_DEVICE_TYPE_PRINTER = 1 << 5,
+        LDM_DEVICE_TYPE_VIDEO = 1 << 6,
+        LDM_DEVICE_TYPE_WIRELESS = 1 << 7,
+        LDM_DEVICE_TYPE_USB = 1 << 8,
+        LDM_DEVICE_TYPE_MAX = 1 << 9,
 } LdmDeviceType;
+
+/**
+ * LdmDeviceAttribute
+ * @LDM_DEVICE_ATTRIBUTE_NONE: No explicitly set attributes
+ * @LDM_DEVICE_ATTRIBUTE_BOOT_VGA: This device is the GPU used to boot the system
+ *
+ * A device have one or more special attributes that need to be queried beyond
+ * the initial DeviceType search.
+ */
+typedef enum {
+        LDM_DEVICE_ATTRIBUTE_NONE = 0,
+        LDM_DEVICE_ATTRIBUTE_BOOT_VGA = 1 << 0,
+        LDM_DEVICE_ATTRIBUTE_MAX = 1 << 1,
+} LdmDeviceAttribute;
 
 #define LDM_TYPE_DEVICE ldm_device_get_type()
 #define LDM_DEVICE(o) (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_DEVICE, LdmDevice))
@@ -70,8 +83,10 @@ const gchar *ldm_device_get_name(LdmDevice *device);
 const gchar *ldm_device_get_path(LdmDevice *device);
 const gchar *ldm_device_get_vendor(LdmDevice *device);
 guint ldm_device_get_device_type(LdmDevice *device);
+guint ldm_device_get_attributes(LdmDevice *device);
 
 gboolean ldm_device_has_type(LdmDevice *device, guint mask);
+gboolean ldm_device_has_attribute(LdmDevice *device, guint mask);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDevice, g_object_unref)
 

@@ -42,6 +42,7 @@ struct _LdmDevice {
                 gchar *modalias;
                 GHashTable *hwdb_info;
                 guint devtype;
+                guint attributes;
         } os;
 
         /* Identification */
