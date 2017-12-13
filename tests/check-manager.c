@@ -47,6 +47,9 @@ START_TEST(test_manager_simple)
         fail_if(!ldm_device_has_type(nvidia_device, LDM_DEVICE_TYPE_PCI),
                 "PCI GPU isn't classified as PCI!");
 
+        fail_if(!ldm_device_has_type(nvidia_device, LDM_DEVICE_TYPE_GPU),
+                "PCI GPU isn't classified as GPU!");
+
         vendor = ldm_device_get_vendor(nvidia_device);
         fail_if(!vendor, "No vendor set on GPU!");
         fail_if(!g_str_equal(vendor, "NVIDIA Corporation"),
