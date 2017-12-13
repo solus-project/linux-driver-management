@@ -30,6 +30,7 @@ libldm_main_sources = [
     'driver.c',
     'manager.c',
     'modalias.c',
+    'drivers/modalias-driver.c',
 ]
 
 libldm_headers = [
@@ -38,6 +39,10 @@ libldm_headers = [
     'manager.h',
     'modalias.h',
     'ldm.h',
+]
+
+libldm_driver_headers = [
+    'drivers/modalias-driver.h',
 ]
 
 libldm_main_includes = [
@@ -78,11 +83,16 @@ install_headers(
     libldm_headers,
     subdir: meson.project_name(),
 )
+# Install driver headers
+install_headers(
+    libldm_driver_headers,
+    subdir: '@0@/drivers'.format(meson.project_name()),
+)
 
 # Generate .gir
 libldm_gir = gnome.generate_gir(
     libldm_main,
-    sources: libldm_main_sources + libldm_headers + libldm_enums,
+    sources: libldm_main_sources + libldm_headers + libldm_driver_headers + libldm_enums,
     namespace: 'Ldm',
     nsversion: '1.0',
     dependencies: libldm_dependencies,

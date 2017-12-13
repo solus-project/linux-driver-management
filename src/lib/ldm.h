@@ -17,6 +17,8 @@
 #include <manager.h>
 #include <modalias.h>
 
+#include <drivers/modalias-driver.h>
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
