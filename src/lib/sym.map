@@ -14,6 +14,7 @@ LIBLDM_0 {
     ldm_modalias_get_match;
     ldm_modalias_get_package;
     ldm_modalias_get_type;
+    ldm_modalias_new;
   local:
     *;
 };

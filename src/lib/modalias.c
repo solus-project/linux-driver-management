@@ -175,6 +175,26 @@ static void ldm_modalias_init(__ldm_unused__ LdmModalias *self)
 }
 
 /**
+ * ldm_modalias_new:
+ * @match: fnmatch style string to match hardware
+ * @driver: Name of the driver for this modalias match
+ * @package: Name of the package or bundle for this modalias match
+ *
+ * Returns: (transfer full): A newly initialised LdmModalias
+ */
+LdmModalias *ldm_modalias_new(const gchar *match, const gchar *driver, const char *package)
+{
+        return g_object_new(LDM_TYPE_MODALIAS,
+                            "match",
+                            match,
+                            "driver",
+                            driver,
+                            "package",
+                            package,
+                            NULL);
+}
+
+/**
  * ldm_modalias_get_driver:
  *
  * This function will return the driver name (i.e "wl") associated with

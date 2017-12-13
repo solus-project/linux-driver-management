@@ -30,6 +30,7 @@ GType ldm_modalias_get_type(void);
 
 /* API */
 
+LdmModalias *ldm_modalias_new(const gchar *match, const gchar *driver, const char *package);
 const gchar *ldm_modalias_get_driver(LdmModalias *modalias);
 const gchar *ldm_modalias_get_match(LdmModalias *modalias);
 const gchar *ldm_modalias_get_package(LdmModalias *modalias);
