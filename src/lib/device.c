@@ -20,6 +20,9 @@
 #define HWDB_LOOKUP_PRODUCT_VENDOR "ID_VENDOR_FROM_DATABASE"
 
 static void ldm_device_init_pci(LdmDevice *self, udev_device *device);
+static void ldm_device_maybe_init_gpu(LdmDevice *self);
+static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
+static gboolean ldm_device_hwinfo_is(LdmDevice *self, const gchar *key, const gchar *expect);
 
 struct _LdmDeviceClass {
         GObjectClass parent_class;
@@ -32,8 +35,6 @@ enum { PROP_PATH = 1, PROP_MODALIAS, PROP_NAME, PROP_VENDOR, PROP_DEV_TYPE, N_PR
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
-
-static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
 
 /**
  * ldm_device_dispose:
@@ -289,16 +290,7 @@ LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
                 lookup = NULL;
         }
 
-        /* Is this looking like a GPU? */
-        if (ldm_device_hwinfo_is(self,
-                                 "ID_PCI_SUBCLASS_FROM_DATABASE",
-                                 "VGA compatible controller")) {
-                if (ldm_device_hwinfo_is(self,
-                                         "ID_PCI_CLASS_FROM_DATABASE",
-                                         "Display controller")) {
-                        self->os.devtype |= LDM_DEVICE_TYPE_GPU;
-                }
-        }
+        ldm_device_maybe_init_gpu(self);
 
 post_hwdb:
 
@@ -329,6 +321,33 @@ static void ldm_device_init_pci(LdmDevice *self, udev_device *device)
         if (sysattr && g_str_equal(sysattr, "1")) {
                 self->pci.boot_vga = TRUE;
         }
+}
+
+/**
+ * ldm_device_maybe_init_gpu:
+ *
+ * Which basically means "something that looks nice and PCI like.
+ */
+static void ldm_device_maybe_init_gpu(LdmDevice *self)
+{
+        const gchar *subclass = NULL;
+
+        /* At minimum. */
+        if (!ldm_device_hwinfo_is(self, "ID_PCI_CLASS_FROM_DATABASE", "Display controller")) {
+                return;
+        }
+
+        subclass = g_hash_table_lookup(self->os.hwdb_info, "ID_PCI_SUBCLASS_FROM_DATABASE");
+        if (!subclass) {
+                return;
+        }
+
+        if (!g_str_equal(subclass, "VGA compatible controller") &&
+            !g_str_equal(subclass, "3D controller")) {
+                return;
+        }
+
+        self->os.devtype |= LDM_DEVICE_TYPE_GPU;
 }
 
 /**

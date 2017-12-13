@@ -72,6 +72,7 @@ START_TEST(test_manager_optimus)
         LdmDevice *igpu = NULL;
         LdmDevice *dgpu = NULL;
         const gchar *vendor = NULL;
+        const gchar *name = NULL;
 
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, OPTIMUS_MOCKDEV_FILE, NULL),
@@ -94,7 +95,7 @@ START_TEST(test_manager_optimus)
         vendor = NULL;
 
         /* Check the iGPU data is correct */
-        igpu = g_list_nth_data(devices, 1);
+        igpu = g_list_nth_data(devices, 0);
         vendor = ldm_device_get_vendor(igpu);
         fail_if(!vendor, "No vendor set on iGPU!");
         fail_if(!g_str_equal(vendor, "Intel Corporation"),
@@ -102,14 +103,19 @@ START_TEST(test_manager_optimus)
                 "Intel Corporation",
                 vendor);
         vendor = NULL;
+        name = ldm_device_get_name(igpu);
+        fail_if(!g_str_equal(name, "4th Gen Core Processor Integrated Graphics Controller"),
+                "Invalid iGPU name, expected '%s', got '%s'",
+                "4th Gen Core Processor Integrated Graphics Controller",
+                name);
 
         /* Does iGPU have PCI/GPU? */
         fail_if(!ldm_device_has_type(igpu, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU),
-                "iGPU has invalid classification");
+                "iGPU has missing PCI/GPU classification");
 
         /* Does dGPU have PCI/GPU? */
         fail_if(!ldm_device_has_type(dgpu, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU),
-                "dGPU has invalid classification");
+                "dGPU has missing PCI/GPU classification");
 }
 END_TEST
 
