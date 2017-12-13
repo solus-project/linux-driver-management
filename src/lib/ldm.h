@@ -12,6 +12,7 @@
 #pragma once
 
 #include <device.h>
+#include <driver.h>
 #include <ldm-enums.h>
 #include <manager.h>
 #include <modalias.h>

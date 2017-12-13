@@ -27,12 +27,14 @@ link_libenum = declare_dependency(
 
 libldm_main_sources = [
     'device.c',
+    'driver.c',
     'manager.c',
     'modalias.c',
 ]
 
 libldm_headers = [
     'device.h',
+    'driver.h',
     'manager.h',
     'modalias.h',
     'ldm.h',
