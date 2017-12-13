@@ -94,9 +94,13 @@ END_TEST
 START_TEST(test_modalias_file)
 {
         g_autoptr(LdmDriver) driver = NULL;
+        const gchar *driver_name = NULL;
 
         driver = ldm_modalias_driver_new_from_filename(NV_MODALIAS_FILE);
         fail_if(!driver, "Failed to construct driver from modalias file");
+
+        driver_name = ldm_driver_get_name(driver);
+        fail_if(!g_str_equal(driver_name, "nvidia-glx-driver"), "Driver name is invalid");
 }
 END_TEST
 
