@@ -8,7 +8,11 @@ LIBLDM_0 {
     ldm_device_get_vendor;
     ldm_device_has_type;
     ldm_device_type_get_type;
+    ldm_driver_get_name;
+    ldm_driver_get_priority;
     ldm_driver_get_type;
+    ldm_driver_set_name;
+    ldm_driver_set_priority;
     ldm_manager_new;
     ldm_manager_get_type;
     ldm_modalias_get_driver;

@@ -15,6 +15,7 @@
 
 G_BEGIN_DECLS
 
+typedef struct _LdmDriverPrivate LdmDriverPrivate;
 typedef struct _LdmDriver LdmDriver;
 typedef struct _LdmDriverClass LdmDriverClass;
 
@@ -36,6 +37,7 @@ struct _LdmDriverClass {
  */
 struct _LdmDriver {
         GObject parent;
+        LdmDriverPrivate *priv;
 };
 
 #define LDM_TYPE_DRIVER ldm_driver_get_type()
@@ -46,6 +48,12 @@ struct _LdmDriver {
 #define LDM_DRIVER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS((o), LDM_TYPE_DRIVER, LdmDriverClass))
 
 GType ldm_driver_get_type(void);
+
+/* API */
+const gchar *ldm_driver_get_name(LdmDriver *driver);
+void ldm_driver_set_name(LdmDriver *driver, const gchar *name);
+gint ldm_driver_get_priority(LdmDriver *driver);
+void ldm_driver_set_priority(LdmDriver *driver, gint priority);
 
 G_END_DECLS
 
