@@ -30,7 +30,7 @@ struct _LdmDeviceClass {
 
         /* Signals */
         void (*child_added)(LdmDevice *self, LdmDevice *child);
-        void (*child_removed)(LdmDevice *self, LdmDevice *child);
+        void (*child_removed)(LdmDevice *self, const gchar *id);
 };
 
 /*

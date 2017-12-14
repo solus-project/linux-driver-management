@@ -14,9 +14,14 @@
 #include <libusb.h>
 #include <stdlib.h>
 
+#include "device.h"
 #include "ldm-private.h"
 #include "usb-device.h"
 #include "util.h"
+
+static void ldm_usb_device_child_added(LdmDevice *device, LdmDevice *child);
+static void ldm_usb_device_child_removed(LdmDevice *device, const gchar *id);
+static void ldm_usb_device_rebuild_info(LdmDevice *device);
 
 struct _LdmUSBDeviceClass {
         LdmDeviceClass parent_class;
@@ -30,6 +35,7 @@ struct _LdmUSBDeviceClass {
  */
 struct _LdmUSBDevice {
         LdmDevice parent;
+        guint original_class;
 };
 
 G_DEFINE_TYPE(LdmUSBDevice, ldm_usb_device, LDM_TYPE_DEVICE)
@@ -52,9 +58,43 @@ static void ldm_usb_device_dispose(GObject *obj)
 static void ldm_usb_device_class_init(LdmUSBDeviceClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+        LdmDeviceClass *d_class = LDM_DEVICE_CLASS(klazz);
 
         /* gobject vtable hookup */
         obj_class->dispose = ldm_usb_device_dispose;
+
+        /* driver vtable hookup */
+        d_class->child_added = ldm_usb_device_child_added;
+        d_class->child_removed = ldm_usb_device_child_removed;
+}
+
+static void ldm_usb_device_rebuild_info(LdmDevice *self)
+{
+        LdmUSBDevice *usb = LDM_USB_DEVICE(self);
+        GHashTableIter iter = { 0 };
+        __ldm_unused__ gpointer key = NULL;
+        LdmDevice *child = NULL;
+
+        self->os.devtype = usb->original_class;
+
+        /* Apply all child attributes to our main type. */
+        g_hash_table_iter_init(&iter, self->tree.kids);
+        while (g_hash_table_iter_next(&iter, &key, (void **)&child)) {
+                if (!ldm_device_has_attribute(child, LDM_DEVICE_ATTRIBUTE_INTERFACE)) {
+                        continue;
+                }
+                self->os.devtype |= child->os.devtype;
+        }
+}
+
+static void ldm_usb_device_child_added(LdmDevice *device, __ldm_unused__ LdmDevice *child)
+{
+        ldm_usb_device_rebuild_info(device);
+}
+
+static void ldm_usb_device_child_removed(LdmDevice *device, __ldm_unused__ const gchar *id)
+{
+        ldm_usb_device_rebuild_info(device);
 }
 
 /**
@@ -115,6 +155,7 @@ void ldm_usb_device_init_private(LdmDevice *self, udev_device *device)
         const gchar *devtype = NULL;
         const gchar *sysattr = NULL;
         int iface_class = 0;
+        LdmUSBDevice *usb = LDM_USB_DEVICE(self);
 
         /* Is this a USB interface? If so, we're gonna need a parent. */
         devtype = udev_device_get_devtype(device);
@@ -131,6 +172,7 @@ void ldm_usb_device_init_private(LdmDevice *self, udev_device *device)
 
         iface_class = (int)strtoll(sysattr, NULL, 10);
         ldm_usb_device_assign_class(self, iface_class);
+        usb->original_class = self->os.devtype;
 }
 
 /*
