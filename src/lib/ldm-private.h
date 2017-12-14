@@ -21,7 +21,6 @@
  * Sanity helpers for dealing with udev.
  */
 typedef struct udev udev_connection;
-typedef struct udev_hwdb udev_hwdb;
 typedef struct udev_device udev_device;
 typedef struct udev_enumerate udev_enum;
 typedef struct udev_list_entry udev_list;
