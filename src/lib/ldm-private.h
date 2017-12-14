@@ -61,6 +61,8 @@ struct _LdmDevice {
         struct {
                 gchar *name;
                 gchar *vendor;
+                guint16 product_id;
+                guint16 vendor_id;
         } id;
 };
 

@@ -31,8 +31,10 @@ G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 enum { PROP_PARENT = 1,
        PROP_PATH,
        PROP_MODALIAS,
+       PROP_PRODUCT_ID,
        PROP_NAME,
        PROP_VENDOR,
+       PROP_VENDOR_ID,
        PROP_DEV_TYPE,
        PROP_ATTRIBUTES,
        N_PROPS };
@@ -172,6 +174,32 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                 G_PARAM_READABLE);
 
         /**
+         * LdmDevice:product-id: (type guint16)
+         *
+         * The product ID for this device.
+         */
+        obj_properties[PROP_PRODUCT_ID] = g_param_spec_uint("product-id",
+                                                            "Product ID",
+                                                            "Hardware product ID",
+                                                            0,
+                                                            0,
+                                                            0,
+                                                            G_PARAM_READABLE);
+
+        /**
+         * LdmDevice:vendor-id: (type guint16)
+         *
+         * The vendor ID for this device.
+         */
+        obj_properties[PROP_VENDOR_ID] = g_param_spec_uint("vendor-id",
+                                                           "Vendor ID",
+                                                           "Hardware vendor ID",
+                                                           0,
+                                                           0,
+                                                           0,
+                                                           G_PARAM_READABLE);
+
+        /**
          * LdmDevice:device-type
          *
          * The composite type of this device, which is a bitwise combination
@@ -232,8 +260,14 @@ static void ldm_device_get_property(GObject *object, guint id, GValue *value, GP
         case PROP_NAME:
                 g_value_set_string(value, self->id.name);
                 break;
+        case PROP_PRODUCT_ID:
+                g_value_set_uint(value, self->id.product_id);
+                break;
         case PROP_VENDOR:
                 g_value_set_string(value, self->id.vendor);
+                break;
+        case PROP_VENDOR_ID:
+                g_value_set_uint(value, self->id.vendor_id);
                 break;
         case PROP_DEV_TYPE:
                 g_value_set_flags(value, self->os.devtype);
@@ -304,6 +338,20 @@ const gchar *ldm_device_get_path(LdmDevice *self)
 }
 
 /**
+ * ldm_device_get_product_id:
+ *
+ * This function will return the product ID (model) of this device,
+ * suitable for comparison with known models.
+ *
+ * Returns: The product ID of the device
+ */
+guint16 ldm_device_get_product_id(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, 0);
+        return self->id.product_id;
+}
+
+/**
  * ldm_device_get_vendor:
  *
  * This function will return the vendor (manufacturer) of this device,
@@ -315,6 +363,20 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
 {
         g_return_val_if_fail(self != NULL, NULL);
         return (const gchar *)self->id.vendor;
+}
+
+/**
+ * ldm_device_get_vendor_id:
+ *
+ * This function will return the vendor ID (manufacturer) of this device,
+ * suitable for comparison with known vendors.
+ *
+ * Returns: The vendor ID of the device
+ */
+guint16 ldm_device_get_vendor_id(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, 0);
+        return self->id.vendor_id;
 }
 
 /**

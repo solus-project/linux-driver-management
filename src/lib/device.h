@@ -85,7 +85,9 @@ GType ldm_device_get_type(void);
 const gchar *ldm_device_get_modalias(LdmDevice *device);
 const gchar *ldm_device_get_name(LdmDevice *device);
 const gchar *ldm_device_get_path(LdmDevice *device);
+guint16 ldm_device_get_product_id(LdmDevice *device);
 const gchar *ldm_device_get_vendor(LdmDevice *device);
+guint16 ldm_device_get_vendor_id(LdmDevice *device);
 LdmDeviceType ldm_device_get_device_type(LdmDevice *device);
 LdmDeviceAttribute ldm_device_get_attributes(LdmDevice *device);
 
