@@ -38,7 +38,6 @@ struct _LdmManager {
 
         /* Udev */
         udev_connection *udev;
-        udev_hwdb *hwdb;
 };
 
 G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
@@ -52,7 +51,6 @@ static void ldm_manager_dispose(GObject *obj)
 {
         LdmManager *self = LDM_MANAGER(obj);
 
-        g_clear_pointer(&self->hwdb, udev_hwdb_unref);
         g_clear_pointer(&self->udev, udev_unref);
 
         /* clean ourselves up */
@@ -87,8 +85,6 @@ static void ldm_manager_init(LdmManager *self)
         /* Get udev going */
         self->udev = udev_new();
         g_assert(self->udev != NULL);
-        self->hwdb = udev_hwdb_new(self->udev);
-        g_assert(self->hwdb != NULL);
 
         ldm_manager_init_udev(self);
 }
@@ -141,12 +137,7 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 {
         autofree(udev_device) *device = NULL;
 
-        /* We only want stuff with a modalias. */
         device = udev_device_new_from_syspath(self->udev, sysfs_path);
-
-        if (!udev_device_get_sysattr_value(device, "modalias")) {
-                return;
-        }
 
         ldm_manager_push_device(self, device);
 }
@@ -159,11 +150,10 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
  */
 static void ldm_manager_push_device(LdmManager *self, udev_device *device)
 {
-        const char *modalias = NULL;
         LdmDevice *ldm_device = NULL;
         const char *sysfs_path = NULL;
         const char *subsystem = NULL;
-        udev_list *hwdb_info = NULL;
+        udev_list *properties = NULL;
 
         sysfs_path = udev_device_get_syspath(device);
 
@@ -173,12 +163,11 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
         }
 
         /* Get our basic information */
-        modalias = udev_device_get_sysattr_value(device, "modalias");
         subsystem = udev_device_get_subsystem(device);
-        hwdb_info = udev_hwdb_get_properties_list_entry(self->hwdb, modalias, 0);
+        properties = udev_device_get_properties_list_entry(device);
 
         /* Build the actual device now */
-        ldm_device = ldm_device_new_from_udev(NULL, device, hwdb_info);
+        ldm_device = ldm_device_new_from_udev(NULL, device, properties);
 
         g_message("ldm_manager_push_device(%s): %s", subsystem, ldm_device_get_name(ldm_device));
 

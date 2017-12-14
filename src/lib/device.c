@@ -285,7 +285,7 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
  * Construct a new LdmDevice from the given udev device and hwdb information.
  * This is private API between the manager and the device.
  */
-LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *hwinfo)
+LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *properties)
 {
         udev_list *entry = NULL;
         LdmDevice *self = NULL;
@@ -299,12 +299,12 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
         self->os.modalias = g_strdup(udev_device_get_sysattr_value(device, "modalias"));
 
         /* Shouldn't happen, but is definitely possible.. */
-        if (!hwinfo) {
+        if (!properties) {
                 goto post_hwdb;
         }
 
         /* Duplicate the hardware data into a private table */
-        udev_list_entry_foreach(entry, hwinfo)
+        udev_list_entry_foreach(entry, properties)
         {
                 const char *prop_id = NULL;
                 const char *value = NULL;

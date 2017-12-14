@@ -58,6 +58,7 @@ typedef enum {
  * LdmDeviceAttribute
  * @LDM_DEVICE_ATTRIBUTE_NONE: No explicitly set attributes
  * @LDM_DEVICE_ATTRIBUTE_BOOT_VGA: This device is the GPU used to boot the system
+ * @LDM_DEVICE_ATTRIBUTE_INTERFACE: Pseudo-device (USB interface, etc.)
  *
  * A device have one or more special attributes that need to be queried beyond
  * the initial DeviceType search.
@@ -65,7 +66,8 @@ typedef enum {
 typedef enum {
         LDM_DEVICE_ATTRIBUTE_NONE = 0,
         LDM_DEVICE_ATTRIBUTE_BOOT_VGA = 1 << 0,
-        LDM_DEVICE_ATTRIBUTE_MAX = 1 << 1,
+        LDM_DEVICE_ATTRIBUTE_INTERFACE = 1 << 1,
+        LDM_DEVICE_ATTRIBUTE_MAX = 1 << 2,
 } LdmDeviceAttribute;
 
 #define LDM_TYPE_DEVICE ldm_device_get_type()

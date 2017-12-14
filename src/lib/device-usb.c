@@ -24,7 +24,15 @@
  */
 void ldm_device_init_usb(LdmDevice *self, udev_device *device)
 {
+        const gchar *devtype = NULL;
+
         self->os.devtype |= LDM_DEVICE_TYPE_USB;
+
+        /* Is this a USB interface? If so, we're gonna need a parent. */
+        devtype = udev_device_get_devtype(device);
+        if (devtype && g_str_equal(devtype, "usb_interface")) {
+                self->os.attributes |= LDM_DEVICE_ATTRIBUTE_INTERFACE;
+        }
 }
 
 /*
