@@ -19,6 +19,21 @@ typedef struct _LdmDevice LdmDevice;
 typedef struct _LdmDeviceClass LdmDeviceClass;
 
 /**
+ * LdmPCIVendorID
+ * @LDM_PCI_VENDOR_ID_AMD: AMD PCI device ID
+ * @LDM_PCI_VENDOR_ID_INTEL: Intel PCI device ID
+ * @LDM_PCI_VENDOR_ID_NVIDIA: NVIDIA PCI device id
+ *
+ * Well known vendor IDs that are statically defined here to make future
+ * lookup and comparisons simpler to users of libldm.
+ */
+typedef enum {
+        LDM_PCI_VENDOR_ID_AMD = 0x1002,
+        LDM_PCI_VENDOR_ID_INTEL = 0x8086,
+        LDM_PCI_VENDOR_ID_NVIDIA = 0x10DE,
+} LdmPCIVendorID;
+
+/**
  * LdmDeviceType:
  * @LDM_DEVICE_TYPE_ANY: Placeholder value
  * @LDM_DEVICE_TYPE_AUDIO: Audio device
