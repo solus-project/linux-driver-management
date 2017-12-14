@@ -35,6 +35,8 @@ struct _LdmGPUConfig {
 static void ldm_gpu_config_set_property(GObject *object, guint id, const GValue *value,
                                         GParamSpec *spec);
 static void ldm_gpu_config_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
+static void ldm_gpu_config_constructed(GObject *obj);
+static void ldm_gpu_config_analyze(LdmGPUConfig *self);
 
 G_DEFINE_TYPE(LdmGPUConfig, ldm_gpu_config, G_TYPE_OBJECT)
 
@@ -65,6 +67,7 @@ static void ldm_gpu_config_class_init(LdmGPUConfigClass *klazz)
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
 
         /* gobject vtable hookup */
+        obj_class->constructed = ldm_gpu_config_constructed;
         obj_class->dispose = ldm_gpu_config_dispose;
         obj_class->get_property = ldm_gpu_config_get_property;
         obj_class->set_property = ldm_gpu_config_set_property;
@@ -113,12 +116,34 @@ static void ldm_gpu_config_get_property(GObject *object, guint id, GValue *value
 }
 
 /**
+ * ldm_gpu_config_constructed:
+ *
+ * We're now up and running with a valid Manager instance, probe it and
+ * find out exactly what our state looks like. :)
+ */
+static void ldm_gpu_config_constructed(GObject *obj)
+{
+        ldm_gpu_config_analyze(LDM_GPU_CONFIG(obj));
+        G_OBJECT_CLASS(ldm_gpu_config_parent_class)->constructed(obj);
+}
+
+/**
  * ldm_gpu_config_init:
  *
  * Handle construction of the LdmGPUConfig
  */
 static void ldm_gpu_config_init(__ldm_unused__ LdmGPUConfig *self)
 {
+}
+
+/**
+ * ldm_gpu_config_analyze:
+ *
+ * Ask the manager what the story is.
+ */
+static void ldm_gpu_config_analyze(__ldm_unused__ LdmGPUConfig *self)
+{
+        g_message("not yet implemented!");
 }
 
 /**
