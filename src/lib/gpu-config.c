@@ -177,6 +177,25 @@ static LdmDevice *ldm_gpu_config_search_vendor(GList *devices, gint vendor_id)
 }
 
 /**
+ * ldm_gpu_config_search_boot:
+ *
+ * Utility method to find the boot_vga device, i.e. the GPU that was used
+ * to boot the system.
+ */
+static LdmDevice *ldm_gpu_config_search_boot(GList *devices)
+{
+        for (GList *elem = devices; elem; elem = elem->next) {
+                LdmDevice *device = LDM_DEVICE(elem->data);
+
+                if (ldm_device_has_attribute(device, LDM_DEVICE_ATTRIBUTE_BOOT_VGA)) {
+                        return device;
+                }
+        }
+
+        return NULL;
+}
+
+/**
  * ldm_gpu_config_analyze:
  *
  * Ask the manager what the story is.
