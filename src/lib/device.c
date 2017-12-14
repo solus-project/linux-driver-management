@@ -444,7 +444,7 @@ void ldm_device_add_child(LdmDevice *self, LdmDevice *child)
         g_return_if_fail(ldm_device_get_parent(child) != self);
 
         id = ldm_device_get_path(child);
-        g_hash_table_replace(self->tree.kids, g_strdup(id), child);
+        g_hash_table_replace(self->tree.kids, g_strdup(id), g_object_ref_sink(child));
 }
 
 /**

@@ -228,7 +228,7 @@ void ldm_modalias_driver_add_modalias(LdmModaliasDriver *self, LdmModalias *moda
         id = ldm_modalias_get_match(modalias);
         g_assert(id != NULL);
 
-        g_hash_table_replace(self->modaliases, g_strdup(id), g_object_ref(modalias));
+        g_hash_table_replace(self->modaliases, g_strdup(id), g_object_ref_sink(modalias));
 }
 
 /*
