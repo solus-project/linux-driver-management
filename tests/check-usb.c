@@ -41,9 +41,9 @@ START_TEST(test_manager_usb_simple)
         fail_if(!manager, "Failed to get the LdmManager");
 
         /* 2 devices right now because of the root hub. */
-        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_USB);
+        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_AUDIO);
         fail_if(!devices, "Failed to obtain devices");
-        fail_if(g_list_length(devices) != 2,
+        fail_if(g_list_length(devices) != 1,
                 "Expected 1 device, got %u devices",
                 g_list_length(devices));
 }
