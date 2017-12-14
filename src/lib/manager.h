@@ -13,6 +13,8 @@
 
 #include <glib-object.h>
 
+#include <device.h>
+
 G_BEGIN_DECLS
 
 typedef struct _LdmManager LdmManager;

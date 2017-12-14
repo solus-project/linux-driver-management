@@ -13,6 +13,7 @@
 
 #include <device.h>
 #include <driver.h>
+#include <gpu-config.h>
 #include <ldm-enums.h>
 #include <manager.h>
 #include <modalias.h>
