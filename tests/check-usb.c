@@ -23,6 +23,8 @@
 DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 
 #define YETI_UMOCKDEV_FILE TEST_DATA_ROOT "/blueYeti.umockdev"
+#define PRINTER_UMOCKDEV_FILE TEST_DATA_ROOT "/brotherPrinter.umockdev"
+#define NV_MOCKDEV_FILE TEST_DATA_ROOT "/nvidia1060.umockdev"
 
 /**
  * This test is to help us develop composite USB aggregation within the
@@ -46,6 +48,53 @@ START_TEST(test_manager_usb_simple)
         fail_if(g_list_length(devices) != 1,
                 "Expected 1 device, got %u devices",
                 g_list_length(devices));
+}
+END_TEST
+
+/**
+ * Identify the USB printer in a noisy environment
+ */
+START_TEST(test_manager_usb_noisy)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GList) devices = NULL;
+        const char *vendor = NULL;
+        LdmDevice *device = NULL;
+        static const gchar *test_files[] = {
+                YETI_UMOCKDEV_FILE,
+                PRINTER_UMOCKDEV_FILE,
+                NV_MOCKDEV_FILE,
+        };
+
+        bed = umockdev_testbed_new();
+
+        for (size_t i = 0; i < G_N_ELEMENTS(test_files); i++) {
+                const gchar *dev = test_files[i];
+                fail_if(!umockdev_testbed_add_from_file(bed, dev, NULL),
+                        "Failed to add device %s",
+                        dev);
+        }
+
+        manager = ldm_manager_new();
+        fail_if(!manager, "Failed to get the LdmManager");
+
+        /* No PCI pls */
+        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_PRINTER);
+        fail_if(devices, "Printer should only be USB!");
+
+        /* Has USB printer? */
+        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_PRINTER);
+        fail_if(!devices, "Failed to find USB printers");
+        fail_if(g_list_length(devices) != 1, "Should only have one printer!");
+
+        device = g_list_nth_data(devices, 0);
+        vendor = ldm_device_get_vendor(device);
+        fail_if(!vendor, "Missing vendor on printer!");
+        fail_if(!g_str_equal(vendor, "Brother Industries, Ltd"),
+                "Invalid printer vendor, expected '%s', got '%s'",
+                "Brother Industries, Ltd",
+                vendor);
 }
 END_TEST
 
@@ -75,6 +124,7 @@ static Suite *test_create(void)
         suite_add_tcase(s, tc);
 
         tcase_add_test(tc, test_manager_usb_simple);
+        tcase_add_test(tc, test_manager_usb_noisy);
 
         return s;
 }
