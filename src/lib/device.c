@@ -80,7 +80,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
         obj_class->set_property = ldm_device_set_property;
 
         /**
-         * LdmDevice:child-added
+         * LdmDevice::child-added:
          * @device: The device owning the new child
          * @child: The newly available child
          *
@@ -98,7 +98,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                        LDM_TYPE_DEVICE);
 
         /**
-         * LdmDevice:child-removed
+         * LdmDevice::child-removed:
          * @device: The device that owned the child
          * @id: The child ID being removed.
          *
