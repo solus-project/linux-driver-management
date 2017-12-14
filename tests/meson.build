@@ -2,6 +2,7 @@
 required_tests = [
     'modalias',
     'manager',
+    'usb',
 ]
 
 test_dependencies = [
