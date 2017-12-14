@@ -178,7 +178,7 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
         hwdb_info = udev_hwdb_get_properties_list_entry(self->hwdb, modalias, 0);
 
         /* Build the actual device now */
-        ldm_device = ldm_device_new_from_udev(device, hwdb_info);
+        ldm_device = ldm_device_new_from_udev(NULL, device, hwdb_info);
 
         g_message("ldm_manager_push_device(%s): %s", subsystem, ldm_device_get_name(ldm_device));
 

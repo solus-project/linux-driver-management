@@ -278,20 +278,21 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
 
 /**
  * ldm_device_new_from_udev:
+ * @parent: (nullable): Parent device, if any.
  * @device: Associated udev device
  * @hwinfo: If set, the hwdb entry for this device.
  *
  * Construct a new LdmDevice from the given udev device and hwdb information.
  * This is private API between the manager and the device.
  */
-LdmDevice *ldm_device_new_from_udev(udev_device *device, udev_list *hwinfo)
+LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *hwinfo)
 {
         udev_list *entry = NULL;
         LdmDevice *self = NULL;
         gchar *lookup = NULL;
         const char *subsystem = NULL;
 
-        self = g_object_new(LDM_TYPE_DEVICE, NULL);
+        self = g_object_new(LDM_TYPE_DEVICE, "parent", parent, NULL);
 
         /* Set the absolute basics */
         self->os.sysfs_path = g_strdup(udev_device_get_syspath(device));
@@ -333,10 +334,9 @@ post_hwdb:
         /* We might need to populate more information per device type */
         subsystem = udev_device_get_subsystem(device);
         if (g_str_equal(subsystem, "pci")) {
-                self->os.devtype |= LDM_DEVICE_TYPE_PCI;
                 ldm_device_init_pci(self, device);
         } else if (g_str_equal(subsystem, "usb")) {
-                self->os.devtype |= LDM_DEVICE_TYPE_USB;
+                ldm_device_init_usb(self, device);
         }
 
         return self;
