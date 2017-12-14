@@ -23,6 +23,7 @@
 DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 
 #define NV_MOCKDEV_FILE TEST_DATA_ROOT "/nvidia1060.umockdev"
+#define OPTIMUS_MOCKDEV_FILE TEST_DATA_ROOT "/optimus765m.umockdev"
 
 static UMockdevTestbed *create_bed_from(const char *mockdevname)
 {
@@ -37,8 +38,7 @@ static UMockdevTestbed *create_bed_from(const char *mockdevname)
 }
 
 /**
- * This test is to help us develop composite USB aggregation within the
- * library so that interfaces are merged into a USB device.
+ * This test will deal with the very basic _SIMPLE type GPU
  */
 START_TEST(test_gpu_config_simple)
 {
@@ -58,6 +58,35 @@ START_TEST(test_gpu_config_simple)
         fail_if(n_gpu != 1, "Invalid number of GPUs (%u) - expected %u", n_gpu, 1);
 
         fail_if(ldm_gpu_config_get_gpu_type(gpu) != LDM_GPU_TYPE_SIMPLE, "GPU type isn't simple");
+}
+END_TEST
+
+/**
+ * This test helps us ensure we can always reliably detect an Optimus system
+ */
+START_TEST(test_gpu_config_optimus)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GList) devices = NULL;
+        g_autoptr(LdmGPUConfig) gpu = NULL;
+        guint n_gpu = 0;
+        guint gpu_type = 0;
+
+        bed = create_bed_from(OPTIMUS_MOCKDEV_FILE);
+        manager = ldm_manager_new();
+
+        gpu = ldm_gpu_config_new(manager);
+        fail_if(!gpu, "Failed to create GPUConfig");
+
+        n_gpu = ldm_gpu_config_count(gpu);
+        fail_if(n_gpu != 2, "Invalid number of GPUs (%u) - expected %u", n_gpu, 2);
+
+        gpu_type = ldm_gpu_config_get_gpu_type(gpu);
+        fail_if((gpu_type & LDM_GPU_TYPE_HYBRID) != LDM_GPU_TYPE_HYBRID,
+                "Failed to detect hybrid graphics");
+        fail_if((gpu_type & LDM_GPU_TYPE_OPTIMUS) != LDM_GPU_TYPE_OPTIMUS,
+                "Failed to detect Optimus");
 }
 END_TEST
 
@@ -87,6 +116,7 @@ static Suite *test_create(void)
         suite_add_tcase(s, tc);
 
         tcase_add_test(tc, test_gpu_config_simple);
+        tcase_add_test(tc, test_gpu_config_optimus);
 
         return s;
 }
