@@ -28,10 +28,10 @@ link_libenum = declare_dependency(
 libldm_main_sources = [
     'device.c',
     'device-pci.c',
-    'device-usb.c',
     'driver.c',
     'manager.c',
     'modalias.c',
+    'usb-device.c',
     'drivers/modalias-driver.c',
 ]
 
@@ -41,6 +41,7 @@ libldm_headers = [
     'manager.h',
     'modalias.h',
     'ldm.h',
+    'usb-device.h',
 ]
 
 libldm_driver_headers = [

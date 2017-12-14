@@ -14,6 +14,7 @@
 #include "device.h"
 #include "ldm-enums.h"
 #include "ldm-private.h"
+#include "usb-device.h"
 #include "util.h"
 
 #define HWDB_LOOKUP_PRODUCT_NAME "ID_MODEL_FROM_DATABASE"
@@ -287,8 +288,17 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
         LdmDevice *self = NULL;
         gchar *lookup = NULL;
         const char *subsystem = NULL;
+        GType special_type = 0;
 
-        self = g_object_new(LDM_TYPE_DEVICE, "parent", parent, NULL);
+        /* Specialise the gtype here */
+        subsystem = udev_device_get_subsystem(device);
+        if (g_str_equal(subsystem, "usb")) {
+                special_type = LDM_TYPE_USB_DEVICE;
+        } else {
+                special_type = LDM_TYPE_DEVICE;
+        }
+
+        self = g_object_new(special_type, "parent", parent, NULL);
 
         /* Set the absolute basics */
         self->os.sysfs_path = g_strdup(udev_device_get_syspath(device));
@@ -328,11 +338,10 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
 post_hwdb:
 
         /* We might need to populate more information per device type */
-        subsystem = udev_device_get_subsystem(device);
         if (g_str_equal(subsystem, "pci")) {
                 ldm_device_init_pci(self, device);
         } else if (g_str_equal(subsystem, "usb")) {
-                ldm_device_init_usb(self, device);
+                ldm_usb_device_init_private(self, device);
         }
 
         return self;
