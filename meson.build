@@ -95,6 +95,8 @@ endif
 with_gl_driver_switch_compat = get_option('with-gl-driver-switch-compat')
 with_ldm_monitor = get_option('with-monitor')
 
+with_docs = get_option('with-docs')
+
 # Define our ABI
 abi_major_version = '0'
 abi_minor_version = '0'
@@ -117,6 +119,10 @@ if enable_tests == true
     subdir('tests')
 endif
 
+if with_docs == true
+    subdir('docs')
+endif
+
 report = [
     '    Build configuration:',
     '    ====================',
@@ -135,6 +141,7 @@ report = [
     '    hardware plug monitor:                  @0@'.format(with_ldm_monitor),
     '',
     '    enable tests:                           @0@'.format(enable_tests),
+    '    enable documentation:                   @0@'.format(with_docs),
 ]
 
 if warn_modalias == true
