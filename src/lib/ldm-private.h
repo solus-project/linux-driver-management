@@ -36,6 +36,11 @@ typedef struct udev_list_entry udev_list;
 struct _LdmDevice {
         GObject parent;
 
+        struct {
+                LdmDevice *parent;
+                GHashTable *kids;
+        } tree;
+
         /* OS Data */
         struct {
                 gchar *sysfs_path;

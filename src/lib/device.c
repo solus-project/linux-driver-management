@@ -19,6 +19,8 @@
 #define HWDB_LOOKUP_PRODUCT_NAME "ID_MODEL_FROM_DATABASE"
 #define HWDB_LOOKUP_PRODUCT_VENDOR "ID_VENDOR_FROM_DATABASE"
 
+static void ldm_device_set_property(GObject *object, guint id, const GValue *value,
+                                    GParamSpec *spec);
 static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
 
 struct _LdmDeviceClass {
@@ -27,7 +29,8 @@ struct _LdmDeviceClass {
 
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 
-enum { PROP_PATH = 1,
+enum { PROP_PARENT = 1,
+       PROP_PATH,
        PROP_MODALIAS,
        PROP_NAME,
        PROP_VENDOR,
@@ -48,6 +51,7 @@ static void ldm_device_dispose(GObject *obj)
 {
         LdmDevice *self = LDM_DEVICE(obj);
 
+        g_clear_pointer(&self->tree.kids, g_hash_table_unref);
         g_clear_pointer(&self->os.hwdb_info, g_hash_table_unref);
         g_clear_pointer(&self->os.sysfs_path, g_free);
         g_clear_pointer(&self->os.modalias, g_free);
@@ -69,7 +73,17 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
         /* gobject vtable hookup */
         obj_class->dispose = ldm_device_dispose;
         obj_class->get_property = ldm_device_get_property;
+        obj_class->set_property = ldm_device_set_property;
 
+        /**
+         * LdmDevice::parent-device
+         *
+         * Parent device for this device instance
+         */
+        obj_properties[PROP_PARENT] = g_param_spec_pointer("parent",
+                                                           "Parent device",
+                                                           "Parent device for this device",
+                                                           G_PARAM_READWRITE);
         /**
          * LdmDevice::path
          *
@@ -144,11 +158,29 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
+static void ldm_device_set_property(GObject *object, guint id, const GValue *value,
+                                    GParamSpec *spec)
+{
+        LdmDevice *self = LDM_DEVICE(object);
+
+        switch (id) {
+        case PROP_PARENT:
+                self->tree.parent = g_value_get_pointer(value);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
+
 static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec)
 {
         LdmDevice *self = LDM_DEVICE(object);
 
         switch (id) {
+        case PROP_PARENT:
+                g_value_set_pointer(value, self->tree.parent);
+                break;
         case PROP_PATH:
                 g_value_set_string(value, self->os.sysfs_path);
                 break;
@@ -182,6 +214,9 @@ static void ldm_device_init(LdmDevice *self)
 {
         /* Just set up the table for our properties */
         self->os.hwdb_info = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
+
+        /* We have sysfs ID to child mapping and own the child */
+        self->tree.kids = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
 }
 
 /**
@@ -362,6 +397,86 @@ gboolean ldm_device_has_attribute(LdmDevice *self, LdmDeviceAttribute mask)
         }
 
         return FALSE;
+}
+
+/**
+ * ldm_device_get_parent:
+ *
+ * Get the parent device, if any
+ *
+ * Returns: (transfer none) (nullable): The parent device if it exists
+ */
+LdmDevice *ldm_device_get_parent(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+
+        return self->tree.parent;
+}
+
+/**
+ * ldm_device_get_children:
+ *
+ * Return any child devices, if any
+ *
+ * Returns: (element-type Ldm.Device) (transfer container): a list of all child devices
+ */
+GList *ldm_device_get_children(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+
+        return g_hash_table_get_values(self->tree.kids);
+}
+
+/**
+ * ldm_device_add_child:
+ * @child: (transfer full): Child to add to this device
+ *
+ * Add a new child to this device, with this device now becoming the parent
+ * and taking ownership of it.
+ */
+void ldm_device_add_child(LdmDevice *self, LdmDevice *child)
+{
+        const gchar *id = NULL;
+        g_return_if_fail(self != NULL);
+
+        id = ldm_device_get_path(child);
+        g_object_set(child, "parent", self, NULL);
+        g_hash_table_replace(self->tree.kids, g_strdup(id), child);
+}
+
+/**
+ * ldm_device_remove_child:
+ * @child: The child to remove from this device
+ *
+ * This is a wrapper around #ldm_device_remove_child_by_path
+ */
+void ldm_device_remove_child(LdmDevice *self, LdmDevice *child)
+{
+        const gchar *id = NULL;
+        g_return_if_fail(self != NULL);
+
+        id = ldm_device_get_path(child);
+        ldm_device_remove_child_by_path(self, id);
+}
+
+/**
+ * ldm_device_remove_child_by_path:
+ * @path: Sysfs path for the child to be removed
+ *
+ * Remove a child from this device if we own it, and unset the parent on
+ * that device.
+ */
+void ldm_device_remove_child_by_path(LdmDevice *self, const gchar *path)
+{
+        g_return_if_fail(self != NULL);
+        LdmDevice *dev = NULL;
+
+        dev = g_hash_table_lookup(self->tree.kids, path);
+        if (!dev) {
+                return;
+        }
+        g_object_set(dev, "parent", NULL, NULL);
+        g_hash_table_remove(self->tree.kids, path);
 }
 
 /*

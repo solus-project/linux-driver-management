@@ -1,15 +1,19 @@
 LIBLDM_0 {
   global:
+    ldm_device_add_child;
     ldm_device_attribute_get_type;
     ldm_device_get_attributes;
+    ldm_device_get_children;
     ldm_device_get_device_type;
     ldm_device_get_type;
     ldm_device_get_modalias;
     ldm_device_get_name;
     ldm_device_get_path;
+    ldm_device_get_parent;
     ldm_device_get_vendor;
     ldm_device_has_attribute;
     ldm_device_has_type;
+    ldm_remove_remove_child;
     ldm_device_type_get_type;
     ldm_driver_get_name;
     ldm_driver_get_priority;
