@@ -13,24 +13,73 @@
 
 #include <stdlib.h>
 
-#include "device.h"
 #include "ldm-private.h"
+#include "pci-device.h"
+#include "util.h"
 
 /* PCI display devices are between 0x03 and 0x0380 */
 #define PCI_DISPLAY_MASK 0x300
 
+struct _LdmPCIDeviceClass {
+        LdmDeviceClass parent_class;
+};
+
+/*
+ * LdmPCIDevice
+ *
+ * An LdmPCIDevice is a specialised implementation of the #LdmDevice which
+ * is aware of PCI capabilities and GPU data.
+ */
+struct _LdmPCIDevice {
+        LdmDevice parent;
+};
+
+G_DEFINE_TYPE(LdmPCIDevice, ldm_pci_device, LDM_TYPE_DEVICE)
+
 /**
- * ldm_device_init_pci:
+ * ldm_pci_device_dispose:
+ *
+ * Clean up a LdmPCIDevice instance
+ */
+static void ldm_pci_device_dispose(GObject *obj)
+{
+        G_OBJECT_CLASS(ldm_pci_device_parent_class)->dispose(obj);
+}
+
+/**
+ * ldm_pci_device_class_init:
+ *
+ * Handle class initialisation
+ */
+static void ldm_pci_device_class_init(LdmPCIDeviceClass *klazz)
+{
+        GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+
+        /* gobject vtable hookup */
+        obj_class->dispose = ldm_pci_device_dispose;
+}
+
+/**
+ * ldm_pci_device_init:
+ *
+ * Handle construction of the LdmPCIDevice
+ */
+static void ldm_pci_device_init(LdmPCIDevice *self)
+{
+        LdmDevice *ldm = LDM_DEVICE(self);
+        ldm->os.devtype |= LDM_DEVICE_TYPE_PCI;
+}
+
+/**
+ * ldm_pci_device_init_private:
  * @device: The udev device that we're being created from
  *
  * Handle PCI specific initialisation
  */
-void ldm_device_init_pci(LdmDevice *self, udev_device *device)
+void ldm_pci_device_init_private(LdmDevice *self, udev_device *device)
 {
         const char *sysattr = NULL;
         int pci_class = 0;
-
-        self->os.devtype |= LDM_DEVICE_TYPE_PCI;
 
         /* Are we boot_vga ? */
         sysattr = udev_device_get_sysattr_value(device, "boot_vga");

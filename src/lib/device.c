@@ -14,6 +14,7 @@
 #include "device.h"
 #include "ldm-enums.h"
 #include "ldm-private.h"
+#include "pci-device.h"
 #include "usb-device.h"
 #include "util.h"
 
@@ -294,6 +295,8 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
         subsystem = udev_device_get_subsystem(device);
         if (g_str_equal(subsystem, "usb")) {
                 special_type = LDM_TYPE_USB_DEVICE;
+        } else if (g_str_equal(subsystem, "pci")) {
+                special_type = LDM_TYPE_PCI_DEVICE;
         } else {
                 special_type = LDM_TYPE_DEVICE;
         }
@@ -337,10 +340,9 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
 
 post_hwdb:
 
-        /* We might need to populate more information per device type */
-        if (g_str_equal(subsystem, "pci")) {
-                ldm_device_init_pci(self, device);
-        } else if (g_str_equal(subsystem, "usb")) {
+        if (special_type == LDM_TYPE_PCI_DEVICE) {
+                ldm_pci_device_init_private(self, device);
+        } else if (special_type == LDM_TYPE_USB_DEVICE) {
                 ldm_usb_device_init_private(self, device);
         }
 
