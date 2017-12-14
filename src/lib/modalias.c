@@ -85,7 +85,7 @@ static void ldm_modalias_class_init(LdmModaliasClass *klazz)
         obj_class->set_property = ldm_modalias_set_property;
 
         /**
-         * LdmModalias::match
+         * LdmModalias:match
          *
          * The fnmatch style string that would create a match
          */
@@ -97,7 +97,7 @@ static void ldm_modalias_class_init(LdmModaliasClass *klazz)
                                 G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
         /**
-         * LdmModalias::driver
+         * LdmModalias:driver
          *
          * The associated kernel driver
          */
@@ -109,7 +109,7 @@ static void ldm_modalias_class_init(LdmModaliasClass *klazz)
                                 G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
         /**
-         * LdmModalias::package
+         * LdmModalias:package
          *
          * The package or bundle containing this driver match
          */

@@ -76,16 +76,17 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
         obj_class->set_property = ldm_device_set_property;
 
         /**
-         * LdmDevice::parent-device
+         * LdmDevice:parent: (type LdmDevice) (transfer none)
          *
          * Parent device for this device instance
          */
-        obj_properties[PROP_PARENT] = g_param_spec_pointer("parent",
-                                                           "Parent device",
-                                                           "Parent device for this device",
-                                                           G_PARAM_READWRITE);
+        obj_properties[PROP_PARENT] =
+            g_param_spec_pointer("parent",
+                                 "Parent device",
+                                 "Parent device for this device",
+                                 G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
         /**
-         * LdmDevice::path
+         * LdmDevice:path
          *
          * The system path for this device. On Linux this is the sysfs path.
          */
@@ -96,7 +97,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                         G_PARAM_READABLE);
 
         /**
-         * LdmDevice::modalias
+         * LdmDevice:modalias
          *
          * The modalias reported by the kernel for this device.
          */
@@ -107,7 +108,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                             G_PARAM_READABLE);
 
         /**
-         * LdmDevice::name
+         * LdmDevice:name
          *
          * The name used to display this device to users, i.e. the model.
          */
@@ -118,7 +119,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                         G_PARAM_READABLE);
 
         /**
-         * LdmDevice::vendor
+         * LdmDevice:vendor
          *
          * The vendor string to display the users, i.e. the manufacturer.
          */
@@ -130,7 +131,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                 G_PARAM_READABLE);
 
         /**
-         * LdmDevice::device-type
+         * LdmDevice:device-type
          *
          * The composite type of this device, which is a bitwise combination
          * of multiple device types (such as PCI|GPU)
@@ -143,7 +144,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                            G_PARAM_READABLE);
 
         /**
-         * LdmDevice::attributes
+         * LdmDevice:attributes
          *
          * The composite attributes of this device, which is a bitwise combination
          * of multiple attribute (such as BOOT_VGA)
@@ -431,16 +432,18 @@ GList *ldm_device_get_children(LdmDevice *self)
  * ldm_device_add_child:
  * @child: (transfer full): Child to add to this device
  *
- * Add a new child to this device, with this device now becoming the parent
- * and taking ownership of it.
+ * Add a new child to this device, with this device now taking ownership of it.
+ * Note: Children must be constructed with the parent explicitly being this
+ * instance, it is not possible to reparent a child, instead they must
+ * be destroyed.
  */
 void ldm_device_add_child(LdmDevice *self, LdmDevice *child)
 {
         const gchar *id = NULL;
         g_return_if_fail(self != NULL);
+        g_return_if_fail(ldm_device_get_parent(child) != self);
 
         id = ldm_device_get_path(child);
-        g_object_set(child, "parent", self, NULL);
         g_hash_table_replace(self->tree.kids, g_strdup(id), child);
 }
 
@@ -454,6 +457,7 @@ void ldm_device_remove_child(LdmDevice *self, LdmDevice *child)
 {
         const gchar *id = NULL;
         g_return_if_fail(self != NULL);
+        g_return_if_fail(ldm_device_get_parent(child) != self);
 
         id = ldm_device_get_path(child);
         ldm_device_remove_child_by_path(self, id);
@@ -469,13 +473,7 @@ void ldm_device_remove_child(LdmDevice *self, LdmDevice *child)
 void ldm_device_remove_child_by_path(LdmDevice *self, const gchar *path)
 {
         g_return_if_fail(self != NULL);
-        LdmDevice *dev = NULL;
 
-        dev = g_hash_table_lookup(self->tree.kids, path);
-        if (!dev) {
-                return;
-        }
-        g_object_set(dev, "parent", NULL, NULL);
         g_hash_table_remove(self->tree.kids, path);
 }
 

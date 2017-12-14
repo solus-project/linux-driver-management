@@ -60,7 +60,7 @@ static void ldm_driver_class_init(LdmDriverClass *klazz)
         obj_class->set_property = ldm_driver_set_property;
 
         /**
-         * LdmDriver::name
+         * LdmDriver:name
          *
          * The display name for this driver
          */
@@ -71,7 +71,7 @@ static void ldm_driver_class_init(LdmDriverClass *klazz)
                                                         G_PARAM_READWRITE);
 
         /**
-         * LdmDriver::priority
+         * LdmDriver:priority
          *
          * Priority for this driver implementation. This can be useful in
          * cases where multiple drivers match some hardware, and the implementation
