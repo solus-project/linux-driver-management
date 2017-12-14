@@ -11,8 +11,11 @@
 
 #define _GNU_SOURCE
 
-#include "usb-device.h"
+#include <libusb.h>
+#include <stdlib.h>
+
 #include "ldm-private.h"
+#include "usb-device.h"
 #include "util.h"
 
 struct _LdmUSBDeviceClass {
@@ -66,6 +69,42 @@ static void ldm_usb_device_init(LdmUSBDevice *self)
 }
 
 /**
+ * ldm_usb_device_assign_class:
+ * @bDeviceClass: The USB class for the device/interface
+ *
+ * Update our #LdmDevice device class based on the device/interface
+ * class as mapped through libusb defines.
+ */
+static void ldm_usb_device_assign_class(LdmDevice *self, int bDeviceClass)
+{
+        switch (bDeviceClass) {
+        case LIBUSB_CLASS_AUDIO:
+                self->os.devtype |= LDM_DEVICE_TYPE_AUDIO;
+                break;
+        case LIBUSB_CLASS_HID:
+                self->os.devtype |= LDM_DEVICE_TYPE_HID;
+                break;
+        case LIBUSB_CLASS_IMAGE:
+                self->os.devtype |= LDM_DEVICE_TYPE_IMAGE;
+                break;
+        case LIBUSB_CLASS_PRINTER:
+                self->os.devtype |= LDM_DEVICE_TYPE_PRINTER;
+                break;
+        case LIBUSB_CLASS_MASS_STORAGE:
+                self->os.devtype |= LDM_DEVICE_TYPE_STORAGE;
+                break;
+        case LIBUSB_CLASS_VIDEO:
+                self->os.devtype |= LDM_DEVICE_TYPE_VIDEO;
+                break;
+        case LIBUSB_CLASS_WIRELESS:
+                self->os.devtype |= LDM_DEVICE_TYPE_WIRELESS;
+                break;
+        default:
+                break;
+        }
+}
+
+/**
  * ldm_usb_device_init_private:
  * @device: The udev device that we're being created from
  *
@@ -74,12 +113,24 @@ static void ldm_usb_device_init(LdmUSBDevice *self)
 void ldm_usb_device_init_private(LdmDevice *self, udev_device *device)
 {
         const gchar *devtype = NULL;
+        const gchar *sysattr = NULL;
+        int iface_class = 0;
 
         /* Is this a USB interface? If so, we're gonna need a parent. */
         devtype = udev_device_get_devtype(device);
         if (devtype && g_str_equal(devtype, "usb_interface")) {
                 self->os.attributes |= LDM_DEVICE_ATTRIBUTE_INTERFACE;
+                sysattr = udev_device_get_sysattr_value(device, "bInterfaceClass");
+        } else {
+                sysattr = udev_device_get_sysattr_value(device, "bDeviceClass");
         }
+
+        if (!sysattr) {
+                return;
+        }
+
+        iface_class = (int)strtoll(sysattr, NULL, 10);
+        ldm_usb_device_assign_class(self, iface_class);
 }
 
 /*

@@ -57,6 +57,7 @@ libldm_main_includes = [
 libldm_dependencies = [
     link_libenum,
     dep_glib2,
+    dep_usb,
     dep_gio_unix,
     dep_udev,
 ]

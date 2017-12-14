@@ -28,6 +28,7 @@ typedef struct _LdmDeviceClass LdmDeviceClass;
  * @LDM_DEVICE_TYPE_IMAGE: Imaging device such as a camera
  * @LDM_DEVICE_TYPE_PCI: The device is connected via PCI
  * @LDM_DEVICE_TYPE_PRINTER: Printer
+ * @LDM_DEVICE_TYPE_STORAGE: Storage device
  * @LDM_DEVICE_TYPE_VIDEO: Video device, perhaps a webcam
  * @LDM_DEVICE_TYPE_USB: The device is connected via USB
  * @LDM_DEVICE_TYPE_WIRELESS: A wireless device, i.e. dongle or mouse
@@ -48,10 +49,11 @@ typedef enum {
         LDM_DEVICE_TYPE_IMAGE = 1 << 3,
         LDM_DEVICE_TYPE_PCI = 1 << 4,
         LDM_DEVICE_TYPE_PRINTER = 1 << 5,
-        LDM_DEVICE_TYPE_VIDEO = 1 << 6,
-        LDM_DEVICE_TYPE_WIRELESS = 1 << 7,
-        LDM_DEVICE_TYPE_USB = 1 << 8,
-        LDM_DEVICE_TYPE_MAX = 1 << 9,
+        LDM_DEVICE_TYPE_STORAGE = 1 << 6,
+        LDM_DEVICE_TYPE_VIDEO = 1 << 7,
+        LDM_DEVICE_TYPE_WIRELESS = 1 << 8,
+        LDM_DEVICE_TYPE_USB = 1 << 9,
+        LDM_DEVICE_TYPE_MAX = 1 << 10,
 } LdmDeviceType;
 
 /**
