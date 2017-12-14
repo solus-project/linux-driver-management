@@ -158,6 +158,25 @@ static void ldm_gpu_config_init(LdmGPUConfig *self)
 }
 
 /**
+ * ldm_gpu_config_search_vendor:
+ *
+ * Utility method to search the list of GPU devices for a given
+ * vendor ID.
+ */
+static LdmDevice *ldm_gpu_config_search_vendor(GList *devices, gint vendor_id)
+{
+        for (GList *elem = devices; elem; elem = elem->next) {
+                LdmDevice *device = LDM_DEVICE(elem->data);
+
+                if (ldm_device_get_vendor_id(device) == vendor_id) {
+                        return device;
+                }
+        }
+
+        return NULL;
+}
+
+/**
  * ldm_gpu_config_analyze:
  *
  * Ask the manager what the story is.
@@ -167,12 +186,18 @@ static void ldm_gpu_config_analyze(LdmGPUConfig *self)
         g_autoptr(GList) devices = NULL;
 
         devices = ldm_manager_get_devices(self->manager, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU);
-        if (!devices) {
+        self->n_gpu = g_list_length(devices);
+        if (self->n_gpu < 1) {
                 g_message("failed to discover any GPUs");
                 return;
         }
 
-        self->n_gpu = g_list_length(devices);
+        /* Trivial GPU configuration */
+        if (self->n_gpu == 1) {
+                self->gpu_type = LDM_GPU_TYPE_SIMPLE;
+                return;
+        }
+
         g_message("not yet fully implemented!");
 }
 
