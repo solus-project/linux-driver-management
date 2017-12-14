@@ -20,12 +20,23 @@ struct _LdmGPUConfigClass {
 };
 
 /**
- * LdmGPUConfig
+ * SECTION:gpu-config
+ * @Short_description: Access GPU configuration
+ * @see_also: #LdmManager, #LdmPCIDevice
+ * @Title: LdmGPUConfig
  *
  * This object is used to query an #LdmManager for the system GPU configuration
  * and topology. Using the #LdmGPUConfig allows end-users to query exactly
  * what kind of configuration is present, and determine the primary vs secondary
  * GPUs, presence of Optimus/Hybrid GPUs, etc.
+ *
+ * C example:
+ *
+ * |[<!-- language="C" -->
+ *      LdmManager *manager = ldm_manager_new();
+ *      LdmGPUConfig *gpu = ldm_gpu_config_new(manager);
+ *      g_message("This system has %d GPUs", ldm_gpu_config_count(gpu));
+ * ]|
  */
 struct _LdmGPUConfig {
         GObject parent;
@@ -380,6 +391,14 @@ LdmGPUType ldm_gpu_config_get_gpu_type(LdmGPUConfig *self)
  *
  * Test whether this GPU config has the given type(s) by testing the mask against
  * our known types.
+ *
+ * C example:
+ *
+ * |[<!-- language="C" -->
+ *      if (ldm_gpu_config_has_type(gpu, LDM_GPU_TYPE_OPTIMUS)) {
+ *              g_message("System is using an Optimus configuration");
+ * }
+ * ]|
  */
 gboolean ldm_gpu_config_has_type(LdmGPUConfig *self, LdmGPUType mask)
 {

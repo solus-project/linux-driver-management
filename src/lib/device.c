@@ -27,6 +27,29 @@ static void ldm_device_get_property(GObject *object, guint id, GValue *value, GP
 
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 
+/**
+ * SECTION:device
+ * @Short_description: Abstract device encapsulation
+ * @see_also: #LdmManager, #LdmModalias
+ * @Title: LdmDevice
+ *
+ * An LdmDevice is not directly created, it is owned and constructed by an
+ * #LdmManager instance. Each #LdmDevice may either be a PCI or USB device,
+ * and is in reality an abstraction of an underlying udev device.
+ *
+ * This object provides easy access to system devices, allowing the end
+ * user to easily introspect basic properties such as the #LdmDevice:name,
+ * #LdmDevice:vendor-id or even the #LdmDevice:modalias.
+ *
+ * Each device returned by the #LdmManager is a composite toplevel device,
+ * that is to say, it is the sum of all of its properties. This is particularly
+ * helpful when dealing with #LdmUSBDevice, whereby the root level properties
+ * of the device are the sum of all child parts. This allows users of the
+ * library to ignore USB interface internals and directly query an #LdmDevice
+ * to determine what capabilities and classes it supports, such as a composite
+ * device with #LDM_DEVICE_TYPE_VIDEO | #LDM_DEVICE_TYPE_AUDIO capabilites.
+ */
+
 /* Property IDs */
 enum { PROP_PARENT = 1,
        PROP_PATH,
@@ -86,7 +109,9 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
          * @device: The device owning the new child
          * @child: The newly available child
          *
-         * Notify interested parties that a new child device was added
+         * Notify interested parties that a new child device was added.
+         * This signal is used internally and would rarely need to be used
+         * outside of the primary APIs.
          */
         obj_signals[SIGNAL_CHILD_ADDED] = g_signal_new("child-added",
                                                        LDM_TYPE_DEVICE,
@@ -104,7 +129,9 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
          * @device: The device that owned the child
          * @id: The child ID being removed.
          *
-         * Notify interested parties that a child was removed
+         * Notify interested parties that a child was removed.
+         * This signal is used internally and would rarely need to be used
+         * outside of the primary APIs.
          */
         obj_signals[SIGNAL_CHILD_REMOVED] =
             g_signal_new("child-removed",
@@ -301,6 +328,10 @@ static void ldm_device_init(LdmDevice *self)
  * The modalias is unique to the device and is used in identifying potential
  * driver candidates.
  *
+ * The Linux kernel will assign each device (or interface) a modalias, which can
+ * be matched via #LdmModalias and #LdmModaliasDriver to determine which package
+ * provides the drivers required to enable this device.
+ *
  * Returns: (transfer none): The modalias of the device
  */
 const gchar *ldm_device_get_modalias(LdmDevice *self)
@@ -327,7 +358,7 @@ const gchar *ldm_device_get_name(LdmDevice *self)
  * ldm_device_get_path:
  *
  * This function will return the system-specific path for this device.
- * On Linux this is the sysfs path.
+ * This is the fully qualified `/sys` path.
  *
  * Returns: (transfer none): The path of the device
  */
@@ -371,6 +402,15 @@ const gchar *ldm_device_get_vendor(LdmDevice *self)
  * This function will return the vendor ID (manufacturer) of this device,
  * suitable for comparison with known vendors.
  *
+ * This is especially useful with the predefined #LdmPCIVendorID IDs
+ *
+ * C example:
+ *
+ * |[<!-- language="C" -->
+ *      if (ldm_device_get_vendor_id(device) == LDM_PCI_VENDOR_ID_NVIDIA) {
+ *              g_message("Found an NVIDIA device!");
+ *      }
+ * ]|
  * Returns: The vendor ID of the device
  */
 gint ldm_device_get_vendor_id(LdmDevice *self)
@@ -471,6 +511,15 @@ LdmDeviceType ldm_device_get_device_type(LdmDevice *self)
  *
  * Test whether this device has the given type(s) by testing the mask against
  * our known types.
+ *
+ * C example:
+ *
+ * |[<!-- language="C" -->
+ *
+ *      if (ldm_device_has_type(device, LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_PRINTER) {
+ *              g_message("Found a USB printer!");
+ *      }
+ *  ]|
  */
 gboolean ldm_device_has_type(LdmDevice *self, LdmDeviceType mask)
 {
@@ -500,6 +549,14 @@ LdmDeviceAttribute ldm_device_get_attributes(LdmDevice *self)
  *
  * Test whether this device has the given attribute(s) by testing the mask against
  * our known attributes
+ *
+ * C example:
+ *
+ * |[<!-- language="C" -->
+ *      if (ldm_device_has_attribute(device, LDM_DEVICE_ATTRIBUTE_BOOT_VGA)) {
+ *              g_message("User booted with this GPU: %s", ldm_device_get_name(device));
+ *      }
+ * ]|
  */
 gboolean ldm_device_has_attribute(LdmDevice *self, LdmDeviceAttribute mask)
 {

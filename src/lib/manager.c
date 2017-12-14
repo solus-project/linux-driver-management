@@ -26,11 +26,37 @@ struct _LdmManagerClass {
         GObjectClass parent_class;
 };
 
-/*
- * LdmManager
+/**
+ * SECTION:manager
+ * @Short_description: Device Manager
+ * @Title: LdmManager
  *
- * The manager is the main library portion of libldm and is used to introspect
- * devices on the system.
+ * The manager object is used to introspect the system and discover various
+ * devices. Using the #LdmManager APIs one can enumerate specific device
+ * classes.
+ *
+ * LdmManager internally makes use of libudev to provide low level enumeration
+ * and hotplug event capabilities, but will convert those raw devices and
+ * interfaces into the more readily consumable #LdmDevice type.
+ *
+ * Using the manager is very simple, and in a few lines you can grab all
+ * the devices from the system for introspection.
+ *
+ * C example:
+ *
+ * |[<!-- language="C" -->
+ *      LdmManager *manager = ldm_manager_new();
+ *      GList *devices = ldm_manager_get_devices(LDM_DEVICE_TYPE_ANY);
+ *      LdmDevice *device = g_list_nth_data(devices, 0);
+ *      g_list_free(devices);
+ * ]|
+ *
+ * Vala example:
+ *
+ * |[<!-- language="Vala" -->
+ *      var manager = new Ldm.Manager();
+ *      var devices = manager.get_devices();
+ * ]|
  */
 struct _LdmManager {
         GObject parent;
@@ -238,7 +264,7 @@ LdmManager *ldm_manager_new()
  *
  * Return a subset of the devices known to this manager that happen to
  * match the given classmask. As an example you might call this function
- * with LDM_DEVICE_TYPE_GPU|LDM_DEVICE_TYPE_PCI to find all PCI GPUs on
+ * with #LDM_DEVICE_TYPE_GPU|#LDM_DEVICE_TYPE_PCI to find all PCI GPUs on
  * the system.
  *
  * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices

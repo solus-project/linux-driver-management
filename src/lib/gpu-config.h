@@ -24,6 +24,9 @@ typedef struct _LdmGPUConfigClass LdmGPUConfigClass;
  * @LDM_GPU_TYPE_SIMPLE: Trivial GPU configuration
  * @LDM_GPU_TYPE_HYBRID: Hybrid graphics discovered (i.e. Optimus)
  * @LDM_GPU_TYPE_COMPOSITE: Composite graphics configuration (SLI/Crossfire)
+ * @LDM_GPU_TYPE_OPTIMUS: NVIDIA Optimus configuration (hybrid GPU)
+ * @LDM_GPU_TYPE_SLI: NVIDIA SLI configuration (multiple GPUs)
+ * @LDM_GPU_TYPE_CROSSFIRE: AMD Crossfire configuration (multiple GPUs)
  *
  * A GPU configuration can only have one active state at the time of detection
  * as far as LDM is concerned. It is in most cases a simple configuration, i.e.

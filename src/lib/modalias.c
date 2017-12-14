@@ -20,14 +20,42 @@ struct _LdmModaliasClass {
         GObjectClass parent_class;
 };
 
-/*
- * LdmModalias
+/**
+ * SECTION:modalias
+ * @Short_description: Modalias matching
+ * @see_also: #LdmDevice, #LdmModaliasDriver
+ * @Title: LdmModalias
  *
  * An LdmModalias is a mapping from an `fnmatch` style modalias match to
  * the required package name and kernel module.
  *
  * This is used in hardware detection to determine which package provides
- * the required kernel modules for any given hardware.
+ * the required kernel modules for any given hardware. At the most simple
+ * level, we attempt to match the #LdmModalias:match field, which is an
+ * `fnmatch` style string, to each device's #LdmDevice:modalias field, which is
+ * an explicit string set by the kernel.
+ *
+ * This allows for automatic hardware detection and association with each
+ * #LdmDriver.
+ *
+ * The primary use of #LdmModalias is by the #LdmModaliasDriver implementation,
+ * which adds a new modalias for every line in a file to allow hardware
+ * matching.
+ *
+ * For example, if we're trying to match an NVIDIA GPU which has the following
+ * modalias:
+ *
+ *      `pci:v000010DEd00001C60sv00001558sd000065A4bc03sc00i00`
+ *
+ * as set by the kernel, we might have a #LdmModalias:match line that looks like:
+ *
+ *      `pci:v000010DEd00001C60sv*sd*bc03sc*i*`
+ *
+ * Then all that is left is a simple comparison to check if the driver can be
+ * supported by the given match. Once we verify a match, we also know from the
+ * #LdmModalias:driver and #LdmModalias:package fields what the end user would
+ * need to have installed on their system for the #LdmModalias:driver to be
+ * activated. This helps immensely in detecting support for drivers.
  */
 struct _LdmModalias {
         GObject parent;
@@ -260,8 +288,8 @@ gboolean ldm_modalias_matches(LdmModalias *self, const gchar *match_string)
  * ldm_modalias_matches_device:
  * @match_device: An LdmDevice to test against
  *
- * This is a simple wrapper around ldm_modalias_matches, and will simply pass
- * the device's modalias for testing.
+ * This is a simple wrapper around #ldm_modalias_matches, and will simply pass
+ * the device's #LdmDevice:modalias for testing.
  *
  * Returns: True if the match_device is indeed a match
  */

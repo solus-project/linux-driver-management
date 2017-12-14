@@ -25,16 +25,6 @@ struct _LdmDriverClass {
         gpointer padding[12];
 };
 
-/*
- * LdmDriver
- *
- * An LdmDriver is essentially a kind of plugin as far as LDM is concerned,
- * and is used to match hardware configurations to provide the potential for
- * automatic driver detection.
- *
- * The base LdmDriver implementation does nothing by itself, and must be
- * extended to be useful.
- */
 struct _LdmDriver {
         GObject parent;
         LdmDriverPrivate *priv;

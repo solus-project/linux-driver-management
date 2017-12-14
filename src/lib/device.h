@@ -35,7 +35,7 @@ typedef enum {
 
 /**
  * LdmDeviceType:
- * @LDM_DEVICE_TYPE_ANY: Placeholder value
+ * @LDM_DEVICE_TYPE_ANY: Device type is either unknown or unhandled
  * @LDM_DEVICE_TYPE_AUDIO: Audio device
  * @LDM_DEVICE_TYPE_BOOT_VGA: Special attribute marking the GPU used to boot the system
  * @LDM_DEVICE_TYPE_GPU: A graphics device (onboard, NVIDIA, etc.)

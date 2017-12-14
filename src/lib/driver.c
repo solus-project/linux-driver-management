@@ -14,6 +14,19 @@
 #include "driver.h"
 #include "util.h"
 
+/**
+ * SECTION:driver
+ * @Short_description: Match hardware to drivers
+ * @see_also: #LdmDevice, #LdmModaliasDriver
+ * @Title: LdmDriver
+ *
+ * An LdmDriver is essentially a kind of plugin as far as LDM is concerned,
+ * and is used to match hardware configurations to provide the potential for
+ * automatic driver detection.
+ *
+ * The base LdmDriver implementation does nothing by itself, and must be
+ * extended to be useful.
+ */
 struct _LdmDriverPrivate {
         gchar *name;
         gint priority;
