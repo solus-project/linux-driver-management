@@ -71,7 +71,6 @@ START_TEST(test_gpu_config_optimus)
         g_autoptr(GList) devices = NULL;
         g_autoptr(LdmGPUConfig) gpu = NULL;
         guint n_gpu = 0;
-        guint gpu_type = 0;
 
         bed = create_bed_from(OPTIMUS_MOCKDEV_FILE);
         manager = ldm_manager_new();
@@ -82,11 +81,9 @@ START_TEST(test_gpu_config_optimus)
         n_gpu = ldm_gpu_config_count(gpu);
         fail_if(n_gpu != 2, "Invalid number of GPUs (%u) - expected %u", n_gpu, 2);
 
-        gpu_type = ldm_gpu_config_get_gpu_type(gpu);
-        fail_if((gpu_type & LDM_GPU_TYPE_HYBRID) != LDM_GPU_TYPE_HYBRID,
+        fail_if(!ldm_gpu_config_has_type(gpu, LDM_GPU_TYPE_HYBRID),
                 "Failed to detect hybrid graphics");
-        fail_if((gpu_type & LDM_GPU_TYPE_OPTIMUS) != LDM_GPU_TYPE_OPTIMUS,
-                "Failed to detect Optimus");
+        fail_if(!ldm_gpu_config_has_type(gpu, LDM_GPU_TYPE_OPTIMUS), "Failed to detect Optimus");
 }
 END_TEST
 

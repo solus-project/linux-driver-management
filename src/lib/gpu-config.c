@@ -254,6 +254,24 @@ LdmGPUType ldm_gpu_config_get_gpu_type(LdmGPUConfig *self)
         return self->gpu_type;
 }
 
+/**
+ * ldm_gpu_config_has_type:
+ * @mask: Bitwise OR combination of #LdmGPUType
+ *
+ * Test whether this GPU config has the given type(s) by testing the mask against
+ * our known types.
+ */
+gboolean ldm_gpu_config_has_type(LdmGPUConfig *self, LdmGPUType mask)
+{
+        g_return_val_if_fail(self != NULL, FALSE);
+
+        if ((self->gpu_type & mask) == mask) {
+                return TRUE;
+        }
+
+        return FALSE;
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

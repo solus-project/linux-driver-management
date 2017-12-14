@@ -26,6 +26,7 @@ LIBLDM_0 {
     ldm_gpu_config_get_gpu_type;
     ldm_gpu_config_get_manager;
     ldm_gpu_config_get_type;
+    ldm_gpu_config_has_type;
     ldm_gpu_config_new;
     ldm_gpu_type_get_type;
     ldm_manager_new;
