@@ -32,6 +32,10 @@ struct _LdmGPUConfig {
 
         LdmManager *manager;
 
+        /* Hybrid GPU tracking basically. */
+        LdmDevice *primary;   /* Primary GPU */
+        LdmDevice *secondary; /* Secondary GPU */
+
         guint n_gpu;    /* How many GPUs we got? */
         guint gpu_type; /* Primary type */
 };
@@ -158,17 +162,23 @@ static void ldm_gpu_config_init(LdmGPUConfig *self)
 }
 
 /**
- * ldm_gpu_config_search_vendor:
+ * ldm_gpu_config_search_boot:
+ * @vga_boot: If we want it bootable or not
+ * @not_like: Item to not be.
  *
- * Utility method to search the list of GPU devices for a given
- * vendor ID.
+ * Utility method to find the boot_vga device, i.e. the GPU that was used
+ * to boot the system.
  */
-static LdmDevice *ldm_gpu_config_search_vendor(GList *devices, gint vendor_id)
+static LdmDevice *ldm_gpu_config_search_boot(GList *devices, gboolean vga_boot, LdmDevice *not_like)
 {
         for (GList *elem = devices; elem; elem = elem->next) {
                 LdmDevice *device = LDM_DEVICE(elem->data);
 
-                if (ldm_device_get_vendor_id(device) == vendor_id) {
+                if (device == not_like) {
+                        continue;
+                }
+
+                if (ldm_device_has_attribute(device, LDM_DEVICE_ATTRIBUTE_BOOT_VGA) == vga_boot) {
                         return device;
                 }
         }
@@ -177,22 +187,69 @@ static LdmDevice *ldm_gpu_config_search_vendor(GList *devices, gint vendor_id)
 }
 
 /**
- * ldm_gpu_config_search_boot:
+ * ldm_gpu_config_do_optimus:
  *
- * Utility method to find the boot_vga device, i.e. the GPU that was used
- * to boot the system.
+ * Attempt to verify whether we have an Optimus system. This basically means that the
+ * primary GPU (boot_vga) must be an Intel device, and the secondary device must be
+ * NVIDIA, without boot_vga attribute.
+ *
+ * Returns: TRUE if we detected Optimus
  */
-static LdmDevice *ldm_gpu_config_search_boot(GList *devices)
+static gboolean ldm_gpu_config_do_optimus(LdmGPUConfig *self, LdmDevice *primary,
+                                          LdmDevice *secondary)
 {
-        for (GList *elem = devices; elem; elem = elem->next) {
-                LdmDevice *device = LDM_DEVICE(elem->data);
-
-                if (ldm_device_has_attribute(device, LDM_DEVICE_ATTRIBUTE_BOOT_VGA)) {
-                        return device;
-                }
+        if (!ldm_device_has_attribute(primary, LDM_DEVICE_ATTRIBUTE_BOOT_VGA)) {
+                return FALSE;
+        }
+        if (ldm_device_has_attribute(secondary, LDM_DEVICE_ATTRIBUTE_BOOT_VGA)) {
+                return FALSE;
+        }
+        if (ldm_device_get_vendor_id(primary) != LDM_PCI_VENDOR_ID_INTEL) {
+                return FALSE;
+        }
+        if (ldm_device_get_vendor_id(secondary) != LDM_PCI_VENDOR_ID_NVIDIA) {
+                return FALSE;
         }
 
-        return NULL;
+        self->gpu_type = LDM_GPU_TYPE_HYBRID | LDM_GPU_TYPE_OPTIMUS;
+        self->primary = primary;
+        self->secondary = secondary;
+        return TRUE;
+}
+
+/**
+ * ldm_gpu_config_amd_hybrid:
+ *
+ * Hybrid AMD gpu configurations require that the primary GPU is boot_vga and is either
+ * and AMD APU or Intel iGPU, and the secondary GPU is non boot-vga and also AMD.
+ *
+ * Returns: TRUE if we detected AMD Hybrid graphics
+ */
+static gboolean ldm_gpu_config_do_amd_hybrid(LdmGPUConfig *self, LdmDevice *primary,
+                                             LdmDevice *secondary)
+{
+        gint primary_vendor_id = 0;
+
+        if (!ldm_device_has_attribute(primary, LDM_DEVICE_ATTRIBUTE_BOOT_VGA)) {
+                return FALSE;
+        }
+        if (ldm_device_has_attribute(secondary, LDM_DEVICE_ATTRIBUTE_BOOT_VGA)) {
+                return FALSE;
+        }
+
+        primary_vendor_id = ldm_device_get_vendor_id(primary);
+        if (primary_vendor_id != LDM_PCI_VENDOR_ID_INTEL &&
+            primary_vendor_id != LDM_PCI_VENDOR_ID_AMD) {
+                return FALSE;
+        }
+        if (ldm_device_get_vendor_id(secondary) != LDM_PCI_VENDOR_ID_AMD) {
+                return FALSE;
+        }
+
+        self->gpu_type = LDM_GPU_TYPE_HYBRID;
+        self->primary = primary;
+        self->secondary = secondary;
+        return TRUE;
 }
 
 /**
@@ -203,6 +260,9 @@ static LdmDevice *ldm_gpu_config_search_boot(GList *devices)
 static void ldm_gpu_config_analyze(LdmGPUConfig *self)
 {
         g_autoptr(GList) devices = NULL;
+        LdmDevice *boot_vga = NULL;
+        LdmDevice *non_boot_vga = NULL;
+        gint vendor_id = 0;
 
         devices = ldm_manager_get_devices(self->manager, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU);
         self->n_gpu = g_list_length(devices);
@@ -211,13 +271,54 @@ static void ldm_gpu_config_analyze(LdmGPUConfig *self)
                 return;
         }
 
+        /* Safety set */
+        self->primary = g_list_nth_data(devices, 0);
+
         /* Trivial GPU configuration */
         if (self->n_gpu == 1) {
                 self->gpu_type = LDM_GPU_TYPE_SIMPLE;
                 return;
         }
 
-        g_message("not yet fully implemented!");
+        /* Ensure we have boot_vga, compensate if required */
+        boot_vga = ldm_gpu_config_search_boot(devices, TRUE, NULL);
+        if (!boot_vga) {
+                boot_vga = g_list_nth_data(devices, 0);
+        }
+
+        /* Ensure primary is properly set now */
+        self->primary = boot_vga;
+
+        /* Find a non_boot_vga that isn't boot_vga */
+        non_boot_vga = ldm_gpu_config_search_boot(devices, FALSE, boot_vga);
+
+        /* Optimus? */
+        if (ldm_gpu_config_do_optimus(self, boot_vga, non_boot_vga)) {
+                return;
+        }
+
+        /* AMD hybrid? */
+        if (ldm_gpu_config_do_amd_hybrid(self, boot_vga, non_boot_vga)) {
+                return;
+        }
+
+        /* Do we have composite graphics, i.e. SLI? */
+        vendor_id = ldm_device_get_vendor_id(boot_vga);
+        if (vendor_id == ldm_device_get_vendor_id(non_boot_vga)) {
+                switch (vendor_id) {
+                case LDM_PCI_VENDOR_ID_AMD:
+                        self->gpu_type = LDM_GPU_TYPE_COMPOSITE | LDM_GPU_TYPE_CROSSFIRE;
+                        return;
+                case LDM_PCI_VENDOR_ID_NVIDIA:
+                        self->gpu_type = LDM_GPU_TYPE_COMPOSITE | LDM_GPU_TYPE_SLI;
+                        return;
+                default:
+                        break;
+                }
+        }
+
+        /* Fugit, back to being simple device */
+        self->gpu_type = LDM_GPU_TYPE_SIMPLE;
 }
 
 /**
