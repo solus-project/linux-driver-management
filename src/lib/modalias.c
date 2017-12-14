@@ -268,7 +268,34 @@ gboolean ldm_modalias_matches(LdmModalias *self, const gchar *match_string)
 gboolean ldm_modalias_matches_device(LdmModalias *self, LdmDevice *match_device)
 {
         g_return_val_if_fail(match_device != NULL, FALSE);
-        return ldm_modalias_matches(self, ldm_device_get_modalias(match_device));
+        g_autoptr(GList) kids = NULL;
+        GList *elem = NULL;
+        const gchar *id = NULL;
+
+        /* Root match? */
+        id = ldm_device_get_modalias(match_device);
+        if (id && ldm_modalias_matches(self, id)) {
+                return TRUE;
+        }
+
+        /* Any kids? */
+        kids = ldm_device_get_children(match_device);
+        if (!kids) {
+                return FALSE;
+        }
+
+        /* Try matching child devices (interfaces) */
+        for (elem = kids; elem; elem = elem->next) {
+                LdmDevice *child_device = NULL;
+
+                child_device = LDM_DEVICE(elem->data);
+                id = ldm_device_get_modalias(child_device);
+                if (id && ldm_modalias_matches(self, id)) {
+                        return TRUE;
+                }
+        }
+
+        return FALSE;
 }
 
 /*
