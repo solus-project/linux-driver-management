@@ -162,7 +162,7 @@ static void ldm_gpu_config_init(LdmGPUConfig *self)
  *
  * Ask the manager what the story is.
  */
-static void ldm_gpu_config_analyze(__ldm_unused__ LdmGPUConfig *self)
+static void ldm_gpu_config_analyze(LdmGPUConfig *self)
 {
         g_autoptr(GList) devices = NULL;
 
