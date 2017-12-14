@@ -214,6 +214,8 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
                 return;
         }
 
+        g_message("ldm_manager_push_device(%s): %s", subsystem, ldm_device_get_name(ldm_device));
+
         /* TODO: Emit signal for the new device. */
         g_hash_table_insert(self->devices, g_strdup(sysfs_path), ldm_device);
 }
