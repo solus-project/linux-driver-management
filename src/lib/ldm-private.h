@@ -27,6 +27,10 @@ typedef struct udev_list_entry udev_list;
 
 struct _LdmDeviceClass {
         GObjectClass parent_class;
+
+        /* Signals */
+        void (*child_added)(LdmDevice *self, LdmDevice *child);
+        void (*child_removed)(LdmDevice *self, LdmDevice *child);
 };
 
 /*

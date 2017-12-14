@@ -27,6 +27,7 @@ static void ldm_device_get_property(GObject *object, guint id, GValue *value, GP
 
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 
+/* Property IDs */
 enum { PROP_PARENT = 1,
        PROP_PATH,
        PROP_MODALIAS,
@@ -39,6 +40,11 @@ enum { PROP_PARENT = 1,
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
+
+/* Signal IDs */
+enum { SIGNAL_CHILD_ADDED = 0, SIGNAL_CHILD_REMOVED, N_SIGNALS };
+
+static guint obj_signals[N_SIGNALS] = { 0 };
 
 /**
  * ldm_device_dispose:
@@ -72,6 +78,43 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
         obj_class->dispose = ldm_device_dispose;
         obj_class->get_property = ldm_device_get_property;
         obj_class->set_property = ldm_device_set_property;
+
+        /**
+         * LdmDevice:child-added
+         * @device: The device owning the new child
+         * @child: The newly available child
+         *
+         * Notify interested parties that a new child device was added
+         */
+        obj_signals[SIGNAL_CHILD_ADDED] = g_signal_new("child-added",
+                                                       LDM_TYPE_DEVICE,
+                                                       G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                                                       G_STRUCT_OFFSET(LdmDeviceClass, child_added),
+                                                       NULL,
+                                                       NULL,
+                                                       NULL,
+                                                       G_TYPE_NONE,
+                                                       1,
+                                                       LDM_TYPE_DEVICE);
+
+        /**
+         * LdmDevice:child-removed
+         * @device: The device that owned the child
+         * @id: The child ID being removed.
+         *
+         * Notify interested parties that a child was removed
+         */
+        obj_signals[SIGNAL_CHILD_REMOVED] =
+            g_signal_new("child-removed",
+                         LDM_TYPE_DEVICE,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(LdmDeviceClass, child_removed),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         G_TYPE_STRING);
 
         /**
          * LdmDevice:parent: (type LdmDevice) (transfer none)
@@ -450,7 +493,10 @@ void ldm_device_add_child(LdmDevice *self, LdmDevice *child)
         g_return_if_fail(self != NULL);
 
         id = ldm_device_get_path(child);
-        g_hash_table_replace(self->tree.kids, g_strdup(id), g_object_ref_sink(child));
+        if (!g_hash_table_replace(self->tree.kids, g_strdup(id), g_object_ref_sink(child))) {
+                return;
+        }
+        g_signal_emit(self, obj_signals[SIGNAL_CHILD_ADDED], 0, child);
 }
 
 /**
@@ -479,7 +525,10 @@ void ldm_device_remove_child_by_path(LdmDevice *self, const gchar *path)
 {
         g_return_if_fail(self != NULL);
 
-        g_hash_table_remove(self->tree.kids, path);
+        if (!g_hash_table_remove(self->tree.kids, path)) {
+                return;
+        }
+        g_signal_emit(self, obj_signals[SIGNAL_CHILD_REMOVED], 0, path);
 }
 
 /*
