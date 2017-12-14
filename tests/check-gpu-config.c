@@ -56,6 +56,8 @@ START_TEST(test_gpu_config_simple)
 
         n_gpu = ldm_gpu_config_count(gpu);
         fail_if(n_gpu != 1, "Invalid number of GPUs (%u) - expected %u", n_gpu, 1);
+
+        fail_if(ldm_gpu_config_get_gpu_type(gpu) != LDM_GPU_TYPE_SIMPLE, "GPU type isn't simple");
 }
 END_TEST
 
