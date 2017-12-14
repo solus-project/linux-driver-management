@@ -23,10 +23,6 @@ static void ldm_device_set_property(GObject *object, guint id, const GValue *val
                                     GParamSpec *spec);
 static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
 
-struct _LdmDeviceClass {
-        GObjectClass parent_class;
-};
-
 G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
 
 enum { PROP_PARENT = 1,
