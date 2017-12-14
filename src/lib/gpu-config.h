@@ -32,8 +32,8 @@ GType ldm_gpu_config_get_type(void);
 
 /* API */
 LdmGPUConfig *ldm_gpu_config_new(LdmManager *manager);
-
 LdmManager *ldm_gpu_config_get_manager(LdmGPUConfig *config);
+guint ldm_gpu_config_count(LdmGPUConfig *config);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmGPUConfig, g_object_unref)
 

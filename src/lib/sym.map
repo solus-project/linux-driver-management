@@ -20,6 +20,7 @@ LIBLDM_0 {
     ldm_driver_get_type;
     ldm_driver_set_name;
     ldm_driver_set_priority;
+    ldm_gpu_config_count;
     ldm_gpu_config_get_manager;
     ldm_gpu_config_get_type;
     ldm_gpu_config_new;

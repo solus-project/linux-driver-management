@@ -30,6 +30,8 @@ struct _LdmGPUConfig {
         GObject parent;
 
         LdmManager *manager;
+
+        guint n_gpu; /* How many GPUs we got? */
 };
 
 static void ldm_gpu_config_set_property(GObject *object, guint id, const GValue *value,
@@ -132,8 +134,9 @@ static void ldm_gpu_config_constructed(GObject *obj)
  *
  * Handle construction of the LdmGPUConfig
  */
-static void ldm_gpu_config_init(__ldm_unused__ LdmGPUConfig *self)
+static void ldm_gpu_config_init(LdmGPUConfig *self)
 {
+        self->n_gpu = 0;
 }
 
 /**
@@ -143,7 +146,16 @@ static void ldm_gpu_config_init(__ldm_unused__ LdmGPUConfig *self)
  */
 static void ldm_gpu_config_analyze(__ldm_unused__ LdmGPUConfig *self)
 {
-        g_message("not yet implemented!");
+        g_autoptr(GList) devices = NULL;
+
+        devices = ldm_manager_get_devices(self->manager, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU);
+        if (!devices) {
+                g_message("failed to discover any GPUs");
+                return;
+        }
+
+        self->n_gpu = g_list_length(devices);
+        g_message("not yet fully implemented!");
 }
 
 /**
@@ -170,6 +182,19 @@ LdmManager *ldm_gpu_config_get_manager(LdmGPUConfig *self)
         g_return_val_if_fail(self != NULL, NULL);
 
         return self->manager;
+}
+
+/**
+ * ldm_gpu_config_count:
+ *
+ * Determine the number of GPUs present on the system
+ *
+ * Returns: Number of GPUs
+ */
+guint ldm_gpu_config_count(LdmGPUConfig *self)
+{
+        g_return_val_if_fail(self != NULL, 0);
+        return self->n_gpu;
 }
 
 /*

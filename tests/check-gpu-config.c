@@ -46,12 +46,16 @@ START_TEST(test_gpu_config_simple)
         autofree(UMockdevTestbed) *bed = NULL;
         g_autoptr(GList) devices = NULL;
         g_autoptr(LdmGPUConfig) gpu = NULL;
+        guint n_gpu = 0;
 
         bed = create_bed_from(NV_MOCKDEV_FILE);
         manager = ldm_manager_new();
 
         gpu = ldm_gpu_config_new(manager);
         fail_if(!gpu, "Failed to create GPUConfig");
+
+        n_gpu = ldm_gpu_config_count(gpu);
+        fail_if(n_gpu != 1, "Invalid number of GPUs (%u) - expected %u", n_gpu, 1);
 }
 END_TEST
 
