@@ -12,6 +12,7 @@
 #define _GNU_SOURCE
 
 #include "gpu-config.h"
+#include "ldm-enums.h"
 #include "util.h"
 
 struct _LdmGPUConfigClass {
@@ -31,7 +32,8 @@ struct _LdmGPUConfig {
 
         LdmManager *manager;
 
-        guint n_gpu; /* How many GPUs we got? */
+        guint n_gpu;    /* How many GPUs we got? */
+        guint gpu_type; /* Primary type */
 };
 
 static void ldm_gpu_config_set_property(GObject *object, guint id, const GValue *value,
@@ -43,7 +45,7 @@ static void ldm_gpu_config_analyze(LdmGPUConfig *self);
 G_DEFINE_TYPE(LdmGPUConfig, ldm_gpu_config, G_TYPE_OBJECT)
 
 /* Property IDs */
-enum { PROP_MANAGER = 1, N_PROPS };
+enum { PROP_MANAGER = 1, PROP_TYPE, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -85,6 +87,18 @@ static void ldm_gpu_config_class_init(LdmGPUConfigClass *klazz)
                                  "Manager for our instance",
                                  G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
+        /**
+         * LdmGPUConfig:gpu-type
+         *
+         * The composite type for this GPU Configuration
+         */
+        obj_properties[PROP_TYPE] = g_param_spec_flags("gpu-type",
+                                                       "GPU type",
+                                                       "Composite type for this GPU Config",
+                                                       LDM_TYPE_GPU_TYPE,
+                                                       LDM_GPU_TYPE_SIMPLE,
+                                                       G_PARAM_READABLE);
+
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -110,6 +124,9 @@ static void ldm_gpu_config_get_property(GObject *object, guint id, GValue *value
         switch (id) {
         case PROP_MANAGER:
                 g_value_set_pointer(value, self->manager);
+                break;
+        case PROP_TYPE:
+                g_value_set_flags(value, self->gpu_type);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -137,6 +154,7 @@ static void ldm_gpu_config_constructed(GObject *obj)
 static void ldm_gpu_config_init(LdmGPUConfig *self)
 {
         self->n_gpu = 0;
+        self->gpu_type = LDM_GPU_TYPE_SIMPLE;
 }
 
 /**
@@ -195,6 +213,20 @@ guint ldm_gpu_config_count(LdmGPUConfig *self)
 {
         g_return_val_if_fail(self != NULL, 0);
         return self->n_gpu;
+}
+
+/**
+ * ldm_gpu_config_get_gpu_type:
+ *
+ * Get the type for this GPU Configuration to determine exactly
+ * what kind of device set we're dealing with.
+ *
+ * Returns: The known type of this configuration
+ */
+LdmGPUType ldm_gpu_config_get_gpu_type(LdmGPUConfig *self)
+{
+        g_return_val_if_fail(self != NULL, LDM_GPU_TYPE_SIMPLE);
+        return self->gpu_type;
 }
 
 /*

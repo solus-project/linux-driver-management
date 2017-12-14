@@ -19,6 +19,35 @@ G_BEGIN_DECLS
 typedef struct _LdmGPUConfig LdmGPUConfig;
 typedef struct _LdmGPUConfigClass LdmGPUConfigClass;
 
+/**
+ * LdmGPUType:
+ * @LDM_GPU_TYPE_SIMPLE: Trivial GPU configuration
+ * @LDM_GPU_TYPE_HYBRID: Hybrid graphics discovered (i.e. Optimus)
+ * @LDM_GPU_TYPE_COMPOSITE: Composite graphics configuration (SLI/Crossfire)
+ *
+ * A GPU configuration can only have one active state at the time of detection
+ * as far as LDM is concerned. It is in most cases a simple configuration, i.e.
+ * not hybrid or composite. Beyond that, we tag to refine the state.
+ *
+ * Hybrid refers to *both* AMD and NVIDIA hybrid GPU approaches, and simply
+ * indicates we discovered a hybrid GPU configuration.
+ *
+ * Composite indicates we're dealing with Crossfire or SLI systems.
+ *
+ * A GPU configuration may have one or more state applied, i.e. it may be
+ * a hybrid GPU system but we can further refine this by tagging it as an
+ * Optimus system too.
+ */
+typedef enum {
+        LDM_GPU_TYPE_SIMPLE = 0,
+        LDM_GPU_TYPE_HYBRID = 1 << 0,
+        LDM_GPU_TYPE_COMPOSITE = 1 << 1,
+        LDM_GPU_TYPE_OPTIMUS = 1 << 2,
+        LDM_GPU_TYPE_SLI = 1 << 3,
+        LDM_GPU_TYPE_CROSSFIRE = 1 << 4,
+        LDM_GPU_TYPE_MAX,
+} LdmGPUType;
+
 #define LDM_TYPE_GPU_CONFIG ldm_gpu_config_get_type()
 #define LDM_GPU_CONFIG(o) (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_GPU_CONFIG, LdmGPUConfig))
 #define LDM_IS_GPU_CONFIG(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), LDM_TYPE_GPU_CONFIG))
@@ -34,6 +63,7 @@ GType ldm_gpu_config_get_type(void);
 LdmGPUConfig *ldm_gpu_config_new(LdmManager *manager);
 LdmManager *ldm_gpu_config_get_manager(LdmGPUConfig *config);
 guint ldm_gpu_config_count(LdmGPUConfig *config);
+LdmGPUType ldm_gpu_config_get_gpu_type(LdmGPUConfig *config);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmGPUConfig, g_object_unref)
 
