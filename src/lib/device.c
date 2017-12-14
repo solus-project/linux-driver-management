@@ -151,7 +151,7 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                              "Device attributes",
                                                              "Composite attributes for this device",
                                                              LDM_TYPE_DEVICE_ATTRIBUTE,
-                                                             LDM_DEVICE_ATTRIBUTE_NONE,
+                                                             LDM_DEVICE_ATTRIBUTE_ANY,
                                                              G_PARAM_READABLE);
 
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
@@ -385,7 +385,7 @@ gboolean ldm_device_has_type(LdmDevice *self, LdmDeviceType mask)
  */
 LdmDeviceAttribute ldm_device_get_attributes(LdmDevice *self)
 {
-        g_return_val_if_fail(self != NULL, LDM_DEVICE_ATTRIBUTE_NONE);
+        g_return_val_if_fail(self != NULL, LDM_DEVICE_ATTRIBUTE_ANY);
         return self->os.attributes;
 }
 
