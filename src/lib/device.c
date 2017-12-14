@@ -441,7 +441,6 @@ void ldm_device_add_child(LdmDevice *self, LdmDevice *child)
 {
         const gchar *id = NULL;
         g_return_if_fail(self != NULL);
-        g_return_if_fail(ldm_device_get_parent(child) != self);
 
         id = ldm_device_get_path(child);
         g_hash_table_replace(self->tree.kids, g_strdup(id), g_object_ref_sink(child));
@@ -457,7 +456,6 @@ void ldm_device_remove_child(LdmDevice *self, LdmDevice *child)
 {
         const gchar *id = NULL;
         g_return_if_fail(self != NULL);
-        g_return_if_fail(ldm_device_get_parent(child) != self);
 
         id = ldm_device_get_path(child);
         ldm_device_remove_child_by_path(self, id);

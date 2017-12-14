@@ -143,6 +143,43 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 }
 
 /**
+ * ldm_manager_get_device_parent:
+ *
+ * Get the associated LdmDevice that is the parent candidate for a newly
+ * added device or interface.
+ */
+LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
+                                         udev_device *device)
+{
+        udev_device *udev_parent = NULL;
+        LdmDevice *parent = NULL;
+        const char *sysfs_path = NULL;
+        const char *devtype = NULL;
+
+        /* Must be a USB interface */
+        if (!g_str_equal(subsystem, "usb")) {
+                return NULL;
+        }
+        devtype = udev_device_get_devtype(device);
+        if (!devtype || !g_str_equal(devtype, "usb_interface")) {
+                return NULL;
+        }
+
+        udev_parent = udev_device_get_parent_with_subsystem_devtype(device, "usb", "usb_device");
+        if (!udev_parent) {
+                return NULL;
+        }
+
+        sysfs_path = udev_device_get_syspath(udev_parent);
+        parent = g_hash_table_lookup(self->devices, sysfs_path);
+        if (!parent) {
+                return NULL;
+        }
+
+        return parent;
+}
+
+/**
  * ldm_manager_push_device:
  * @device: The udev device to add
  *
@@ -151,6 +188,7 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 static void ldm_manager_push_device(LdmManager *self, udev_device *device)
 {
         LdmDevice *ldm_device = NULL;
+        LdmDevice *parent = NULL;
         const char *sysfs_path = NULL;
         const char *subsystem = NULL;
         udev_list *properties = NULL;
@@ -166,12 +204,17 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
         subsystem = udev_device_get_subsystem(device);
         properties = udev_device_get_properties_list_entry(device);
 
+        parent = ldm_manager_get_device_parent(self, subsystem, device);
+
         /* Build the actual device now */
-        ldm_device = ldm_device_new_from_udev(NULL, device, properties);
+        ldm_device = ldm_device_new_from_udev(parent, device, properties);
+        if (parent) {
+                ldm_device_add_child(parent, ldm_device);
+                /* TODO: Emit signal on change! */
+                return;
+        }
 
-        g_message("ldm_manager_push_device(%s): %s", subsystem, ldm_device_get_name(ldm_device));
-
-        /* TODO: Emit signal for the device. */
+        /* TODO: Emit signal for the new device. */
         g_hash_table_insert(self->devices, g_strdup(sysfs_path), ldm_device);
 }
 
