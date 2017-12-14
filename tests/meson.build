@@ -1,5 +1,6 @@
 # Contains definitions for all of our tests
 required_tests = [
+    'gpu-config',
     'modalias',
     'manager',
     'usb',
