@@ -16,6 +16,8 @@
 #include <ldm-enums.h>
 #include <manager.h>
 #include <modalias.h>
+#include <pci-device.h>
+#include <usb-device.h>
 
 #include <drivers/modalias-driver.h>
 
