@@ -71,6 +71,33 @@ static void ldm_pci_device_init(LdmPCIDevice *self)
 }
 
 /**
+ * ldm_pci_device_assign_pvid:
+ *
+ * Assign product/vendor ID to the device from the PCI sysfs attributes
+ */
+static void ldm_pci_device_assign_pvid(LdmDevice *self, udev_device *device)
+{
+        const char *sysattr = NULL;
+
+        /* Grab the vendor */
+        sysattr = udev_device_get_sysattr_value(device, "vendor");
+        if (!sysattr) {
+                goto product;
+        }
+        self->id.vendor_id = (gint)(strtoll(sysattr, NULL, 0));
+        sysattr = NULL;
+
+product:
+
+        /* Grab the product */
+        sysattr = udev_device_get_sysattr_value(device, "device");
+        if (!sysattr) {
+                return;
+        }
+        self->id.product_id = (gint)(strtoll(sysattr, NULL, 0));
+}
+
+/**
  * ldm_pci_device_init_private:
  * @device: The udev device that we're being created from
  *
@@ -80,6 +107,8 @@ void ldm_pci_device_init_private(LdmDevice *self, udev_device *device)
 {
         const char *sysattr = NULL;
         int pci_class = 0;
+
+        ldm_pci_device_assign_pvid(self, device);
 
         /* Are we boot_vga ? */
         sysattr = udev_device_get_sysattr_value(device, "boot_vga");
