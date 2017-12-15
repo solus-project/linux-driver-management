@@ -88,7 +88,7 @@ START_TEST(test_manager_optimus)
         fail_if(g_list_length(devices) != 2, "Invalid device set");
 
         /* Check the dGPU data is correct */
-        dgpu = g_list_nth_data(devices, 0);
+        dgpu = g_list_nth_data(devices, 1);
         vendor = ldm_device_get_vendor(dgpu);
         fail_if(!vendor, "No vendor set on dGPU!");
         fail_if(!g_str_equal(vendor, "NVIDIA Corporation"),
@@ -98,7 +98,7 @@ START_TEST(test_manager_optimus)
         vendor = NULL;
 
         /* Check the iGPU data is correct */
-        igpu = g_list_nth_data(devices, 1);
+        igpu = g_list_nth_data(devices, 0);
         vendor = ldm_device_get_vendor(igpu);
         fail_if(!vendor, "No vendor set on iGPU!");
         fail_if(!g_str_equal(vendor, "Intel Corporation"),
