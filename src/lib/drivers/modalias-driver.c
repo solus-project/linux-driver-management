@@ -20,11 +20,38 @@ struct _LdmModaliasDriverClass {
         LdmDriverClass parent_class;
 };
 
-/*
- * LdmModaliasDriver
+/**
+ * SECTION:modalias-driver
+ * @Short_description: Modalias-based driver implementation
+ * @see_also: #LdmModalias, #LdmDriver
+ * @Title: LdmModaliasDriver
  *
  * The LdmModaliasDriver extends the base #LdmDriver and adds modalias-based
- * hardware detection to it.
+ * hardware detection to it. This allows us to perform #LdmModalias based
+ * matching against any given hardware.
+ *
+ * The most useful case for #LdmModaliasDriver is to dynamically construct
+ * it at runtime using `.modaliases` files. These files contain specially
+ * formatted lines that can be parsed into a set of #LdmModalias rules,
+ * all of which can later be used to detect hardware in bulk.
+ *
+ * The format of the file is very simple, space separated, with just 4
+ * columns:
+ *
+ *      `TYPE   ALIAS   DRIVER  PACKAGE`
+ *
+ * `TYPE` is reserved and is currently always set to `alias`.
+ * `MODALIAS` is the `fnmatch` style string used to match against hardware.
+ * `DRIVER` is the kernel driver that supports any hardware matching the #LdmModlias:match field
+ * `PACKAGE` is the name of the package or bundle providing the kernel driver
+ *
+ * Example:
+ *
+ *      `alias pci:v000014E4d*sv*sd*bc02sc80i* wl broadcom-sta`
+ *
+ * If a hardware device matching `pci:v000014E4d*sv*sd*bc02sc80i` is discovered,
+ * it requires `wl.ko` to operate correctly (or to enhance it). The user can find
+ * `wl.ko` in the `broadcom-sta` package.
  */
 struct _LdmModaliasDriver {
         LdmDriver parent;
