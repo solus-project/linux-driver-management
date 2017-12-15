@@ -60,7 +60,7 @@ static void ldm_gpu_config_analyze(LdmGPUConfig *self);
 G_DEFINE_TYPE(LdmGPUConfig, ldm_gpu_config, G_TYPE_OBJECT)
 
 /* Property IDs */
-enum { PROP_MANAGER = 1, PROP_TYPE, N_PROPS };
+enum { PROP_MANAGER = 1, PROP_TYPE, PROP_PRIMARY, PROP_SECONDARY, PROP_DETECTION, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -114,6 +114,36 @@ static void ldm_gpu_config_class_init(LdmGPUConfigClass *klazz)
                                                        LDM_GPU_TYPE_SIMPLE,
                                                        G_PARAM_READABLE);
 
+        /**
+         * LdmGPUConfig:primary-device: (type LdmDevice) (transfer none)
+         *
+         * Primary device in this configuration
+         */
+        obj_properties[PROP_PRIMARY] = g_param_spec_pointer("primary-device",
+                                                            "LdmDevice",
+                                                            "Primary GPU device",
+                                                            G_PARAM_READABLE);
+
+        /**
+         * LdmGPUConfig:secondary-device: (type LdmDevice) (transfer none)
+         *
+         * Secondary device in this configuration
+         */
+        obj_properties[PROP_SECONDARY] = g_param_spec_pointer("secondary-device",
+                                                              "LdmDevice",
+                                                              "Secondary GPU device (dGPU)",
+                                                              G_PARAM_READABLE);
+
+        /**
+         * LdmGPUConfig:detection-device: (type LdmDevice) (transfer none)
+         *
+         * GPU device that should be used for driver detection
+         */
+        obj_properties[PROP_DETECTION] = g_param_spec_pointer("detection-device",
+                                                              "LdmDevice",
+                                                              "Device used for driver detection",
+                                                              G_PARAM_READABLE);
+
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -135,6 +165,7 @@ static void ldm_gpu_config_set_property(GObject *object, guint id, const GValue 
 static void ldm_gpu_config_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec)
 {
         LdmGPUConfig *self = LDM_GPU_CONFIG(object);
+        LdmDevice *dev = NULL;
 
         switch (id) {
         case PROP_MANAGER:
@@ -142,6 +173,16 @@ static void ldm_gpu_config_get_property(GObject *object, guint id, GValue *value
                 break;
         case PROP_TYPE:
                 g_value_set_flags(value, self->gpu_type);
+                break;
+        case PROP_PRIMARY:
+                g_value_set_pointer(value, self->primary);
+                break;
+        case PROP_SECONDARY:
+                g_value_set_pointer(value, self->secondary);
+                break;
+        case PROP_DETECTION:
+                dev = ldm_gpu_config_get_detection_device(self);
+                g_value_set_pointer(value, dev);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -409,6 +450,62 @@ gboolean ldm_gpu_config_has_type(LdmGPUConfig *self, LdmGPUType mask)
         }
 
         return FALSE;
+}
+
+/**
+ * ldm_gpu_config_get_primary_device:
+ *
+ * Get the device that this #LdmGPUConfig has determined to be the
+ * primary active GPU. This should be the baseline for driver detection
+ * in all *non hybrid* detection cases.
+ *
+ * Returns: (transfer none): The primary GPU #LdmDevice
+ */
+LdmDevice *ldm_gpu_config_get_primary_device(LdmGPUConfig *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+
+        return self->primary;
+}
+
+/**
+ * ldm_gpu_config_get_secondary_device:
+ *
+ * Get the device that this #LdmGPUConfig has determined to be the
+ * secondary GPU. This is only useful in hybrid GPU setups, and is
+ * always the discrete GPU (dGPU).
+ *
+ * When the #LdmGPUConfig:gpu-type is #LDM_GPU_TYPE_OPTIMUS, the
+ * secondary device is always the NVIDIA dGPU, and driver detection
+ * should be performed against this device only.
+ *
+ * Returns: (transfer none): The secondary GPU #LdmDevice
+ */
+LdmDevice *ldm_gpu_config_get_secondary_device(LdmGPUConfig *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+
+        return self->secondary;
+}
+
+/**
+ * ldm_gpu_config_get_detection_device:
+ *
+ * Get the device that this #LdmGPUConfig has determined to be the
+ * best candidate for driver detection.
+ *
+ * For any hybrid GPU configuration, this will be the secondary
+ * GPU (discrete GPU). For all other cases, this will be the primary
+ * GPU (i.e. the one used to boot the system)
+ *
+ * Returns: (transfer none): The GPU #LdmDevice used for driver detection
+ */
+LdmDevice *ldm_gpu_config_get_detection_device(LdmGPUConfig *self)
+{
+        if (ldm_gpu_config_has_type(self, LDM_GPU_TYPE_HYBRID)) {
+                return self->secondary;
+        }
+        return self->primary;
 }
 
 /*
