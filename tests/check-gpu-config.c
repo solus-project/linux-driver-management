@@ -24,6 +24,7 @@ DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 
 #define NV_MOCKDEV_FILE TEST_DATA_ROOT "/nvidia1060.umockdev"
 #define OPTIMUS_MOCKDEV_FILE TEST_DATA_ROOT "/optimus765m.umockdev"
+#define DESKTOP_NVIDIA_MOCKDEV_FILE TEST_DATA_ROOT "/desktop-nvidia-intel.umockdev"
 
 static UMockdevTestbed *create_bed_from(const char *mockdevname)
 {
@@ -88,6 +89,38 @@ START_TEST(test_gpu_config_optimus)
 END_TEST
 
 /**
+ * This test has both an Intel onboard GPU and an active NVIDIA GPU over PCI,
+ * we must ensure we only detect an NVIDIA GPU configuration, in the SIMPLE
+ * arrangement (i.e. not Optimus!)
+ */
+START_TEST(test_gpu_config_desktop_nvidia)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GList) devices = NULL;
+        g_autoptr(LdmGPUConfig) gpu = NULL;
+        guint n_gpu = 0;
+
+        bed = create_bed_from(DESKTOP_NVIDIA_MOCKDEV_FILE);
+        manager = ldm_manager_new();
+
+        gpu = ldm_gpu_config_new(manager);
+        fail_if(!gpu, "Failed to create GPUConfig");
+
+        n_gpu = ldm_gpu_config_count(gpu);
+        fail_if(n_gpu != 2, "Invalid number of GPUs (%u) - expected %u", n_gpu, 2);
+
+        fail_if(ldm_gpu_config_has_type(gpu, LDM_GPU_TYPE_HYBRID),
+                "Incorrectly detected hybrid graphics!");
+        fail_if(ldm_gpu_config_has_type(gpu, LDM_GPU_TYPE_OPTIMUS),
+                "Incorrectly detected Optimus!");
+
+        fail_if(ldm_gpu_config_get_gpu_type(gpu) != LDM_GPU_TYPE_SIMPLE,
+                "Config type should be simple ONLY");
+}
+END_TEST
+
+/**
  * Standard helper for running a test suite
  */
 static int ldm_test_run(Suite *suite)
@@ -114,6 +147,7 @@ static Suite *test_create(void)
 
         tcase_add_test(tc, test_gpu_config_simple);
         tcase_add_test(tc, test_gpu_config_optimus);
+        tcase_add_test(tc, test_gpu_config_desktop_nvidia);
 
         return s;
 }
