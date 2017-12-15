@@ -58,7 +58,7 @@ struct _LdmUSBDeviceClass {
  * via ports. #LdmUSBDevice abstracts that complexity away, and is instead composed
  * of multiple devices.
  *
- * Conceptually, an #LdmUSBDevice has each interface as a separate child within
+ * Conceptually, a #LdmUSBDevice has each interface as a separate child within
  * the toplevel instance. Most end users will be able to safely ignore this difference,
  * as #LdmUSBDevice will modify the #LdmDevice:device-type to be the merged type
  * of the toplevel device, and all interfaces.
