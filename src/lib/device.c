@@ -47,7 +47,7 @@ G_DEFINE_TYPE(LdmDevice, ldm_device, G_TYPE_OBJECT)
  * of the device are the sum of all child parts. This allows users of the
  * library to ignore USB interface internals and directly query an #LdmDevice
  * to determine what capabilities and classes it supports, such as a composite
- * device with #LDM_DEVICE_TYPE_VIDEO | #LDM_DEVICE_TYPE_AUDIO capabilites.
+ * device with #LDM_DEVICE_TYPE_VIDEO | #LDM_DEVICE_TYPE_AUDIO capabilities.
  */
 
 /* Property IDs */

@@ -63,7 +63,7 @@ struct _LdmUSBDeviceClass {
  * as #LdmUSBDevice will modify the #LdmDevice:device-type to be the merged type
  * of the toplevel device, and all interfaces.
  *
- * As a result, any capabilites exposed by interfaces are available in the toplevel
+ * As a result, any capabilities exposed by interfaces are available in the toplevel
  * object returned by the #LdmManager instance. This can be used to search for
  * specific types of USB devices:
  *
