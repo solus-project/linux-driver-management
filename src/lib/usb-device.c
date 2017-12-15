@@ -27,6 +27,57 @@ struct _LdmUSBDeviceClass {
         LdmDeviceClass parent_class;
 };
 
+/**
+ * SECTION:usb-device
+ * @Short_description: USB Device abstraction
+ * @see_also: #LdmDevice
+ * @Title: LdmUSBDevice
+ *
+ * An LdmPCIDevice is a specialised implementation of the #LdmDevice which
+ * is aware of PCI capabilities and GPU data. This class is never directly
+ * created by the user, but is instead returned by the #LdmManager.
+ *
+ * This class extends the base #LdmDevice to add USB specific data.
+ *
+ * Users can test if a device is a USB device without having to cast, by
+ * simply checking the #LdmDevice:device-type:
+ *
+ * |[<!-- language="C" -->
+ *      if (ldm_device_has_type(device, LDM_DEVICE_TYPE_USB)) {
+ *              g_message("Found PCI device");
+ *      }
+ *
+ *      // Alternatively..
+ *      if (LDM_IS_USB_DEVICE(device)) {
+ *              g_message("Found PCI device through casting");
+ *      }
+ * ]|
+ *
+ * Internally USB devices are complex, having a top-level device visible
+ * to the operating system and specialised interfaces (`bInterfaceClass`) exposed
+ * via ports. #LdmUSBDevice abstracts that complexity away, and is instead composed
+ * of multiple devices.
+ *
+ * Conceptually, an #LdmUSBDevice has each interface as a separate child within
+ * the toplevel instance. Most end users will be able to safely ignore this difference,
+ * as #LdmUSBDevice will modify the #LdmDevice:device-type to be the merged type
+ * of the toplevel device, and all interfaces.
+ *
+ * As a result, any capabilites exposed by interfaces are available in the toplevel
+ * object returned by the #LdmManager instance. This can be used to search for
+ * specific types of USB devices:
+ *
+ * |[<!-- language="c" -->
+ *      gint search_mask = LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_PRINTER;
+ *      GList *usb_printers = ldm_manager_get_devices(search_mask);
+ *      g_message("Got %d printers", g_list_length(usb_printers);
+ *      LdmDevice *device = g_list_nth_data(usb_printers, 0);
+ *      if (ldm_device_has_type(device, LDM_DEVICE_TYPE_IMAGE)) {
+ *              g_message("Printer supports PTP!");
+ *      }
+ * ]|
+ */
+
 /*
  * LdmUSBDevice
  *

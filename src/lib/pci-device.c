@@ -24,11 +24,33 @@ struct _LdmPCIDeviceClass {
         LdmDeviceClass parent_class;
 };
 
-/*
- * LdmPCIDevice
+/**
+ * SECTION:pci-device
+ * @Short_description: PCI Device abstraction
+ * @see_also: #LdmDevice
+ * @Title: LdmPCIDevice
  *
  * An LdmPCIDevice is a specialised implementation of the #LdmDevice which
- * is aware of PCI capabilities and GPU data.
+ * is aware of PCI capabilities and GPU data. This class is never directly
+ * created by the user, but is instead returned by the #LdmManager.
+ *
+ * This class extends the base #LdmDevice to add PCI specific data.
+ * The primary use case within LDM is to detect GPUs, which will all
+ * carry the #LdmDevice:device-type of #LDM_DEVICE_TYPE_PCI | #LDM_DEVICE_TYPE_GPU.
+ *
+ * Users can test if a device is a PCI device without having to cast, by
+ * simply checking the #LdmDevice:device-type:
+ *
+ * |[<!-- language="C" -->
+ *      if (ldm_device_has_type(device, LDM_DEVICE_TYPE_PCI)) {
+ *              g_message("Found PCI device");
+ *      }
+ *
+ *      // Alternatively..
+ *      if (LDM_IS_PCI_DEVICE(device)) {
+ *              g_message("Found PCI device through casting");
+ *      }
+ * ]|
  */
 struct _LdmPCIDevice {
         LdmDevice parent;
