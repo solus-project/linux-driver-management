@@ -113,10 +113,6 @@ gboolean ldm_device_has_attribute(LdmDevice *device, LdmDeviceAttribute mask);
 LdmDevice *ldm_device_get_parent(LdmDevice *device);
 GList *ldm_device_get_children(LdmDevice *device);
 
-void ldm_device_add_child(LdmDevice *device, LdmDevice *child);
-void ldm_device_remove_child(LdmDevice *device, LdmDevice *child);
-void ldm_device_remove_child_by_path(LdmDevice *device, const gchar *path);
-
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDevice, g_object_unref)
 
 G_END_DECLS

@@ -81,6 +81,11 @@ void ldm_dmi_device_init_private(LdmDevice *self, udev_device *device);
 void ldm_pci_device_init_private(LdmDevice *self, udev_device *device);
 void ldm_usb_device_init_private(LdmDevice *self, udev_device *device);
 
+/* private child APIs */
+void ldm_device_add_child(LdmDevice *device, LdmDevice *child);
+void ldm_device_remove_child(LdmDevice *device, LdmDevice *child);
+void ldm_device_remove_child_by_path(LdmDevice *device, const gchar *path);
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
