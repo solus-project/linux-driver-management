@@ -16,10 +16,13 @@
 
   <chapter id="linux-driver-management">
     <title>Linux Driver Management</title>
-    <xi:include href="xml/device.xml"/>
     <xi:include href="xml/gpu-config.xml"/>
     <xi:include href="xml/manager.xml"/>
     <xi:include href="xml/modalias.xml"/>
+  </chapter>
+  <chapter id="devices">
+    <title>Device API</title>
+    <xi:include href="xml/device.xml"/>
     <xi:include href="xml/dmi-device.xml"/>
     <xi:include href="xml/pci-device.xml"/>
     <xi:include href="xml/usb-device.xml"/>
