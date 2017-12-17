@@ -40,8 +40,18 @@ static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
 
+/* Signal IDs */
+enum { SIGNAL_DEVICE_ADDED = 0, SIGNAL_DEVICE_CHANGED, SIGNAL_DEVICE_REMOVED, N_SIGNALS };
+
+static guint obj_signals[N_SIGNALS] = { 0 };
+
 struct _LdmManagerClass {
         GObjectClass parent_class;
+
+        /* Signals */
+        void (*device_added)(LdmManager *self, LdmDevice *device);
+        void (*device_changed)(LdmManager *self, LdmDevice *device);
+        void (*device_removed)(LdmManager *self, const gchar *id);
 };
 
 /**
@@ -138,6 +148,69 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
         obj_class->dispose = ldm_manager_dispose;
         obj_class->get_property = ldm_manager_get_property;
         obj_class->set_property = ldm_manager_set_property;
+
+        /**
+         * LdmManager::device-added:
+         * @manager: The manager owning the device
+         * @device: The newly available device
+         *
+         * Connect to this signal to be notified about devices as they become
+         * available to the #LdmManager.
+         */
+        obj_signals[SIGNAL_DEVICE_ADDED] =
+            g_signal_new("device-added",
+                         LDM_TYPE_MANAGER,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(LdmManagerClass, device_added),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         LDM_TYPE_DEVICE);
+
+        /**
+         * LdmManager::device-changed:
+         * @manager: The manager owning the device
+         * @device: The device that was changed
+         *
+         * Connect to this signal to be notified about devices that have
+         * undergone state changes. This is typical for USB devices which
+         * support multiple interfaces, which will cause changes both in the
+         * add and remove stages.
+         */
+        obj_signals[SIGNAL_DEVICE_CHANGED] =
+            g_signal_new("device-changed",
+                         LDM_TYPE_MANAGER,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(LdmManagerClass, device_changed),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         LDM_TYPE_DEVICE);
+
+        /**
+         * LdmManager::device-removed
+         * @manager: The manager owning the device
+         * @path: The device #LdmDevice:path being removed.
+         *
+         * Connect to this signal to be notified when a device is about to
+         * be removed from the #LdmManager. Only the ID is provided as you
+         * should not attempt to directly use the #LdmDevice anymore.
+         */
+        obj_signals[SIGNAL_DEVICE_REMOVED] =
+            g_signal_new("device-removed",
+                         LDM_TYPE_MANAGER,
+                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_STRUCT_OFFSET(LdmManagerClass, device_removed),
+                         NULL,
+                         NULL,
+                         NULL,
+                         G_TYPE_NONE,
+                         1,
+                         G_TYPE_STRING);
 
         /**
          * LdmManager:flags
@@ -330,7 +403,6 @@ static gboolean ldm_manager_io_ready(__ldm_unused__ GIOChannel *source, GIOCondi
 
         /* Interesting actions */
         if (g_str_equal(action, "add")) {
-                g_message("hotplug: %s", udev_device_get_syspath(device));
                 ldm_manager_push_device(self, device);
         } else if (g_str_equal(action, "remove")) {
                 ldm_manager_remove_device(self, device);
@@ -357,8 +429,8 @@ static void ldm_manager_remove_device(LdmManager *self, udev_device *device)
         /* Got a parent? Remove from there */
         parent = ldm_manager_get_device_parent(self, subsystem, device);
         if (parent) {
-                g_message("Removed interface: %s", sysfs_path);
                 ldm_device_remove_child_by_path(parent, sysfs_path);
+                g_signal_emit(self, obj_signals[SIGNAL_DEVICE_CHANGED], 0, sysfs_path);
                 return;
         }
 
@@ -366,7 +438,9 @@ static void ldm_manager_remove_device(LdmManager *self, udev_device *device)
                 return;
         }
 
-        g_message("Removed device: %s", sysfs_path);
+        /*  Emit signal for the device removal */
+        g_signal_emit(self, obj_signals[SIGNAL_DEVICE_REMOVED], 0, sysfs_path);
+
         /* Remove from our known devices */
         g_hash_table_remove(self->devices, sysfs_path);
 }
@@ -459,14 +533,14 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
         ldm_device = ldm_device_new_from_udev(parent, device, properties);
         if (parent) {
                 ldm_device_add_child(parent, ldm_device);
-                /* TODO: Emit signal on change! */
+                /* Emit change notification */
+                g_signal_emit(self, obj_signals[SIGNAL_DEVICE_CHANGED], 0, ldm_device);
                 return;
         }
 
-        g_message("ldm_manager_push_device(%s): %s", subsystem, ldm_device_get_name(ldm_device));
-
-        /* TODO: Emit signal for the new device. */
         g_hash_table_insert(self->devices, g_strdup(sysfs_path), ldm_device);
+        /*  Emit signal for the new device. */
+        g_signal_emit(self, obj_signals[SIGNAL_DEVICE_ADDED], 0, ldm_device);
 }
 
 /**
