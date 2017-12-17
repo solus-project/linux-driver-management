@@ -22,7 +22,10 @@ static void ldm_manager_init_udev_monitor(LdmManager *self);
 static void ldm_manager_init_udev_static(LdmManager *self);
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
 static void ldm_manager_push_device(LdmManager *self, udev_device *device);
+static void ldm_manager_remove_device(LdmManager *self, udev_device *device);
 static gboolean ldm_manager_io_ready(GIOChannel *source, GIOCondition condition, gpointer v);
+static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
+                                                udev_device *device);
 
 struct _LdmManagerClass {
         GObjectClass parent_class;
@@ -247,13 +250,45 @@ static gboolean ldm_manager_io_ready(__ldm_unused__ GIOChannel *source, GIOCondi
 
         /* Interesting actions */
         if (g_str_equal(action, "add")) {
-                g_message("Device added: %s", udev_device_get_syspath(device));
+                g_message("hotplug: %s", udev_device_get_syspath(device));
+                ldm_manager_push_device(self, device);
         } else if (g_str_equal(action, "remove")) {
-                g_message("Device removed: %s", udev_device_get_syspath(device));
+                ldm_manager_remove_device(self, device);
         }
 
         /* Keep the source around */
         return TRUE;
+}
+
+/**
+ * ldm_manager_remove_device:
+ *
+ * Attempt removal of a previously registered device or interface.
+ */
+static void ldm_manager_remove_device(LdmManager *self, udev_device *device)
+{
+        LdmDevice *parent = NULL;
+        const char *subsystem = NULL;
+        const char *sysfs_path = NULL;
+
+        subsystem = udev_device_get_subsystem(device);
+        sysfs_path = udev_device_get_syspath(device);
+
+        /* Got a parent? Remove from there */
+        parent = ldm_manager_get_device_parent(self, subsystem, device);
+        if (parent) {
+                g_message("Removed interface: %s", sysfs_path);
+                ldm_device_remove_child_by_path(parent, sysfs_path);
+                return;
+        }
+
+        if (!g_hash_table_contains(self->devices, sysfs_path)) {
+                return;
+        }
+
+        g_message("Removed device: %s", sysfs_path);
+        /* Remove from our known devices */
+        g_hash_table_remove(self->devices, sysfs_path);
 }
 
 /**
@@ -277,8 +312,8 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
  * Get the associated LdmDevice that is the parent candidate for a newly
  * added device or interface.
  */
-LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
-                                         udev_device *device)
+static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
+                                                udev_device *device)
 {
         udev_device *udev_parent = NULL;
         LdmDevice *parent = NULL;
