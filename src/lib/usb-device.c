@@ -33,8 +33,8 @@ struct _LdmUSBDeviceClass {
  * @see_also: #LdmDevice
  * @Title: LdmUSBDevice
  *
- * An LdmPCIDevice is a specialised implementation of the #LdmDevice which
- * is aware of PCI capabilities and GPU data. This class is never directly
+ * An LdmUSBDevice is a specialised implementation of the #LdmDevice which
+ * is aware of UB interface capabilities. This class is never directly
  * created by the user, but is instead returned by the #LdmManager.
  *
  * This class extends the base #LdmDevice to add USB specific data.
