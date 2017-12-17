@@ -33,6 +33,7 @@ libldm_main_sources = [
     'plugin.c',
     'gpu-config.c',
     'manager.c',
+    'manager-plugins.c',
     'modalias.c',
     'pci-device.c',
     'provider.c',
