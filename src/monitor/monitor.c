@@ -9,34 +9,68 @@
  * of the License, or (at your option) any later version.
  */
 
-#include <stdbool.h>
-#include <stdlib.h>
+#define _GNU_SOURCE
 
-#include "ldm.h"
 #include "monitor.h"
-#include "util.h"
+#include "ldm.h"
 
-struct LdmMonitor {
+struct _LdmDaemonClass {
+        GObjectClass parent_class;
+};
+
+struct _LdmDaemon {
+        GObject parent;
+
         LdmManager *manager;
 };
 
-LdmMonitor *ldm_monitor_new(void)
+G_DEFINE_TYPE(LdmDaemon, ldm_daemon, G_TYPE_OBJECT)
+
+/**
+ * ldm_daemon_dispose:
+ *
+ * Clean up a LdmDaemon instance
+ */
+static void ldm_daemon_dispose(GObject *obj)
 {
-        LdmMonitor *ret = NULL;
+        LdmDaemon *self = LDM_DAEMON(obj);
 
-        ret = g_new0(LdmMonitor, 1);
-        if (!ret) {
-                return NULL;
-        }
-        ret->manager = ldm_manager_new(LDM_MANAGER_FLAGS_NONE);
+        g_clear_object(&self->manager);
 
-        return ret;
+        G_OBJECT_CLASS(ldm_daemon_parent_class)->dispose(obj);
 }
 
-void ldm_monitor_free(LdmMonitor *self)
+/**
+ * ldm_daemon_class_init:
+ *
+ * Handle class initialisation
+ */
+static void ldm_daemon_class_init(LdmDaemonClass *klazz)
 {
-        g_clear_object(&self->manager);
-        g_free(self);
+        GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+
+        /* gobject vtable hookup */
+        obj_class->dispose = ldm_daemon_dispose;
+}
+
+/**
+ * ldm_daemon_init:
+ *
+ * Handle construction of the LdmDaemon
+ */
+static void ldm_daemon_init(LdmDaemon *self)
+{
+        self->manager = ldm_manager_new(LDM_MANAGER_FLAGS_NONE);
+}
+
+/**
+ * ldm_daemon_new:
+ *
+ * Returns: (transfer full): A new #LdmDaemon instance
+ */
+LdmDaemon *ldm_daemon_new()
+{
+        return g_object_new(LDM_TYPE_DAEMON, NULL);
 }
 
 /*

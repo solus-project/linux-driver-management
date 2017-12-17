@@ -19,7 +19,7 @@
 #define LDM_APP_ID "com.solus-project.linux-driver-management.Monitor"
 
 static bool have_shutdown = false;
-static LdmMonitor *monitor = NULL;
+static LdmDaemon *monitor = NULL;
 
 /**
  * We're called on the main context *after* a SIGINT so we don't need
@@ -44,11 +44,7 @@ static gboolean ldm_shutdown_trigger(GApplication *app)
 static void ldm_app_startup(GApplication *app, __ldm_unused__ gpointer v)
 {
         g_message("LDM Monitor running");
-        monitor = ldm_monitor_new();
-        if (!monitor) {
-                g_message("Cannot allocate monitor");
-                g_application_quit(app);
-        }
+        monitor = ldm_daemon_new();
 
         /* Safely add shutdown callback. */
         g_unix_signal_add(SIGINT, (GSourceFunc)ldm_shutdown_trigger, app);
@@ -64,7 +60,7 @@ static void ldm_app_startup(GApplication *app, __ldm_unused__ gpointer v)
 static void ldm_app_shutdown(__ldm_unused__ GApplication *app, __ldm_unused__ gpointer v)
 {
         g_message("Shutting down LDM Monitor");
-        g_clear_pointer(&monitor, ldm_monitor_free);
+        g_clear_object(&monitor);
 }
 
 int main(int argc, char **argv)

@@ -11,21 +11,29 @@
 
 #pragma once
 
-typedef struct LdmMonitor LdmMonitor;
+#include <glib-object.h>
 
-/**
- * Construct a new LdmMonitor instance.
- *
- * @returns A newly allocated LdmMonitor
- */
-LdmMonitor *ldm_monitor_new(void);
+G_BEGIN_DECLS
 
-/**
- * Free a previously allocated LdmMonitor.
- *
- * @param monitor Pointer to an allocated LdmMonitor instance
- */
-void ldm_monitor_free(LdmMonitor *monitor);
+typedef struct _LdmDaemon LdmDaemon;
+typedef struct _LdmDaemonClass LdmDaemonClass;
+
+#define LDM_TYPE_DAEMON ldm_daemon_get_type()
+#define LDM_DAEMON(o) (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_DAEMON, LdmDaemon))
+#define LDM_IS_DAEMON(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), LDM_TYPE_DAEMON))
+#define LDM_DAEMON_CLASS(o) (G_TYPE_CHECK_CLASS_CAST((o), LDM_TYPE_DAEMON, LdmDaemonClass))
+#define LDM_IS_DAEMON_CLASS(o) (G_TYPE_CHECK_CLASS_TYPE((o), LDM_TYPE_DAEMON))
+#define LDM_DAEMON_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS((o), LDM_TYPE_DAEMON, LdmDaemonClass))
+
+GType ldm_daemon_get_type(void);
+
+/* API */
+
+LdmDaemon *ldm_daemon_new(void);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmDaemon, g_object_unref)
+
+G_END_DECLS
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
