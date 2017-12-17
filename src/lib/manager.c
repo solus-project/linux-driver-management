@@ -14,9 +14,15 @@
 #include <libudev.h>
 
 #include "device.h"
+#include "ldm-enums.h"
 #include "ldm-private.h"
 #include "manager.h"
 #include "util.h"
+
+static void ldm_manager_set_property(GObject *object, guint id, const GValue *value,
+                                     GParamSpec *spec);
+static void ldm_manager_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
+static void ldm_manager_constructed(GObject *obj);
 
 static void ldm_manager_init_udev_monitor(LdmManager *self);
 static void ldm_manager_init_udev_static(LdmManager *self);
@@ -26,6 +32,13 @@ static void ldm_manager_remove_device(LdmManager *self, udev_device *device);
 static gboolean ldm_manager_io_ready(GIOChannel *source, GIOCondition condition, gpointer v);
 static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
                                                 udev_device *device);
+
+/* Property IDs */
+enum { PROP_FLAGS = 1, N_PROPS };
+
+static GParamSpec *obj_properties[N_PROPS] = {
+        NULL,
+};
 
 struct _LdmManagerClass {
         GObjectClass parent_class;
@@ -50,7 +63,7 @@ struct _LdmManagerClass {
  * C example:
  *
  * |[<!-- language="C" -->
- *      LdmManager *manager = ldm_manager_new();
+ *      LdmManager *manager = ldm_manager_new(LDM_MANAGER_FLAGS_NONE);
  *      GList *devices = ldm_manager_get_devices(LDM_DEVICE_TYPE_ANY);
  *      LdmDevice *device = g_list_nth_data(devices, 0);
  *      g_list_free(devices);
@@ -69,6 +82,8 @@ struct _LdmManager {
 
         /* Udev */
         udev_connection *udev;
+
+        LdmManagerFlags flags;
 
         struct {
                 udev_monitor *udev;  /* Connection to udev.. */
@@ -119,7 +134,80 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
 
         /* gobject vtable hookup */
+        obj_class->constructed = ldm_manager_constructed;
         obj_class->dispose = ldm_manager_dispose;
+        obj_class->get_property = ldm_manager_get_property;
+        obj_class->set_property = ldm_manager_set_property;
+
+        /**
+         * LdmManager:flags
+         *
+         * The flags set at time of construction dictating the behaviour
+         * of this manager
+         */
+        obj_properties[PROP_FLAGS] = g_param_spec_flags("flags",
+                                                        "Manager flags",
+                                                        "Behavioural flags for this manager",
+                                                        LDM_TYPE_MANAGER_FLAGS,
+                                                        LDM_MANAGER_FLAGS_NONE,
+                                                        G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+        g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
+}
+
+static void ldm_manager_set_property(GObject *object, guint id, const GValue *value,
+                                     GParamSpec *spec)
+{
+        LdmManager *self = LDM_MANAGER(object);
+
+        switch (id) {
+        case PROP_FLAGS:
+                self->flags = g_value_get_flags(value);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
+
+static void ldm_manager_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec)
+{
+        LdmManager *self = LDM_MANAGER(object);
+
+        switch (id) {
+        case PROP_FLAGS:
+                g_value_set_flags(value, self->flags);
+                break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
+                break;
+        }
+}
+
+/**
+ * ldm_manager_constructed:
+ *
+ * Now we've got properties and member variables lets set up udev.
+ */
+static void ldm_manager_constructed(GObject *obj)
+{
+        LdmManager *self = LDM_MANAGER(obj);
+
+        /* Get udev going */
+        self->udev = udev_new();
+        g_assert(self->udev != NULL);
+
+        /* End user may have disabled monitoring */
+        if ((self->flags & LDM_MANAGER_FLAGS_NO_MONITOR) == LDM_MANAGER_FLAGS_NO_MONITOR) {
+                goto static_init;
+        }
+
+        /* We're defaulting to hotplugging */
+        ldm_manager_init_udev_monitor(self);
+
+static_init:
+        ldm_manager_init_udev_static(self);
+
+        G_OBJECT_CLASS(ldm_manager_parent_class)->constructed(obj);
 }
 
 /**
@@ -131,13 +219,6 @@ static void ldm_manager_init(LdmManager *self)
 {
         /* Device table is a mapping of sysfs name to LdmDevice */
         self->devices = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
-
-        /* Get udev going */
-        self->udev = udev_new();
-        g_assert(self->udev != NULL);
-
-        ldm_manager_init_udev_monitor(self);
-        ldm_manager_init_udev_static(self);
 }
 
 /**
@@ -392,14 +473,17 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
 
 /**
  * ldm_manager_new:
+ * @flags: Control behaviour of the new manager.
  *
  * Construct a new LdmManager
+ * Without any specified flags, the new #LdmManager will default to monitoring
+ * for hotplug events.
  *
  * Returns: (transfer full): A newly created #LdmManager
  */
-LdmManager *ldm_manager_new()
+LdmManager *ldm_manager_new(LdmManagerFlags flags)
 {
-        return g_object_new(LDM_TYPE_MANAGER, NULL);
+        return g_object_new(LDM_TYPE_MANAGER, "flags", flags, NULL);
 }
 
 /**

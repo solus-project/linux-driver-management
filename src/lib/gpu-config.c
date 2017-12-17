@@ -33,7 +33,7 @@ struct _LdmGPUConfigClass {
  * C example:
  *
  * |[<!-- language="C" -->
- *      LdmManager *manager = ldm_manager_new();
+ *      LdmManager *manager = ldm_manager_new(LDM_MANAGER_FLAGS_NONE);
  *      LdmGPUConfig *gpu = ldm_gpu_config_new(manager);
  *      g_message("This system has %d GPUs", ldm_gpu_config_count(gpu));
  * ]|

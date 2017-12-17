@@ -36,7 +36,7 @@ START_TEST(test_manager_simple)
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, NV_MOCKDEV_FILE, NULL),
                 "Failed to create NVIDIA device");
-        manager = ldm_manager_new();
+        manager = ldm_manager_new(0);
         fail_if(!manager, "Failed to get the LdmManager");
 
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_GPU);
@@ -80,7 +80,7 @@ START_TEST(test_manager_optimus)
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, OPTIMUS_MOCKDEV_FILE, NULL),
                 "Failed to create Optimus device");
-        manager = ldm_manager_new();
+        manager = ldm_manager_new(0);
         fail_if(!manager, "Failed to get the LdmManager");
 
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_GPU);

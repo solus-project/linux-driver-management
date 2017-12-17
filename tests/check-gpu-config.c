@@ -50,7 +50,7 @@ START_TEST(test_gpu_config_simple)
         guint n_gpu = 0;
 
         bed = create_bed_from(NV_MOCKDEV_FILE);
-        manager = ldm_manager_new();
+        manager = ldm_manager_new(0);
 
         gpu = ldm_gpu_config_new(manager);
         fail_if(!gpu, "Failed to create GPUConfig");
@@ -74,7 +74,7 @@ START_TEST(test_gpu_config_optimus)
         guint n_gpu = 0;
 
         bed = create_bed_from(OPTIMUS_MOCKDEV_FILE);
-        manager = ldm_manager_new();
+        manager = ldm_manager_new(0);
 
         gpu = ldm_gpu_config_new(manager);
         fail_if(!gpu, "Failed to create GPUConfig");
@@ -102,7 +102,7 @@ START_TEST(test_gpu_config_desktop_nvidia)
         guint n_gpu = 0;
 
         bed = create_bed_from(DESKTOP_NVIDIA_MOCKDEV_FILE);
-        manager = ldm_manager_new();
+        manager = ldm_manager_new(0);
 
         gpu = ldm_gpu_config_new(manager);
         fail_if(!gpu, "Failed to create GPUConfig");

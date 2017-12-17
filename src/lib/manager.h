@@ -20,6 +20,19 @@ G_BEGIN_DECLS
 typedef struct _LdmManager LdmManager;
 typedef struct _LdmManagerClass LdmManagerClass;
 
+/**
+ * LdmManagerFlags
+ * @LDM_MANAGER_FLAGS_NONE: No special behaviour required
+ * @LDM_MANAGER_FLAGS_NO_MONITOR: Disable hotplug events
+ *
+ * Override the behaviour of the new LdmManager to allow disabling
+ * of hotplug events, etc.
+ */
+typedef enum {
+        LDM_MANAGER_FLAGS_NONE = 0,
+        LDM_MANAGER_FLAGS_NO_MONITOR = 1 << 0,
+} LdmManagerFlags;
+
 #define LDM_TYPE_MANAGER ldm_manager_get_type()
 #define LDM_MANAGER(o) (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_MANAGER, LdmManager))
 #define LDM_IS_MANAGER(o) (G_TYPE_CHECK_INSTANCE_TYPE((o), LDM_TYPE_MANAGER))
@@ -29,7 +42,7 @@ typedef struct _LdmManagerClass LdmManagerClass;
 
 GType ldm_manager_get_type(void);
 
-LdmManager *ldm_manager_new(void);
+LdmManager *ldm_manager_new(LdmManagerFlags flags);
 GList *ldm_manager_get_devices(LdmManager *manager, LdmDeviceType class_mask);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmManager, g_object_unref)

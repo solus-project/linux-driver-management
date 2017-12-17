@@ -28,7 +28,7 @@ LdmMonitor *ldm_monitor_new(void)
         if (!ret) {
                 return NULL;
         }
-        ret->manager = ldm_manager_new();
+        ret->manager = ldm_manager_new(LDM_MANAGER_FLAGS_NONE);
 
         return ret;
 }

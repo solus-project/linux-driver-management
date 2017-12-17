@@ -39,7 +39,7 @@ START_TEST(test_manager_usb_simple)
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, YETI_UMOCKDEV_FILE, NULL),
                 "Failed to create Blue Yeti device");
-        manager = ldm_manager_new();
+        manager = ldm_manager_new(0);
         fail_if(!manager, "Failed to get the LdmManager");
 
         /* 2 devices right now because of the root hub. */
@@ -76,7 +76,7 @@ START_TEST(test_manager_usb_noisy)
                         dev);
         }
 
-        manager = ldm_manager_new();
+        manager = ldm_manager_new(0);
         fail_if(!manager, "Failed to get the LdmManager");
 
         /* No PCI pls */

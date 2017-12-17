@@ -7,6 +7,7 @@ libldm_enums = gnome.mkenums(
     sources: [
         'device.h',
         'gpu-config.h',
+        'manager.h',
     ],
     c_template: 'ldm-enums.c.template',
     h_template: 'ldm-enums.h.template',
