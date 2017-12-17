@@ -17,6 +17,9 @@
 #include <ldm-enums.h>
 #include <manager.h>
 #include <modalias.h>
+
+/* Specialised devices */
+#include <dmi-device.h>
 #include <pci-device.h>
 #include <usb-device.h>
 
