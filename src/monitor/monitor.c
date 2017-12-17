@@ -90,7 +90,15 @@ LdmDaemon *ldm_daemon_new()
 static void ldm_daemon_device_added(__ldm_unused__ LdmDaemon *daemon, LdmDevice *device,
                                     __ldm_unused__ gpointer v)
 {
-        g_message("ldm_daemon_device_added(): %s", ldm_device_get_name(device));
+        g_message("ldm_daemon_device_added(): %s %s",
+                  ldm_device_get_vendor(device),
+                  ldm_device_get_name(device));
+        if (ldm_device_has_type(device, LDM_DEVICE_TYPE_HID)) {
+                g_message("HID device!");
+        }
+        if (ldm_device_has_type(device, LDM_DEVICE_TYPE_STORAGE)) {
+                g_message("Storage device!");
+        }
 }
 
 static void ldm_daemon_device_removed(__ldm_unused__ LdmDaemon *daemon, const gchar *path,
