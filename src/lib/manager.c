@@ -89,6 +89,7 @@ struct _LdmManagerClass {
 struct _LdmManager {
         GObject parent;
         GHashTable *devices;
+        GHashTable *plugins;
 
         /* Udev */
         udev_connection *udev;
@@ -130,6 +131,8 @@ static void ldm_manager_dispose(GObject *obj)
 
         /* clean ourselves up */
         g_clear_pointer(&self->devices, g_hash_table_unref);
+
+        g_clear_pointer(&self->plugins, g_hash_table_unref);
 
         G_OBJECT_CLASS(ldm_manager_parent_class)->dispose(obj);
 }
@@ -270,6 +273,9 @@ static void ldm_manager_init(LdmManager *self)
 {
         /* Device table is a mapping of sysfs name to LdmDevice */
         self->devices = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
+
+        /* Plugin table is a mapping from plugin name to plugin */
+        self->plugins = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
 }
 
 /**

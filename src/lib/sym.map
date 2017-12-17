@@ -46,6 +46,7 @@ LIBLDM_0 {
     ldm_pci_vendor_id_get_type;
     ldm_plugin_get_name;
     ldm_plugin_get_priority;
+    ldm_plugin_get_provider;
     ldm_plugin_get_type;
     ldm_plugin_set_name;
     ldm_plugin_set_priority;

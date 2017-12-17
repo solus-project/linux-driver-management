@@ -198,6 +198,24 @@ void ldm_plugin_set_priority(LdmPlugin *self, gint priority)
         g_object_set(self, "priority", priority, NULL);
 }
 
+/**
+ * ldm_plugin_get_provider:
+ *
+ * Virtual method that must be overridden by plugin implementations to provide
+ * the required #LdmProvider solution for the given hardware.
+ *
+ * This may return NULL if the plugin doesn't support the given device.
+ *
+ * Returns: (transfer full) (nullable): A new #LdmProvider if possible
+ */
+LdmProvider *ldm_plugin_get_provider(LdmPlugin *self, LdmDevice *device)
+{
+        g_assert(self != NULL);
+        LdmPluginClass *klazz = LDM_PLUGIN_GET_CLASS(self);
+        g_assert(klazz->get_provider != NULL);
+        return klazz->get_provider(self, device);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

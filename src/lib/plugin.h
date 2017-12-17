@@ -13,6 +13,9 @@
 
 #include <glib-object.h>
 
+#include <device.h>
+#include <provider.h>
+
 G_BEGIN_DECLS
 
 typedef struct _LdmPluginPrivate LdmPluginPrivate;
@@ -21,6 +24,9 @@ typedef struct _LdmPluginClass LdmPluginClass;
 
 struct _LdmPluginClass {
         GObjectClass parent_class;
+
+        /* Plugin API */
+        LdmProvider *(*get_provider)(LdmPlugin *plugin, LdmDevice *device);
 
         gpointer padding[12];
 };
@@ -40,10 +46,12 @@ struct _LdmPlugin {
 GType ldm_plugin_get_type(void);
 
 /* API */
-const gchar *ldm_plugin_get_name(LdmPlugin *driver);
-void ldm_plugin_set_name(LdmPlugin *driver, const gchar *name);
-gint ldm_plugin_get_priority(LdmPlugin *driver);
-void ldm_plugin_set_priority(LdmPlugin *driver, gint priority);
+const gchar *ldm_plugin_get_name(LdmPlugin *plugin);
+void ldm_plugin_set_name(LdmPlugin *plugin, const gchar *name);
+gint ldm_plugin_get_priority(LdmPlugin *plugin);
+void ldm_plugin_set_priority(LdmPlugin *plugin, gint priority);
+
+LdmProvider *ldm_plugin_get_provider(LdmPlugin *self, LdmDevice *device);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmPlugin, g_object_unref)
 
