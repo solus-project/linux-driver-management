@@ -190,6 +190,14 @@ static void ldm_manager_init_udev_monitor(LdmManager *self)
                 g_warning("udev monitoring is unavailable");
                 return;
         }
+
+        /* We only want hotplug events for USB right now */
+        if (udev_monitor_filter_add_match_subsystem_devtype(self->monitor.udev, "usb", NULL) != 0) {
+                g_warning("Unable to install USB filter");
+                g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
+                return;
+        }
+
         if (udev_monitor_enable_receiving(self->monitor.udev) != 0) {
                 g_warning("Failed to enable monitor receiving");
                 g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
