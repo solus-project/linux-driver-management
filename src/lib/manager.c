@@ -16,6 +16,7 @@
 #include "device.h"
 #include "ldm-enums.h"
 #include "ldm-private.h"
+#include "manager-private.h"
 #include "manager.h"
 #include "util.h"
 
@@ -45,14 +46,6 @@ static GParamSpec *obj_properties[N_PROPS] = {
 enum { SIGNAL_DEVICE_ADDED = 0, SIGNAL_DEVICE_CHANGED, SIGNAL_DEVICE_REMOVED, N_SIGNALS };
 
 static guint obj_signals[N_SIGNALS] = { 0 };
-
-struct _LdmManagerClass {
-        GObjectClass parent_class;
-
-        /* Signals */
-        void (*device_added)(LdmManager *self, LdmDevice *device);
-        void (*device_removed)(LdmManager *self, const gchar *id);
-};
 
 /**
  * SECTION:manager
@@ -86,22 +79,6 @@ struct _LdmManagerClass {
  *      var devices = manager.get_devices();
  * ]|
  */
-struct _LdmManager {
-        GObject parent;
-        GHashTable *devices;
-        GHashTable *plugins;
-
-        /* Udev */
-        udev_connection *udev;
-
-        LdmManagerFlags flags;
-
-        struct {
-                udev_monitor *udev;  /* Connection to udev.. */
-                GIOChannel *channel; /* Main channel for poll main loop */
-                guint source;        /* GIO source */
-        } monitor;
-};
 
 G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
 
