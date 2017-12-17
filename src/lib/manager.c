@@ -337,7 +337,6 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
 
         /* Don't push the child interface again to the parent, i.e. monitor vs enumerate */
         if (parent && g_hash_table_contains(parent->tree.kids, sysfs_path)) {
-                g_message("naughty!");
                 return;
         }
 
