@@ -21,9 +21,6 @@
 #include "pci-device.h"
 #include "usb-device.h"
 
-#define HWDB_LOOKUP_PRODUCT_NAME "ID_MODEL_FROM_DATABASE"
-#define HWDB_LOOKUP_PRODUCT_VENDOR "ID_VENDOR_FROM_DATABASE"
-
 static void ldm_device_set_property(GObject *object, guint id, const GValue *value,
                                     GParamSpec *spec);
 static void ldm_device_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
@@ -479,14 +476,20 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
         }
 
         /* Set vendor from hwdb information */
-        lookup = g_hash_table_lookup(self->os.hwdb_info, HWDB_LOOKUP_PRODUCT_VENDOR);
+        lookup = g_hash_table_lookup(self->os.hwdb_info, "ID_VENDOR_FROM_DATABASE");
+        if (!lookup) {
+                lookup = g_hash_table_lookup(self->os.hwdb_info, "ID_VENDOR");
+        }
         if (lookup) {
                 self->id.vendor = g_strdup(lookup);
                 lookup = NULL;
         }
 
         /* Set name from hwdb information. TODO: Add fallback name! */
-        lookup = g_hash_table_lookup(self->os.hwdb_info, HWDB_LOOKUP_PRODUCT_NAME);
+        lookup = g_hash_table_lookup(self->os.hwdb_info, "ID_MODEL_FROM_DATABASE");
+        if (!lookup) {
+                lookup = g_hash_table_lookup(self->os.hwdb_info, "ID_MODEL");
+        }
         if (lookup) {
                 self->id.name = g_strdup(lookup);
                 lookup = NULL;
