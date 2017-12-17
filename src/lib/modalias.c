@@ -23,7 +23,7 @@ struct _LdmModaliasClass {
 /**
  * SECTION:modalias
  * @Short_description: Modalias matching
- * @see_also: #LdmDevice, #LdmModaliasDriver
+ * @see_also: #LdmDevice, #LdmModaliasPlugin
  * @Title: LdmModalias
  *
  * An LdmModalias is a mapping from an `fnmatch` style modalias match to
@@ -36,9 +36,9 @@ struct _LdmModaliasClass {
  * an explicit string set by the kernel.
  *
  * This allows for automatic hardware detection and association with each
- * #LdmDriver.
+ * #LdmPlugin.
  *
- * The primary use of #LdmModalias is by the #LdmModaliasDriver implementation,
+ * The primary use of #LdmModalias is by the #LdmModaliasPlugin implementation,
  * which adds a new modalias for every line in a file to allow hardware
  * matching.
  *

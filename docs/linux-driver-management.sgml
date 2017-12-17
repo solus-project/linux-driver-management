@@ -17,14 +17,17 @@
   <chapter id="linux-driver-management">
     <title>Linux Driver Management</title>
     <xi:include href="xml/device.xml"/>
-    <xi:include href="xml/driver.xml"/>
     <xi:include href="xml/gpu-config.xml"/>
     <xi:include href="xml/manager.xml"/>
-    <xi:include href="xml/modalias-driver.xml"/>
     <xi:include href="xml/modalias.xml"/>
     <xi:include href="xml/dmi-device.xml"/>
     <xi:include href="xml/pci-device.xml"/>
     <xi:include href="xml/usb-device.xml"/>
+  </chapter>
+  <chapter id="plugins">
+    <title>Plugins API</title>
+    <xi:include href="xml/plugin.xml"/>
+    <xi:include href="xml/modalias-plugin.xml"/>
   </chapter>
   <chapter id="object-tree">
     <title>Object Hierarchy</title>

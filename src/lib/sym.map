@@ -16,11 +16,6 @@ LIBLDM_0 {
     ldm_device_has_type;
     ldm_device_type_get_type;
     ldm_dmi_device_get_type;
-    ldm_driver_get_name;
-    ldm_driver_get_priority;
-    ldm_driver_get_type;
-    ldm_driver_set_name;
-    ldm_driver_set_priority;
     ldm_gpu_config_count;
     ldm_gpu_config_get_detection_device;
     ldm_gpu_config_get_gpu_type;
@@ -42,13 +37,18 @@ LIBLDM_0 {
     ldm_modalias_matches;
     ldm_modalias_matches_device;
     ldm_modalias_new;
-    ldm_modalias_driver_add_modalias;
-    ldm_modalias_driver_get_type;
-    ldm_modalias_driver_new;
-    ldm_modalias_driver_new_from_file;
-    ldm_modalias_driver_new_from_filename;
+    ldm_modalias_plugin_add_modalias;
+    ldm_modalias_plugin_get_type;
+    ldm_modalias_plugin_new;
+    ldm_modalias_plugin_new_from_file;
+    ldm_modalias_plugin_new_from_filename;
     ldm_pci_device_get_type;
     ldm_pci_vendor_id_get_type;
+    ldm_plugin_get_name;
+    ldm_plugin_get_priority;
+    ldm_plugin_get_type;
+    ldm_plugin_set_name;
+    ldm_plugin_set_priority;
     ldm_usb_device_get_type;
   local:
     *;

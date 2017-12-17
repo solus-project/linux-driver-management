@@ -30,19 +30,19 @@ link_libenum = declare_dependency(
 libldm_main_sources = [
     'device.c',
     'dmi-device.c',
-    'driver.c',
+    'plugin.c',
     'gpu-config.c',
     'manager.c',
     'modalias.c',
     'pci-device.c',
     'usb-device.c',
-    'drivers/modalias-driver.c',
+    'plugins/modalias-plugin.c',
 ]
 
 libldm_headers = [
     'device.h',
     'dmi-device.h',
-    'driver.h',
+    'plugin.h',
     'gpu-config.h',
     'manager.h',
     'modalias.h',
@@ -51,8 +51,8 @@ libldm_headers = [
     'usb-device.h',
 ]
 
-libldm_driver_headers = [
-    'drivers/modalias-driver.h',
+libldm_plugin_headers = [
+    'plugins/modalias-plugin.h',
 ]
 
 libldm_main_includes = [
@@ -96,16 +96,16 @@ install_headers(
     libldm_headers,
     subdir: meson.project_name(),
 )
-# Install driver headers
+# Install plugin headers
 install_headers(
-    libldm_driver_headers,
-    subdir: '@0@/drivers'.format(meson.project_name()),
+    libldm_plugin_headers,
+    subdir: '@0@/plugins'.format(meson.project_name()),
 )
 
 # Generate .gir
 libldm_gir = gnome.generate_gir(
     libldm_main,
-    sources: libldm_main_sources + libldm_headers + libldm_driver_headers + libldm_enums,
+    sources: libldm_main_sources + libldm_headers + libldm_plugin_headers + libldm_enums,
     namespace: 'Ldm',
     nsversion: '1.0',
     dependencies: libldm_dependencies,

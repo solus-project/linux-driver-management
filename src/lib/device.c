@@ -329,7 +329,7 @@ static void ldm_device_init(LdmDevice *self)
  * driver candidates.
  *
  * The Linux kernel will assign each device (or interface) a modalias, which can
- * be matched via #LdmModalias and #LdmModaliasDriver to determine which package
+ * be matched via #LdmModalias and #LdmModaliasPlugin to determine which package
  * provides the drivers required to enable this device.
  *
  * Returns: (transfer none): The modalias of the device

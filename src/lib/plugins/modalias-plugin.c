@@ -1,9 +1,9 @@
 /*
- * This file is part of linux-driver-management.
+ * This file is part of linux-plugin-management.
  *
  * Copyright © 2016-2017 Ikey Doherty
  *
- * linux-driver-management is free software; you can redistribute it and/or
+ * linux-plugin-management is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
@@ -13,24 +13,24 @@
 
 #include <string.h>
 
-#include "modalias-driver.h"
+#include "modalias-plugin.h"
 #include "util.h"
 
-struct _LdmModaliasDriverClass {
-        LdmDriverClass parent_class;
+struct _LdmModaliasPluginClass {
+        LdmPluginClass parent_class;
 };
 
 /**
- * SECTION:modalias-driver
- * @Short_description: Modalias-based driver implementation
- * @see_also: #LdmModalias, #LdmDriver
- * @Title: LdmModaliasDriver
+ * SECTION:modalias-plugin
+ * @Short_description: Modalias-based plugin implementation
+ * @see_also: #LdmModalias, #LdmPlugin
+ * @Title: LdmModaliasPlugin
  *
- * The LdmModaliasDriver extends the base #LdmDriver and adds modalias-based
+ * The LdmModaliasPlugin extends the base #LdmPlugin and adds modalias-based
  * hardware detection to it. This allows us to perform #LdmModalias based
  * matching against any given hardware.
  *
- * The most useful case for #LdmModaliasDriver is to dynamically construct
+ * The most useful case for #LdmModaliasPlugin is to dynamically construct
  * it at runtime using `.modaliases` files. These files contain specially
  * formatted lines that can be parsed into a set of #LdmModalias rules,
  * all of which can later be used to detect hardware in bulk.
@@ -38,11 +38,11 @@ struct _LdmModaliasDriverClass {
  * The format of the file is very simple, space separated, with just 4
  * columns:
  *
- *      `TYPE   ALIAS   DRIVER  PACKAGE`
+ *      `TYPE   ALIAS   PLUGIN  PACKAGE`
  *
  * `TYPE` is reserved and is currently always set to `alias`.
  * `MODALIAS` is the `fnmatch` style string used to match against hardware.
- * `DRIVER` is the kernel driver that supports any hardware matching the #LdmModlias:match field
+ * `PLUGIN` is the kernel driver that supports any hardware matching the #LdmModlias:match field
  * `PACKAGE` is the name of the package or bundle providing the kernel driver
  *
  * Example:
@@ -53,72 +53,72 @@ struct _LdmModaliasDriverClass {
  * it requires `wl.ko` to operate correctly (or to enhance it). The user can find
  * `wl.ko` in the `broadcom-sta` package.
  */
-struct _LdmModaliasDriver {
-        LdmDriver parent;
+struct _LdmModaliasPlugin {
+        LdmPlugin parent;
 
         /* Our known modalias implementations */
         GHashTable *modaliases;
 };
 
-G_DEFINE_TYPE(LdmModaliasDriver, ldm_modalias_driver, LDM_TYPE_DRIVER)
+G_DEFINE_TYPE(LdmModaliasPlugin, ldm_modalias_plugin, LDM_TYPE_PLUGIN)
 
 /**
- * ldm_modalias_driver_dispose:
+ * ldm_modalias_plugin_dispose:
  *
- * Clean up a LdmModaliasDriver instance
+ * Clean up a LdmModaliasPlugin instance
  */
-static void ldm_modalias_driver_dispose(GObject *obj)
+static void ldm_modalias_plugin_dispose(GObject *obj)
 {
-        G_OBJECT_CLASS(ldm_modalias_driver_parent_class)->dispose(obj);
+        G_OBJECT_CLASS(ldm_modalias_plugin_parent_class)->dispose(obj);
 }
 
 /**
- * ldm_modalias_driver_class_init:
+ * ldm_modalias_plugin_class_init:
  *
  * Handle class initialisation
  */
-static void ldm_modalias_driver_class_init(LdmModaliasDriverClass *klazz)
+static void ldm_modalias_plugin_class_init(LdmModaliasPluginClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
 
         /* gobject vtable hookup */
-        obj_class->dispose = ldm_modalias_driver_dispose;
+        obj_class->dispose = ldm_modalias_plugin_dispose;
 }
 
 /**
- * ldm_modalias_driver_init:
+ * ldm_modalias_plugin_init:
  *
- * Handle construction of the LdmModaliasDriver
+ * Handle construction of the LdmModaliasPlugin
  */
-static void ldm_modalias_driver_init(LdmModaliasDriver *self)
+static void ldm_modalias_plugin_init(LdmModaliasPlugin *self)
 {
         /* Map name to modalias */
         self->modaliases = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
 }
 
 /**
- * ldm_modalias_driver_new:
- * @name: Name for this driver instance
+ * ldm_modalias_plugin_new:
+ * @name: Name for this plugin instance
  *
- * Create a new LdmDriver for modalias detection with the given name
+ * Create a new LdmPlugin for modalias detection with the given name
  *
- * Returns: (transfer full): A newly initialised LdmModaliasDriver
+ * Returns: (transfer full): A newly initialised LdmModaliasPlugin
  */
-LdmDriver *ldm_modalias_driver_new(const gchar *name)
+LdmPlugin *ldm_modalias_plugin_new(const gchar *name)
 {
-        return g_object_new(LDM_TYPE_MODALIAS_DRIVER, "name", name, "priority", 0, NULL);
+        return g_object_new(LDM_TYPE_MODALIAS_PLUGIN, "name", name, "priority", 0, NULL);
 }
 
 /**
- * ldm_modalias_driver_new_from_file:
+ * ldm_modalias_plugin_new_from_file:
  * @file: A valid GFile
  *
- * Create a new LdmDriver for modalias detection, which is seeded with all
+ * Create a new LdmPlugin for modalias detection, which is seeded with all
  * the modalias definitions referenced in the given file.
  *
- * Returns: (transfer full): A newly initialised LdmModaliasDriver
+ * Returns: (transfer full): A newly initialised LdmModaliasPlugin
  */
-LdmDriver *ldm_modalias_driver_new_from_file(GFile *file)
+LdmPlugin *ldm_modalias_plugin_new_from_file(GFile *file)
 {
         g_autoptr(GFileInputStream) fis = NULL;
         g_autoptr(GDataInputStream) dis = NULL;
@@ -126,7 +126,7 @@ LdmDriver *ldm_modalias_driver_new_from_file(GFile *file)
         g_autofree gchar *filename = NULL;
         gchar *line = NULL;
         gsize len = 0;
-        LdmDriver *ret = NULL;
+        LdmPlugin *ret = NULL;
 
         g_return_val_if_fail(file != NULL, NULL);
 
@@ -150,7 +150,7 @@ LdmDriver *ldm_modalias_driver_new_from_file(GFile *file)
                 filename[strlen(filename) - strlen(".modaliases")] = '\0';
         }
 
-        ret = ldm_modalias_driver_new(filename);
+        ret = ldm_modalias_plugin_new(filename);
 
         while ((line = g_data_input_stream_read_line_utf8(dis, &len, NULL, &error)) != NULL) {
                 gchar *work = g_strstrip(line);
@@ -184,7 +184,7 @@ LdmDriver *ldm_modalias_driver_new_from_file(GFile *file)
                 }
 
                 /* Add modalias. */
-                ldm_modalias_driver_add_modalias(LDM_MODALIAS_DRIVER(ret), alias);
+                ldm_modalias_plugin_add_modalias(LDM_MODALIAS_PLUGIN(ret), alias);
 
         next_line:
                 if (splits) {
@@ -206,7 +206,7 @@ LdmDriver *ldm_modalias_driver_new_from_file(GFile *file)
 
 failed:
         if (error) {
-                g_printerr("ldm_modalias_driver_new_from_file(): %s", error->message);
+                g_printerr("ldm_modalias_plugin_new_from_file(): %s", error->message);
         }
 
         if (ret) {
@@ -218,15 +218,15 @@ failed:
 }
 
 /**
- * ldm_modalias_driver_new_from_filename:
+ * ldm_modalias_plugin_new_from_filename:
  * @filename: Path to a modaliases file
  *
- * Create a new LdmDriver for modalias detection. The named file will be
- * opened and the resulting driver will be seeded from that file.
+ * Create a new LdmPlugin for modalias detection. The named file will be
+ * opened and the resulting plugin will be seeded from that file.
  *
- * Returns: (transfer full): A newly initialised LdmModaliasDriver
+ * Returns: (transfer full): A newly initialised LdmModaliasPlugin
  */
-LdmDriver *ldm_modalias_driver_new_from_filename(const gchar *filename)
+LdmPlugin *ldm_modalias_plugin_new_from_filename(const gchar *filename)
 {
         g_autoptr(GFile) file = NULL;
 
@@ -235,17 +235,17 @@ LdmDriver *ldm_modalias_driver_new_from_filename(const gchar *filename)
                 return NULL;
         }
 
-        return ldm_modalias_driver_new_from_file(file);
+        return ldm_modalias_plugin_new_from_file(file);
 }
 
 /**
- * ldm_modalias_driver_add_modalias:
+ * ldm_modalias_plugin_add_modalias:
  * @modalias: (transfer full): Modalias object to add to the table
  *
- * Add a new modalias object to the driver table. This method will take a new
+ * Add a new modalias object to the plugin table. This method will take a new
  * reference to the modalias.
  */
-void ldm_modalias_driver_add_modalias(LdmModaliasDriver *self, LdmModalias *modalias)
+void ldm_modalias_plugin_add_modalias(LdmModaliasPlugin *self, LdmModalias *modalias)
 {
         const gchar *id = NULL;
 

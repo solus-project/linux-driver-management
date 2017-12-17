@@ -12,7 +12,6 @@
 #pragma once
 
 #include <device.h>
-#include <driver.h>
 #include <gpu-config.h>
 #include <ldm-enums.h>
 #include <manager.h>
@@ -23,7 +22,9 @@
 #include <pci-device.h>
 #include <usb-device.h>
 
-#include <drivers/modalias-driver.h>
+/* Plugin API */
+#include <plugin.h>
+#include <plugins/modalias-plugin.h>
 
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
