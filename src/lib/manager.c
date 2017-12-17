@@ -160,7 +160,7 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
         obj_signals[SIGNAL_DEVICE_ADDED] =
             g_signal_new("device-added",
                          LDM_TYPE_MANAGER,
-                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
                          G_STRUCT_OFFSET(LdmManagerClass, device_added),
                          NULL,
                          NULL,
@@ -176,13 +176,13 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
          *
          * Connect to this signal to be notified about devices that have
          * undergone state changes. This is typical for USB devices which
-         * support multiple interfaces, which will cause changes both in the
-         * add and remove stages.
+         * support multiple interfaces, which will cause changes after
+         * the initial add stage.
          */
         obj_signals[SIGNAL_DEVICE_CHANGED] =
             g_signal_new("device-changed",
                          LDM_TYPE_MANAGER,
-                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
                          G_STRUCT_OFFSET(LdmManagerClass, device_changed),
                          NULL,
                          NULL,
@@ -203,7 +203,7 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
         obj_signals[SIGNAL_DEVICE_REMOVED] =
             g_signal_new("device-removed",
                          LDM_TYPE_MANAGER,
-                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                         G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
                          G_STRUCT_OFFSET(LdmManagerClass, device_removed),
                          NULL,
                          NULL,
@@ -430,7 +430,6 @@ static void ldm_manager_remove_device(LdmManager *self, udev_device *device)
         parent = ldm_manager_get_device_parent(self, subsystem, device);
         if (parent) {
                 ldm_device_remove_child_by_path(parent, sysfs_path);
-                g_signal_emit(self, obj_signals[SIGNAL_DEVICE_CHANGED], 0, sysfs_path);
                 return;
         }
 
