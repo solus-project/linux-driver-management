@@ -77,6 +77,7 @@ DEF_AUTOFREE(gchar, g_free)
 /* Private device API */
 LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *properties);
 
+void ldm_dmi_device_init_private(LdmDevice *self, udev_device *device);
 void ldm_pci_device_init_private(LdmDevice *self, udev_device *device);
 void ldm_usb_device_init_private(LdmDevice *self, udev_device *device);
 

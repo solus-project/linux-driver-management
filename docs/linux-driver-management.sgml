@@ -22,6 +22,7 @@
     <xi:include href="xml/manager.xml"/>
     <xi:include href="xml/modalias-driver.xml"/>
     <xi:include href="xml/modalias.xml"/>
+    <xi:include href="xml/dmi-device.xml"/>
     <xi:include href="xml/pci-device.xml"/>
     <xi:include href="xml/usb-device.xml"/>
   </chapter>

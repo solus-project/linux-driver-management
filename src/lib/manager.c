@@ -151,6 +151,7 @@ static void ldm_manager_init_udev_static(LdmManager *self)
         autofree(udev_enum) *ue = NULL;
         udev_list *list = NULL, *entry = NULL;
         static const char *subsystems[] = {
+                "dmi",
                 "usb",
                 "pci",
         };

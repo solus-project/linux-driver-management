@@ -1,6 +1,7 @@
 ldm_device_attribute_get_type
 ldm_device_get_type
 ldm_device_type_get_type
+ldm_dmi_device_get_type
 ldm_driver_get_type
 ldm_gpu_config_get_type
 ldm_gpu_type_get_type

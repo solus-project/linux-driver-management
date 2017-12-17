@@ -14,9 +14,12 @@
 #include "device.h"
 #include "ldm-enums.h"
 #include "ldm-private.h"
+#include "util.h"
+
+/* Supported device types */
+#include "dmi-device.h"
 #include "pci-device.h"
 #include "usb-device.h"
-#include "util.h"
 
 #define HWDB_LOOKUP_PRODUCT_NAME "ID_MODEL_FROM_DATABASE"
 #define HWDB_LOOKUP_PRODUCT_VENDOR "ID_VENDOR_FROM_DATABASE"
@@ -435,6 +438,7 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
         gchar *lookup = NULL;
         const char *subsystem = NULL;
         GType special_type = 0;
+        const char *sysattr = NULL;
 
         /* Specialise the gtype here */
         subsystem = udev_device_get_subsystem(device);
@@ -442,6 +446,8 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
                 special_type = LDM_TYPE_USB_DEVICE;
         } else if (g_str_equal(subsystem, "pci")) {
                 special_type = LDM_TYPE_PCI_DEVICE;
+        } else if (g_str_equal(subsystem, "dmi")) {
+                special_type = LDM_TYPE_DMI_DEVICE;
         } else {
                 special_type = LDM_TYPE_DEVICE;
         }
@@ -450,7 +456,10 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
 
         /* Set the absolute basics */
         self->os.sysfs_path = g_strdup(udev_device_get_syspath(device));
-        self->os.modalias = g_strdup(udev_device_get_sysattr_value(device, "modalias"));
+        sysattr = udev_device_get_sysattr_value(device, "modalias");
+        if (sysattr) {
+                self->os.modalias = g_strdup(sysattr);
+        }
 
         /* Shouldn't happen, but is definitely possible.. */
         if (!properties) {
@@ -489,6 +498,8 @@ post_hwdb:
                 ldm_pci_device_init_private(self, device);
         } else if (special_type == LDM_TYPE_USB_DEVICE) {
                 ldm_usb_device_init_private(self, device);
+        } else if (special_type == LDM_TYPE_DMI_DEVICE) {
+                ldm_dmi_device_init_private(self, device);
         }
 
         return self;

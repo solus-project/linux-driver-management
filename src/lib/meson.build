@@ -28,6 +28,7 @@ link_libenum = declare_dependency(
 
 libldm_main_sources = [
     'device.c',
+    'dmi-device.c',
     'driver.c',
     'gpu-config.c',
     'manager.c',
@@ -39,6 +40,7 @@ libldm_main_sources = [
 
 libldm_headers = [
     'device.h',
+    'dmi-device.h',
     'driver.h',
     'gpu-config.h',
     'manager.h',

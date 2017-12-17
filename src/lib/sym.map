@@ -17,6 +17,7 @@ LIBLDM_0 {
     ldm_device_has_type;
     ldm_remove_remove_child;
     ldm_device_type_get_type;
+    ldm_dmi_device_get_type;
     ldm_driver_get_name;
     ldm_driver_get_priority;
     ldm_driver_get_type;

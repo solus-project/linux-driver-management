@@ -63,12 +63,13 @@ typedef enum {
         LDM_DEVICE_TYPE_HID = 1 << 2,
         LDM_DEVICE_TYPE_IMAGE = 1 << 3,
         LDM_DEVICE_TYPE_PCI = 1 << 4,
-        LDM_DEVICE_TYPE_PRINTER = 1 << 5,
-        LDM_DEVICE_TYPE_STORAGE = 1 << 6,
-        LDM_DEVICE_TYPE_VIDEO = 1 << 7,
-        LDM_DEVICE_TYPE_WIRELESS = 1 << 8,
-        LDM_DEVICE_TYPE_USB = 1 << 9,
-        LDM_DEVICE_TYPE_MAX = 1 << 10,
+        LDM_DEVICE_TYPE_PLATFORM = 1 << 5,
+        LDM_DEVICE_TYPE_PRINTER = 1 << 6,
+        LDM_DEVICE_TYPE_STORAGE = 1 << 7,
+        LDM_DEVICE_TYPE_VIDEO = 1 << 8,
+        LDM_DEVICE_TYPE_WIRELESS = 1 << 9,
+        LDM_DEVICE_TYPE_USB = 1 << 10,
+        LDM_DEVICE_TYPE_MAX = 1 << 11,
 } LdmDeviceType;
 
 /**
