@@ -44,6 +44,7 @@ GType ldm_manager_get_type(void);
 
 LdmManager *ldm_manager_new(LdmManagerFlags flags);
 GList *ldm_manager_get_devices(LdmManager *manager, LdmDeviceType class_mask);
+GList *ldm_manager_get_providers(LdmManager *manager, LdmDevice *device);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmManager, g_object_unref)
 

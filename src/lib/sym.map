@@ -28,6 +28,7 @@ LIBLDM_0 {
     ldm_gpu_type_get_type;
     ldm_manager_new;
     ldm_manager_get_devices;
+    ldm_manager_get_providers;
     ldm_manager_get_type;
     ldm_manager_flags_get_type;
     ldm_modalias_get_driver;

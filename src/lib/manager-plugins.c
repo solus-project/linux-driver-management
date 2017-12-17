@@ -34,6 +34,47 @@ void ldm_manager_add_modalias_plugin_for_path(LdmManager *self, const gchar *pat
         g_hash_table_replace(self->plugins, g_strdup(plugin_id), plugin);
 }
 
+/**
+ * ldm_manager_get_providers:
+ *
+ * Walk the plugins and find all known providers for the given device,
+ * if they can support it. The list should be freed by the end user
+ * and all the elements should be freed with `g_object_unref`.
+ *
+ * Returns: (element-type Ldm.Provider) (transfer full): a list of all possible providers
+ */
+GList *ldm_manager_get_providers(LdmManager *self, LdmDevice *device)
+{
+        GList *ret = NULL;
+        __ldm_unused__ gpointer k = NULL;
+        LdmPlugin *plugin = NULL;
+        GHashTableIter iter = { 0 };
+
+        g_hash_table_iter_init(&iter, self->plugins);
+        while (g_hash_table_iter_next(&iter, &k, (void **)&plugin)) {
+                LdmProvider *provider = NULL;
+
+                /* See if this plugin supports the device */
+                provider = ldm_plugin_get_provider(plugin, device);
+                if (provider) {
+                        ret = g_list_append(ret, provider);
+                }
+        }
+
+        /* Not yet possible until providers have a plugin reference
+        if (ret) {
+                goto done;
+        }
+
+        ret = g_list_sort(ret, ldm_manager_sort_by_plugin);
+
+done:
+        return ret;
+        */
+
+        return ret;
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
