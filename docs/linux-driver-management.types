@@ -11,4 +11,5 @@ ldm_modalias_plugin_get_type
 ldm_pci_device_get_type
 ldm_pci_vendor_id_get_type
 ldm_plugin_get_type
+ldm_provider_get_type
 ldm_usb_device_get_type

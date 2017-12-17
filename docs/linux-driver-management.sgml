@@ -19,6 +19,7 @@
     <xi:include href="xml/gpu-config.xml"/>
     <xi:include href="xml/manager.xml"/>
     <xi:include href="xml/modalias.xml"/>
+    <xi:include href="xml/provider.xml"/>
   </chapter>
   <chapter id="devices">
     <title>Device API</title>

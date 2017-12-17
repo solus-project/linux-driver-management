@@ -16,6 +16,7 @@
 #include <ldm-enums.h>
 #include <manager.h>
 #include <modalias.h>
+#include <provider.h>
 
 /* Specialised devices */
 #include <dmi-device.h>
