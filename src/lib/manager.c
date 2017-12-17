@@ -297,8 +297,6 @@ static void ldm_manager_init_udev_monitor(LdmManager *self)
         g_io_channel_set_encoding(self->monitor.channel, NULL, NULL);
         self->monitor.source =
             g_io_add_watch(self->monitor.channel, G_IO_IN, ldm_manager_io_ready, self);
-
-        g_assert(self->monitor.udev != NULL);
 }
 
 /**
