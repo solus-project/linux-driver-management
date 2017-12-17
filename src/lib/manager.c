@@ -18,8 +18,8 @@
 #include "manager.h"
 #include "util.h"
 
-static void ldm_manager_init_udev(LdmManager *self);
 static void ldm_manager_init_udev_monitor(LdmManager *self);
+static void ldm_manager_init_udev_static(LdmManager *self);
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
 static void ldm_manager_push_device(LdmManager *self, udev_device *device);
 static gboolean ldm_manager_io_ready(GIOChannel *source, GIOCondition condition, gpointer v);
@@ -133,16 +133,17 @@ static void ldm_manager_init(LdmManager *self)
         self->udev = udev_new();
         g_assert(self->udev != NULL);
 
-        ldm_manager_init_udev(self);
         ldm_manager_init_udev_monitor(self);
+        ldm_manager_init_udev_static(self);
 }
 
 /**
- * ldm_manager_init_udev:
+ * ldm_manager_init_udev_static:
  *
- * Set up udev and get some devices going.
+ * Enumerate the existing devices on the system, and pass them all of to
+ * be added, assuming we don't already know about the device.
  */
-static void ldm_manager_init_udev(LdmManager *self)
+static void ldm_manager_init_udev_static(LdmManager *self)
 {
         autofree(udev_enum) *ue = NULL;
         udev_list *list = NULL, *entry = NULL;
