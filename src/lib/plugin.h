@@ -22,12 +22,17 @@ typedef struct _LdmPluginPrivate LdmPluginPrivate;
 typedef struct _LdmPlugin LdmPlugin;
 typedef struct _LdmPluginClass LdmPluginClass;
 
+/**
+ * LdmPluginClass:
+ * @parent_class: The parent class
+ * @get_provider: Virtual get_provider function
+ */
 struct _LdmPluginClass {
         GObjectClass parent_class;
 
-        /* Plugin API */
         LdmProvider *(*get_provider)(LdmPlugin *plugin, LdmDevice *device);
 
+        /*< private >*/
         gpointer padding[12];
 };
 
