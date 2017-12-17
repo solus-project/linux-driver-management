@@ -24,6 +24,7 @@ typedef struct udev udev_connection;
 typedef struct udev_device udev_device;
 typedef struct udev_enumerate udev_enum;
 typedef struct udev_list_entry udev_list;
+typedef struct udev_monitor udev_monitor;
 
 struct _LdmDeviceClass {
         GObjectClass parent_class;

@@ -19,8 +19,10 @@
 #include "util.h"
 
 static void ldm_manager_init_udev(LdmManager *self);
+static void ldm_manager_init_udev_monitor(LdmManager *self);
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
 static void ldm_manager_push_device(LdmManager *self, udev_device *device);
+static gboolean ldm_manager_io_ready(GIOChannel *source, GIOCondition condition, gpointer v);
 
 struct _LdmManagerClass {
         GObjectClass parent_class;
@@ -64,6 +66,12 @@ struct _LdmManager {
 
         /* Udev */
         udev_connection *udev;
+
+        struct {
+                udev_monitor *udev;  /* Connection to udev.. */
+                GIOChannel *channel; /* Main channel for poll main loop */
+                guint source;        /* GIO source */
+        } monitor;
 };
 
 G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
@@ -76,6 +84,19 @@ G_DEFINE_TYPE(LdmManager, ldm_manager, G_TYPE_OBJECT)
 static void ldm_manager_dispose(GObject *obj)
 {
         LdmManager *self = LDM_MANAGER(obj);
+
+        /* Clear up our source */
+        if (self->monitor.source > 0) {
+                g_source_remove(self->monitor.source);
+                self->monitor.source = 0;
+        }
+
+        /* Clear out the monitor */
+        if (self->monitor.udev) {
+                g_io_channel_shutdown(self->monitor.channel, FALSE, NULL);
+                g_clear_pointer(&self->monitor.channel, g_io_channel_unref);
+                g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
+        }
 
         g_clear_pointer(&self->udev, udev_unref);
 
@@ -113,6 +134,7 @@ static void ldm_manager_init(LdmManager *self)
         g_assert(self->udev != NULL);
 
         ldm_manager_init_udev(self);
+        ldm_manager_init_udev_monitor(self);
 }
 
 /**
@@ -151,6 +173,78 @@ static void ldm_manager_init_udev(LdmManager *self)
         {
                 ldm_manager_push_sysfs(self, udev_list_entry_get_name(entry));
         }
+}
+
+/**
+ * ldm_manager_init_udev_monitor:
+ *
+ * Set up the udev monitor and attach the file descriptor to the main event
+ * context to enable receiving the events on the idle loop.
+ */
+static void ldm_manager_init_udev_monitor(LdmManager *self)
+{
+        int fd = 0;
+
+        self->monitor.udev = udev_monitor_new_from_netlink(self->udev, "udev");
+        if (!self->monitor.udev) {
+                g_warning("udev monitoring is unavailable");
+                return;
+        }
+        if (udev_monitor_enable_receiving(self->monitor.udev) != 0) {
+                g_warning("Failed to enable monitor receiving");
+                g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
+                return;
+        }
+
+        /* Now let's hook up monitoring. */
+        fd = udev_monitor_get_fd(self->monitor.udev);
+        self->monitor.channel = g_io_channel_unix_new(fd);
+        /* Don't do anything fancy with the channel */
+        g_io_channel_set_encoding(self->monitor.channel, NULL, NULL);
+        self->monitor.source =
+            g_io_add_watch(self->monitor.channel, G_IO_IN, ldm_manager_io_ready, self);
+
+        g_assert(self->monitor.udev != NULL);
+}
+
+/**
+ * ldm_manager_io_ready:
+ *
+ * We have I/O on the udev channel, do something with it.
+ */
+static gboolean ldm_manager_io_ready(__ldm_unused__ GIOChannel *source, GIOCondition condition,
+                                     gpointer v)
+{
+        LdmManager *self = v;
+        autofree(udev_device) *device = NULL;
+        const char *action = NULL;
+
+        /* Only want G_IO_IN here. */
+        if ((condition & G_IO_IN) != G_IO_IN) {
+                return TRUE;
+        }
+
+        device = udev_monitor_receive_device(self->monitor.udev);
+        if (!device) {
+                /* Remove polling now, something is badly wrong. */
+                g_warning("Failed to receive device!");
+                return FALSE;
+        }
+
+        action = udev_device_get_action(device);
+        if (!action) {
+                return TRUE;
+        }
+
+        /* Interesting actions */
+        if (g_str_equal(action, "add")) {
+                g_message("Device added: %s", udev_device_get_syspath(device));
+        } else if (g_str_equal(action, "remove")) {
+                g_message("Device removed: %s", udev_device_get_syspath(device));
+        }
+
+        /* Keep the source around */
+        return TRUE;
 }
 
 /**
