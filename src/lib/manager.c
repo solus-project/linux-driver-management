@@ -27,11 +27,12 @@ static void ldm_manager_constructed(GObject *obj);
 static void ldm_manager_init_udev_monitor(LdmManager *self);
 static void ldm_manager_init_udev_static(LdmManager *self);
 static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path);
-static void ldm_manager_push_device(LdmManager *self, udev_device *device);
+static void ldm_manager_push_device(LdmManager *self, udev_device *device, gboolean emit_signal);
 static void ldm_manager_remove_device(LdmManager *self, udev_device *device);
 static gboolean ldm_manager_io_ready(GIOChannel *source, GIOCondition condition, gpointer v);
 static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
                                                 udev_device *device);
+static void ldm_manager_emit_usb(LdmManager *self, udev_device *device);
 
 /* Property IDs */
 enum { PROP_FLAGS = 1, N_PROPS };
@@ -50,7 +51,6 @@ struct _LdmManagerClass {
 
         /* Signals */
         void (*device_added)(LdmManager *self, LdmDevice *device);
-        void (*device_changed)(LdmManager *self, LdmDevice *device);
         void (*device_removed)(LdmManager *self, const gchar *id);
 };
 
@@ -162,28 +162,6 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
                          LDM_TYPE_MANAGER,
                          G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
                          G_STRUCT_OFFSET(LdmManagerClass, device_added),
-                         NULL,
-                         NULL,
-                         NULL,
-                         G_TYPE_NONE,
-                         1,
-                         LDM_TYPE_DEVICE);
-
-        /**
-         * LdmManager::device-changed:
-         * @manager: The manager owning the device
-         * @device: The device that was changed
-         *
-         * Connect to this signal to be notified about devices that have
-         * undergone state changes. This is typical for USB devices which
-         * support multiple interfaces, which will cause changes after
-         * the initial add stage.
-         */
-        obj_signals[SIGNAL_DEVICE_CHANGED] =
-            g_signal_new("device-changed",
-                         LDM_TYPE_MANAGER,
-                         G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-                         G_STRUCT_OFFSET(LdmManagerClass, device_changed),
                          NULL,
                          NULL,
                          NULL,
@@ -403,9 +381,11 @@ static gboolean ldm_manager_io_ready(__ldm_unused__ GIOChannel *source, GIOCondi
 
         /* Interesting actions */
         if (g_str_equal(action, "add")) {
-                ldm_manager_push_device(self, device);
+                ldm_manager_push_device(self, device, TRUE);
         } else if (g_str_equal(action, "remove")) {
                 ldm_manager_remove_device(self, device);
+        } else if (g_str_equal(action, "bind")) {
+                ldm_manager_emit_usb(self, device);
         }
 
         /* Keep the source around */
@@ -456,7 +436,7 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 
         device = udev_device_new_from_syspath(self->udev, sysfs_path);
 
-        ldm_manager_push_device(self, device);
+        ldm_manager_push_device(self, device, FALSE);
 }
 
 /**
@@ -497,12 +477,46 @@ static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *su
 }
 
 /**
+ * ldm_manager_emit_usb:
+ *
+ * We won't emit the USB device until we know its "finished", i.e. the
+ * bind event has been received for the usb_device
+ */
+static void ldm_manager_emit_usb(LdmManager *self, udev_device *device)
+{
+        const char *sysfs_path = NULL;
+        const char *devtype = NULL;
+        const char *subsystem = NULL;
+        LdmDevice *lookup = NULL;
+
+        subsystem = udev_device_get_subsystem(device);
+
+        /* Must be a USB device */
+        if (!g_str_equal(subsystem, "usb")) {
+                return;
+        }
+
+        devtype = udev_device_get_devtype(device);
+        if (!devtype || !g_str_equal(devtype, "usb_device")) {
+                return;
+        }
+
+        sysfs_path = udev_device_get_syspath(device);
+        lookup = g_hash_table_lookup(self->devices, sysfs_path);
+        if (!lookup) {
+                return;
+        }
+
+        g_signal_emit(self, obj_signals[SIGNAL_DEVICE_ADDED], 0, lookup);
+}
+
+/**
  * ldm_manager_push_device:
  * @device: The udev device to add
  *
  * This will handle the real work of adding a new device to the manager
  */
-static void ldm_manager_push_device(LdmManager *self, udev_device *device)
+static void ldm_manager_push_device(LdmManager *self, udev_device *device, gboolean emit_signal)
 {
         LdmDevice *ldm_device = NULL;
         LdmDevice *parent = NULL;
@@ -532,13 +546,18 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device)
         ldm_device = ldm_device_new_from_udev(parent, device, properties);
         if (parent) {
                 ldm_device_add_child(parent, ldm_device);
-                /* Emit change notification */
-                g_signal_emit(self, obj_signals[SIGNAL_DEVICE_CHANGED], 0, ldm_device);
                 return;
         }
 
         g_hash_table_insert(self->devices, g_strdup(sysfs_path), ldm_device);
         /*  Emit signal for the new device. */
+        if (!emit_signal) {
+                return;
+        }
+        /* Don't emit signal for USB here */
+        if (g_str_equal(subsystem, "usb")) {
+                return;
+        }
         g_signal_emit(self, obj_signals[SIGNAL_DEVICE_ADDED], 0, ldm_device);
 }
 

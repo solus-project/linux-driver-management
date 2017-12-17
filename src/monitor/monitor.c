@@ -16,7 +16,6 @@
 #include "util.h"
 
 static void ldm_daemon_device_added(LdmDaemon *daemon, LdmDevice *device, gpointer v);
-static void ldm_daemon_device_changed(LdmDaemon *daemon, LdmDevice *device, gpointer v);
 static void ldm_daemon_device_removed(LdmDaemon *daemon, const gchar *path, gpointer v);
 
 struct _LdmDaemonClass {
@@ -73,10 +72,6 @@ static void ldm_daemon_init(LdmDaemon *self)
                                  G_CALLBACK(ldm_daemon_device_added),
                                  self);
         g_signal_connect_swapped(self->manager,
-                                 "device-changed",
-                                 G_CALLBACK(ldm_daemon_device_changed),
-                                 self);
-        g_signal_connect_swapped(self->manager,
                                  "device-removed",
                                  G_CALLBACK(ldm_daemon_device_removed),
                                  self);
@@ -96,12 +91,6 @@ static void ldm_daemon_device_added(__ldm_unused__ LdmDaemon *daemon, LdmDevice 
                                     __ldm_unused__ gpointer v)
 {
         g_message("ldm_daemon_device_added(): %s", ldm_device_get_name(device));
-}
-
-static void ldm_daemon_device_changed(__ldm_unused__ LdmDaemon *daemon, LdmDevice *device,
-                                      __ldm_unused__ gpointer v)
-{
-        g_message("ldm_daemon_device_changed(): %s", ldm_device_get_name(device));
 }
 
 static void ldm_daemon_device_removed(__ldm_unused__ LdmDaemon *daemon, const gchar *path,
