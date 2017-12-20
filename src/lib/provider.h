@@ -13,10 +13,15 @@
 
 #include <glib-object.h>
 
+#include <device.h>
+
 G_BEGIN_DECLS
 
 typedef struct _LdmProvider LdmProvider;
 typedef struct _LdmProviderClass LdmProviderClass;
+
+/* Fix circular references between Provider and Plugin */
+#include <plugin.h>
 
 #define LDM_TYPE_PROVIDER ldm_provider_get_type()
 #define LDM_PROVIDER(o) (G_TYPE_CHECK_INSTANCE_CAST((o), LDM_TYPE_PROVIDER, LdmProvider))
@@ -27,6 +32,12 @@ typedef struct _LdmProviderClass LdmProviderClass;
         (G_TYPE_INSTANCE_GET_CLASS((o), LDM_TYPE_PROVIDER, LdmProviderClass))
 
 GType ldm_provider_get_type(void);
+
+/* API */
+
+LdmProvider *ldm_provider_new(LdmPlugin *parent_plugin, LdmDevice *device);
+LdmDevice *ldm_provider_get_device(LdmProvider *provider);
+LdmPlugin *ldm_provider_get_plugin(LdmProvider *provider);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmProvider, g_object_unref)
 

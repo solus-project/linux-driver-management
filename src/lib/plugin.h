@@ -14,13 +14,15 @@
 #include <glib-object.h>
 
 #include <device.h>
-#include <provider.h>
 
 G_BEGIN_DECLS
 
 typedef struct _LdmPluginPrivate LdmPluginPrivate;
 typedef struct _LdmPlugin LdmPlugin;
 typedef struct _LdmPluginClass LdmPluginClass;
+
+/* Fix circular references between Plugin and Provider */
+#include <provider.h>
 
 /**
  * LdmPluginClass:
