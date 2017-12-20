@@ -36,6 +36,7 @@ void ldm_manager_add_plugin(LdmManager *self, LdmPlugin *plugin)
         } else {
                 g_message("new plugin: %s", plugin_id);
         }
+
         g_hash_table_replace(self->plugins, g_strdup(plugin_id), g_object_ref_sink(plugin));
 }
 
@@ -44,7 +45,13 @@ void ldm_manager_add_plugin(LdmManager *self, LdmPlugin *plugin)
  * @path: The fully qualified ".modaliases" file path
  *
  * Add a new #LdmModaliasPlugin to the manager for the given path. This is a convenience
- * wrapper around #ldm_modalias_plugin_new_from_filename and #ldm_manager_add_plugin
+ * wrapper around #ldm_modalias_plugin_new_from_filename and #ldm_manager_add_plugin.
+ *
+ * Note that the insert order is the same order that plugins will be returned, so
+ * always insert your highest priority items FIRST if you expect them to be returned
+ * first when multiple plugins might match the same device.
+ *
+ * i.e. insert 380 driver before 340.
  *
  * Returns: TRUE if a new plugin was added
  */
@@ -57,6 +64,11 @@ gboolean ldm_manager_add_modalias_plugin_for_path(LdmManager *self, const gchar 
         }
 
         plugin = ldm_modalias_plugin_new_from_filename(path);
+
+        /* Enforce priority based on insert order */
+        ldm_plugin_set_priority(plugin, self->modalias_plugin_priority);
+        ++self->modalias_plugin_priority;
+
         ldm_manager_add_plugin(self, plugin);
 
         return TRUE;

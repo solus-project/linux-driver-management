@@ -30,6 +30,8 @@ struct _LdmManager {
         GPtrArray *devices;
         GHashTable *plugins;
 
+        gint modalias_plugin_priority;
+
         /* Udev */
         udev_connection *udev;
 
