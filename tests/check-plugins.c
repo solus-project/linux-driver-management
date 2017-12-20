@@ -24,6 +24,9 @@ DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 
 #define NV_MOCKDEV_FILE TEST_DATA_ROOT "/nvidia1060.umockdev"
 
+#define NV_MAIN_MODALIAS TEST_DATA_ROOT "/nvidia-glx-driver.modaliases"
+#define NV_340_MODALIAS TEST_DATA_ROOT "/nvidia-340-glx-driver.modaliases"
+
 static UMockdevTestbed *create_bed_from(const char *mockdevname)
 {
         UMockdevTestbed *bed = NULL;
@@ -46,15 +49,24 @@ START_TEST(test_plugins_nvidia)
         autofree(UMockdevTestbed) *bed = NULL;
         g_autoptr(LdmGPUConfig) gpu = NULL;
         g_autoptr(GPtrArray) providers = NULL;
+        const gchar *plugin_id = NULL;
 
         bed = create_bed_from(NV_MOCKDEV_FILE);
         manager = ldm_manager_new(0);
+
+        fail_if(!ldm_manager_add_modalias_plugin_for_path(manager, NV_MAIN_MODALIAS),
+                "Failed to add main modalias file");
+        fail_if(!ldm_manager_add_modalias_plugin_for_path(manager, NV_340_MODALIAS),
+                "Failed to add 340 modalias file");
 
         gpu = ldm_gpu_config_new(manager);
         fail_if(!gpu, "Failed to create GPUConfig");
 
         providers = ldm_gpu_config_get_providers(gpu);
         fail_if(providers->len != 1, "Expected 1 provider, got %u providers", providers->len);
+
+        plugin_id = ldm_plugin_get_name(ldm_provider_get_plugin(providers->pdata[0]));
+        fail_if(!g_str_equal(plugin_id, "nvidia-glx-driver"), "Failed to grab correct plugin");
 }
 END_TEST
 
