@@ -401,7 +401,6 @@ static gboolean ldm_manager_device_by_sysfs_path(LdmManager *self, const char *s
                         continue;
                 }
 
-                *out_device = node;
                 if (out_device) {
                         *out_device = node;
                 }
