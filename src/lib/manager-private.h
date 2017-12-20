@@ -27,7 +27,7 @@ struct _LdmManagerClass {
 
 struct _LdmManager {
         GObject parent;
-        GHashTable *devices;
+        GPtrArray *devices;
         GHashTable *plugins;
 
         /* Udev */

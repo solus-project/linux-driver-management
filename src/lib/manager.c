@@ -107,7 +107,7 @@ static void ldm_manager_dispose(GObject *obj)
         g_clear_pointer(&self->udev, udev_unref);
 
         /* clean ourselves up */
-        g_clear_pointer(&self->devices, g_hash_table_unref);
+        g_clear_pointer(&self->devices, g_ptr_array_unref);
 
         g_clear_pointer(&self->plugins, g_hash_table_unref);
 
@@ -248,8 +248,8 @@ static_init:
  */
 static void ldm_manager_init(LdmManager *self)
 {
-        /* Device table is a mapping of sysfs name to LdmDevice */
-        self->devices = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
+        /* Devices is an array of devices in the order that we encounter them */
+        self->devices = g_ptr_array_new_full(50, g_object_unref);
 
         /* Plugin table is a mapping from plugin name to plugin */
         self->plugins = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
@@ -375,6 +375,45 @@ static gboolean ldm_manager_io_ready(__ldm_unused__ GIOChannel *source, GIOCondi
         return TRUE;
 }
 
+/*
+ * Walk devices and find the matching device.
+ * We originally used a hashtable internally but that has the undesirable
+ * effect that we lose our original sorting as it came from udev, and not
+ * only did it make test suites unreliable, it also meant we could encounter
+ * PCI devices in the wrong order too.
+ */
+static gboolean ldm_manager_device_by_sysfs_path(LdmManager *self, const char *sysfs_path,
+                                                 LdmDevice **out_device, guint *out_index)
+{
+        if (out_device) {
+                *out_device = NULL;
+        }
+        if (out_index) {
+                *out_index = 0;
+        }
+
+        /* Find the device */
+        for (guint i = 0; i < self->devices->len; i++) {
+                LdmDevice *node = NULL;
+
+                node = self->devices->pdata[i];
+                if (!g_str_equal(node->os.sysfs_path, sysfs_path)) {
+                        continue;
+                }
+
+                *out_device = node;
+                if (out_device) {
+                        *out_device = node;
+                }
+                if (out_index) {
+                        *out_index = i;
+                }
+                return TRUE;
+        }
+
+        return FALSE;
+}
+
 /**
  * ldm_manager_remove_device:
  *
@@ -385,6 +424,8 @@ static void ldm_manager_remove_device(LdmManager *self, udev_device *device)
         LdmDevice *parent = NULL;
         const char *subsystem = NULL;
         const char *sysfs_path = NULL;
+        LdmDevice *node = NULL;
+        guint index = 0;
 
         subsystem = udev_device_get_subsystem(device);
         sysfs_path = udev_device_get_syspath(device);
@@ -396,15 +437,15 @@ static void ldm_manager_remove_device(LdmManager *self, udev_device *device)
                 return;
         }
 
-        if (!g_hash_table_contains(self->devices, sysfs_path)) {
+        if (!ldm_manager_device_by_sysfs_path(self, sysfs_path, &node, &index)) {
                 return;
-        }
+        };
 
         /*  Emit signal for the device removal */
         g_signal_emit(self, obj_signals[SIGNAL_DEVICE_REMOVED], 0, sysfs_path);
 
         /* Remove from our known devices */
-        g_hash_table_remove(self->devices, sysfs_path);
+        g_ptr_array_remove_index(self->devices, index);
 }
 
 /**
@@ -432,9 +473,9 @@ static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *su
                                                 udev_device *device)
 {
         udev_device *udev_parent = NULL;
-        LdmDevice *parent = NULL;
         const char *sysfs_path = NULL;
         const char *devtype = NULL;
+        LdmDevice *node = NULL;
 
         /* Must be a USB interface */
         if (!g_str_equal(subsystem, "usb")) {
@@ -451,12 +492,12 @@ static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *su
         }
 
         sysfs_path = udev_device_get_syspath(udev_parent);
-        parent = g_hash_table_lookup(self->devices, sysfs_path);
-        if (!parent) {
-                return NULL;
-        }
 
-        return parent;
+        if (!ldm_manager_device_by_sysfs_path(self, sysfs_path, &node, NULL)) {
+                return NULL;
+        };
+
+        return node;
 }
 
 /**
@@ -470,7 +511,7 @@ static void ldm_manager_emit_usb(LdmManager *self, udev_device *device)
         const char *sysfs_path = NULL;
         const char *devtype = NULL;
         const char *subsystem = NULL;
-        LdmDevice *lookup = NULL;
+        LdmDevice *node = NULL;
 
         subsystem = udev_device_get_subsystem(device);
 
@@ -485,12 +526,11 @@ static void ldm_manager_emit_usb(LdmManager *self, udev_device *device)
         }
 
         sysfs_path = udev_device_get_syspath(device);
-        lookup = g_hash_table_lookup(self->devices, sysfs_path);
-        if (!lookup) {
+        if (!ldm_manager_device_by_sysfs_path(self, sysfs_path, &node, NULL)) {
                 return;
-        }
+        };
 
-        g_signal_emit(self, obj_signals[SIGNAL_DEVICE_ADDED], 0, lookup);
+        g_signal_emit(self, obj_signals[SIGNAL_DEVICE_ADDED], 0, node);
 }
 
 /**
@@ -510,7 +550,7 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device, gbool
         sysfs_path = udev_device_get_syspath(device);
 
         /* Don't dupe these guys. */
-        if (g_hash_table_contains(self->devices, sysfs_path)) {
+        if (ldm_manager_device_by_sysfs_path(self, sysfs_path, NULL, NULL)) {
                 return;
         }
 
@@ -532,7 +572,8 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device, gbool
                 return;
         }
 
-        g_hash_table_insert(self->devices, g_strdup(sysfs_path), ldm_device);
+        g_ptr_array_add(self->devices, ldm_device);
+
         /*  Emit signal for the new device. */
         if (!emit_signal) {
                 return;
@@ -572,19 +613,18 @@ LdmManager *ldm_manager_new(LdmManagerFlags flags)
  */
 GList *ldm_manager_get_devices(LdmManager *self, LdmDeviceType class_mask)
 {
-        GHashTableIter iter = { 0 };
-        __ldm_unused__ gpointer key = NULL;
-        LdmDevice *dev = NULL;
         GList *ret = NULL;
 
         g_return_val_if_fail(self != NULL, NULL);
 
-        g_hash_table_iter_init(&iter, self->devices);
-        while (g_hash_table_iter_next(&iter, &key, (void **)&dev)) {
-                if (!ldm_device_has_type(dev, class_mask)) {
+        for (guint i = 0; i < self->devices->len; i++) {
+                LdmDevice *node = NULL;
+
+                node = self->devices->pdata[i];
+                if (!ldm_device_has_type(node, class_mask)) {
                         continue;
                 }
-                ret = g_list_append(ret, dev);
+                ret = g_list_append(ret, node);
         }
 
         return ret;
