@@ -4,6 +4,7 @@ required_tests = [
     'manager',
     'usb',
     'gpu-config',
+    'plugins',
 ]
 
 test_dependencies = [
