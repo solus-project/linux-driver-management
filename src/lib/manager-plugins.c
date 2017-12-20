@@ -16,7 +16,7 @@
 
 /**
  * ldm_manager_add_plugin:
- * @plugin: New plugin to add.
+ * @plugin: (transfer full): New plugin to add.
  *
  * Add a new plugin to the current set of plugins. The plugins are used to
  * provide automatic hardware detection capabilities to the #LdmManager
@@ -36,7 +36,7 @@ void ldm_manager_add_plugin(LdmManager *self, LdmPlugin *plugin)
         } else {
                 g_message("new plugin: %s", plugin_id);
         }
-        g_hash_table_replace(self->plugins, g_strdup(plugin_id), plugin);
+        g_hash_table_replace(self->plugins, g_strdup(plugin_id), g_object_ref_sink(plugin));
 }
 
 /**

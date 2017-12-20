@@ -30,7 +30,7 @@ typedef struct _LdmPluginClass LdmPluginClass;
  * @get_provider: Virtual get_provider function
  */
 struct _LdmPluginClass {
-        GObjectClass parent_class;
+        GInitiallyUnownedClass parent_class;
 
         LdmProvider *(*get_provider)(LdmPlugin *plugin, LdmDevice *device);
 
@@ -39,7 +39,7 @@ struct _LdmPluginClass {
 };
 
 struct _LdmPlugin {
-        GObject parent;
+        GInitiallyUnowned parent;
         LdmPluginPrivate *priv;
 };
 

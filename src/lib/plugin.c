@@ -31,7 +31,7 @@ struct _LdmPluginPrivate {
         gint priority;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE(LdmPlugin, ldm_plugin, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE(LdmPlugin, ldm_plugin, G_TYPE_INITIALLY_UNOWNED)
 
 enum { PROP_NAME = 1, PROP_PRIORITY, N_PROPS };
 
