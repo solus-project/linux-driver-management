@@ -43,7 +43,7 @@ static GParamSpec *obj_properties[N_PROPS] = {
 };
 
 /* Signal IDs */
-enum { SIGNAL_DEVICE_ADDED = 0, SIGNAL_DEVICE_CHANGED, SIGNAL_DEVICE_REMOVED, N_SIGNALS };
+enum { SIGNAL_DEVICE_ADDED = 0, SIGNAL_DEVICE_REMOVED, N_SIGNALS };
 
 static guint obj_signals[N_SIGNALS] = { 0 };
 
