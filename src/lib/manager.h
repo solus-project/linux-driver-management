@@ -50,6 +50,8 @@ GPtrArray *ldm_manager_get_providers(LdmManager *manager, LdmDevice *device);
 
 /* Plugin API */
 gboolean ldm_manager_add_modalias_plugin_for_path(LdmManager *manager, const gchar *path);
+gboolean ldm_manager_add_modalias_plugins_for_directory(LdmManager *manager,
+                                                        const gchar *directory);
 void ldm_manager_add_plugin(LdmManager *manager, LdmPlugin *plugin);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmManager, g_object_unref)

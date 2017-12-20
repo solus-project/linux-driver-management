@@ -9,6 +9,10 @@
  * of the License, or (at your option) any later version.
  */
 
+#define _GNU_SOURCE
+
+#include <glob.h>
+
 #include "manager-private.h"
 #include "plugin.h"
 
@@ -72,6 +76,45 @@ gboolean ldm_manager_add_modalias_plugin_for_path(LdmManager *self, const gchar 
         ldm_manager_add_plugin(self, plugin);
 
         return TRUE;
+}
+
+/**
+ * ldm_manager_add_modalias_plugins_for_directory:
+ * @directory: Path containing `*.modaliases` files
+ *
+ * Attempt to bulk-add #LdmModaliasPlugin objects from the given directory to
+ * ensure preservation of sort order and ease of use.
+ *
+ * This function is used to add well known modalias paths to the plugin and
+ * construct plugins used for hardware detection.
+ *
+ * Returns: TRUE if a new plugin was added
+ */
+gboolean ldm_manager_add_modalias_plugins_for_directory(LdmManager *self, const gchar *directory)
+{
+        g_autofree gchar *glob_path = NULL;
+        glob_t glo = { 0 };
+        gboolean ret = FALSE;
+
+        glob_path = g_strdup_printf("%s%s*.modaliases", directory, G_DIR_SEPARATOR_S);
+
+        if (glob(glob_path, 0, NULL, &glo) != 0) {
+                goto cleanup;
+        }
+
+        if (glo.gl_pathc < 1) {
+                goto cleanup;
+        }
+
+        for (size_t i = 0; i < glo.gl_pathc; i++) {
+                if (ldm_manager_add_modalias_plugin_for_path(self, glo.gl_pathv[i])) {
+                        ret = TRUE;
+                }
+        }
+
+cleanup:
+        globfree(&glo);
+        return ret;
 }
 
 static gint ldm_manager_sort_by_priority(gconstpointer a, gconstpointer b)

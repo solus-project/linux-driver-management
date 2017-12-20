@@ -27,6 +27,7 @@ DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 
 #define NV_MAIN_MODALIAS TEST_DATA_ROOT "/nvidia-glx-driver.modaliases"
 #define NV_340_MODALIAS TEST_DATA_ROOT "/nvidia-340-glx-driver.modaliases"
+#define MODALIAS_DIR TEST_DATA_ROOT "/"
 
 static UMockdevTestbed *create_bed_from(const char *mockdevname)
 {
@@ -98,7 +99,44 @@ START_TEST(test_plugins_nvidia_multiple)
         fail_if(!gpu, "Failed to create GPUConfig");
 
         providers = ldm_gpu_config_get_providers(gpu);
-        fail_if(providers->len != 2, "Expected 1 provider, got %u providers", providers->len);
+        fail_if(providers->len != 2, "Expected 2 providers, got %u providers", providers->len);
+
+        plugin_id = ldm_plugin_get_name(ldm_provider_get_plugin(providers->pdata[0]));
+        fail_if(!g_str_equal(plugin_id, "nvidia-glx-driver"),
+                "First candidate should be nvidia-glx-driver, got %s",
+                plugin_id);
+
+        plugin_id = ldm_plugin_get_name(ldm_provider_get_plugin(providers->pdata[1]));
+        fail_if(!g_str_equal(plugin_id, "nvidia-340-glx-driver"),
+                "Second candidate should be nvidia-340-glx-driver, got %s",
+                plugin_id);
+}
+END_TEST
+
+/**
+ * Identical to test_plugins_nvidia_multiple except we don't manually add
+ * the plugins, we add them from the search path.
+ */
+START_TEST(test_plugins_nvidia_multiple_glob)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(LdmGPUConfig) gpu = NULL;
+        g_autoptr(GPtrArray) providers = NULL;
+        const gchar *plugin_id = NULL;
+
+        bed = create_bed_from(OPTIMUS_MOCKDEV_FILE);
+        manager = ldm_manager_new(0);
+
+        /* Modalias plugins preserve the priority from the insert order. */
+        fail_if(!ldm_manager_add_modalias_plugins_for_directory(manager, MODALIAS_DIR),
+                "Failed to add main modalias directory");
+
+        gpu = ldm_gpu_config_new(manager);
+        fail_if(!gpu, "Failed to create GPUConfig");
+
+        providers = ldm_gpu_config_get_providers(gpu);
+        fail_if(providers->len != 2, "Expected 2 provider, got %u providers", providers->len);
 
         plugin_id = ldm_plugin_get_name(ldm_provider_get_plugin(providers->pdata[0]));
         fail_if(!g_str_equal(plugin_id, "nvidia-glx-driver"),
@@ -139,6 +177,7 @@ static Suite *test_create(void)
 
         tcase_add_test(tc, test_plugins_nvidia);
         tcase_add_test(tc, test_plugins_nvidia_multiple);
+        tcase_add_test(tc, test_plugins_nvidia_multiple_glob);
 
         return s;
 }

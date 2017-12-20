@@ -29,6 +29,7 @@ LIBLDM_0 {
     ldm_gpu_type_get_type;
     ldm_manager_add_plugin;
     ldm_manager_add_modalias_plugin_for_path;
+    ldm_manager_add_modalias_plugins_for_directory;
     ldm_manager_new;
     ldm_manager_get_devices;
     ldm_manager_get_providers;
