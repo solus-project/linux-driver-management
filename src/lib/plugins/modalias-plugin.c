@@ -20,6 +20,8 @@ struct _LdmModaliasPluginClass {
         LdmPluginClass parent_class;
 };
 
+static LdmProvider *ldm_modalias_plugin_get_provider(LdmPlugin *plugin, LdmDevice *device);
+
 /**
  * SECTION:modalias-plugin
  * @Short_description: Modalias-based plugin implementation
@@ -80,9 +82,13 @@ static void ldm_modalias_plugin_dispose(GObject *obj)
 static void ldm_modalias_plugin_class_init(LdmModaliasPluginClass *klazz)
 {
         GObjectClass *obj_class = G_OBJECT_CLASS(klazz);
+        LdmPluginClass *plug_class = LDM_PLUGIN_CLASS(klazz);
 
         /* gobject vtable hookup */
         obj_class->dispose = ldm_modalias_plugin_dispose;
+
+        /* plugin vtable hookup */
+        plug_class->get_provider = ldm_modalias_plugin_get_provider;
 }
 
 /**
@@ -256,6 +262,38 @@ void ldm_modalias_plugin_add_modalias(LdmModaliasPlugin *self, LdmModalias *moda
         g_assert(id != NULL);
 
         g_hash_table_replace(self->modaliases, g_strdup(id), g_object_ref_sink(modalias));
+}
+
+/**
+ * ldm_modalias_plugin_get_provider:
+ * @device: Test input device
+ *
+ * Walk our modaliases and attempt to find a match from one of those lines. If
+ * we match the device off against our table, return a new #LdmProvider to help
+ * configure that device.
+ *
+ * Returns: (transfer full) (nullable): A new #LdmProvider for the device
+ */
+static LdmProvider *ldm_modalias_plugin_get_provider(LdmPlugin *plugin, LdmDevice *device)
+{
+        LdmModaliasPlugin *self = LDM_MODALIAS_PLUGIN(plugin);
+        LdmProvider *ret = NULL;
+        GHashTableIter iter = { 0 };
+        __ldm_unused__ gpointer key = NULL;
+        LdmModalias *modalias = NULL;
+
+        g_hash_table_iter_init(&iter, self->modaliases);
+        while (g_hash_table_iter_next(&iter, &key, (void **)&modalias)) {
+                if (!ldm_modalias_matches_device(modalias, device)) {
+                        continue;
+                }
+
+                /* TODO: Populate with package name and such */
+                ret = ldm_provider_new(plugin, device);
+                return ret;
+        }
+
+        return NULL;
 }
 
 /*
