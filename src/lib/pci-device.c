@@ -17,8 +17,8 @@
 #include "pci-device.h"
 #include "util.h"
 
-/* PCI display devices are between 0x03 and 0x0380 */
-#define PCI_DISPLAY_MASK 0x300
+#define PCI_CLASS_DISPLAY_VGA 0x0300
+#define PCI_CLASS_DISPLAY_OTHER 0x0380
 
 struct _LdmPCIDeviceClass {
         LdmDeviceClass parent_class;
@@ -147,7 +147,7 @@ void ldm_pci_device_init_private(LdmDevice *self, udev_device *device)
 
         /* Does it look like a display device? */
         pci_class = (int)(strtoll(sysattr, NULL, 0) >> 8);
-        if ((pci_class & PCI_DISPLAY_MASK) == PCI_DISPLAY_MASK) {
+        if (pci_class >= PCI_CLASS_DISPLAY_VGA && pci_class <= PCI_CLASS_DISPLAY_OTHER) {
                 self->os.devtype |= LDM_DEVICE_TYPE_GPU;
         }
 }
