@@ -34,6 +34,14 @@ void ldm_manager_add_modalias_plugin_for_path(LdmManager *self, const gchar *pat
         g_hash_table_replace(self->plugins, g_strdup(plugin_id), plugin);
 }
 
+static gint ldm_manager_sort_by_priority(gconstpointer a, gconstpointer b)
+{
+        gint prioA = ldm_plugin_get_priority(ldm_provider_get_plugin(*(LdmProvider **)a));
+        gint prioB = ldm_plugin_get_priority(ldm_provider_get_plugin(*(LdmProvider **)b));
+
+        return prioA - prioB;
+}
+
 /**
  * ldm_manager_get_providers:
  *
@@ -63,6 +71,8 @@ GPtrArray *ldm_manager_get_providers(LdmManager *self, LdmDevice *device)
                 }
                 g_ptr_array_add(ret, provider);
         }
+
+        g_ptr_array_sort(ret, ldm_manager_sort_by_priority);
 
         return ret;
 }
