@@ -249,7 +249,7 @@ static_init:
 static void ldm_manager_init(LdmManager *self)
 {
         /* Devices is an array of devices in the order that we encounter them */
-        self->devices = g_ptr_array_new_full(50, g_object_unref);
+        self->devices = g_ptr_array_new_full(30, g_object_unref);
 
         /* Plugin table is a mapping from plugin name to plugin */
         self->plugins = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_object_unref);
