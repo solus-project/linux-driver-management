@@ -89,11 +89,10 @@ START_TEST(test_plugins_nvidia_multiple)
         bed = create_bed_from(OPTIMUS_MOCKDEV_FILE);
         manager = ldm_manager_new(0);
 
-        /* Modalias plugins preserve the priority from the insert order. */
-        fail_if(!ldm_manager_add_modalias_plugin_for_path(manager, NV_MAIN_MODALIAS),
-                "Failed to add main modalias file");
         fail_if(!ldm_manager_add_modalias_plugin_for_path(manager, NV_340_MODALIAS),
                 "Failed to add 340 modalias file");
+        fail_if(!ldm_manager_add_modalias_plugin_for_path(manager, NV_MAIN_MODALIAS),
+                "Failed to add main modalias file");
 
         gpu = ldm_gpu_config_new(manager);
         fail_if(!gpu, "Failed to create GPUConfig");

@@ -51,11 +51,12 @@ void ldm_manager_add_plugin(LdmManager *self, LdmPlugin *plugin)
  * Add a new #LdmModaliasPlugin to the manager for the given path. This is a convenience
  * wrapper around #ldm_modalias_plugin_new_from_filename and #ldm_manager_add_plugin.
  *
- * Note that the insert order is the same order that plugins will be returned, so
- * always insert your highest priority items FIRST if you expect them to be returned
- * first when multiple plugins might match the same device.
+ * Note that newer modalias plugins have a higher priority than older plugins,
+ * so you should add newest drivers last if you have multiple driver versions.
+ * This is already taken care of by using the glob-based function
+ * #ldm_manager_add_modalias_plugins_for_directory
  *
- * i.e. insert 380 driver before 340.
+ * i.e. insert 380 driver AFTER 340.
  *
  * Returns: TRUE if a new plugin was added
  */
@@ -122,7 +123,7 @@ static gint ldm_manager_sort_by_priority(gconstpointer a, gconstpointer b)
         gint prioA = ldm_plugin_get_priority(ldm_provider_get_plugin(*(LdmProvider **)a));
         gint prioB = ldm_plugin_get_priority(ldm_provider_get_plugin(*(LdmProvider **)b));
 
-        return prioA - prioB;
+        return prioB - prioA;
 }
 
 /**
