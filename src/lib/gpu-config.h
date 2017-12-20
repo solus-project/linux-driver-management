@@ -71,7 +71,7 @@ gboolean ldm_gpu_config_has_type(LdmGPUConfig *config, LdmGPUType mask);
 LdmDevice *ldm_gpu_config_get_primary_device(LdmGPUConfig *config);
 LdmDevice *ldm_gpu_config_get_secondary_device(LdmGPUConfig *config);
 LdmDevice *ldm_gpu_config_get_detection_device(LdmGPUConfig *config);
-GList *ldm_gpu_config_get_providers(LdmGPUConfig *config);
+GPtrArray *ldm_gpu_config_get_providers(LdmGPUConfig *config);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmGPUConfig, g_object_unref)
 

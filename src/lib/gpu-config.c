@@ -521,7 +521,7 @@ LdmDevice *ldm_gpu_config_get_detection_device(LdmGPUConfig *self)
  *
  * Returns: (element-type Ldm.Provider) (transfer full): a list of all possible providers
  */
-GList *ldm_gpu_config_get_providers(LdmGPUConfig *self)
+GPtrArray *ldm_gpu_config_get_providers(LdmGPUConfig *self)
 {
         g_return_val_if_fail(self != NULL, NULL);
 
