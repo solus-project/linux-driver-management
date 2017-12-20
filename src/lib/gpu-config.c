@@ -508,6 +508,29 @@ LdmDevice *ldm_gpu_config_get_detection_device(LdmGPUConfig *self)
         return self->primary;
 }
 
+/**
+ * ldm_gpu_config_get_providers:
+ *
+ * Get the #LdmProvider sbest suited for this particular GPU Configuration.
+ * This is a quick wrapper around various internal functions to make it
+ * quick and painless to learn the correct GPU driver expected for the
+ * graphical drivers.
+ *
+ * The internal #LdmGPUConfig:manager is responsible for sorting the returned
+ * list.
+ *
+ * Returns: (element-type Ldm.Provider) (transfer full): a list of all possible providers
+ */
+GList *ldm_gpu_config_get_providers(LdmGPUConfig *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+
+        /* TODO: Perhaps in future detect multiple devices of the same kind
+         * that are in SIMPLE/COMPOSITE range and return the lowest common
+         * denominator.
+         */
+        return ldm_manager_get_providers(self->manager, ldm_gpu_config_get_detection_device(self));
+}
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
