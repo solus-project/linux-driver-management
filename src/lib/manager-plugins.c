@@ -14,24 +14,52 @@
 
 #include "plugins/modalias-plugin.h"
 
-/* ldm_manager_add_modalias_plugin_for_path:
- * @path: The fully qualified ".modaliases" file path
+/**
+ * ldm_manager_add_plugin:
+ * @plugin: New plugin to add.
  *
- * Add a modalias plugin to the manager for the given path.
+ * Add a new plugin to the current set of plugins. The plugins are used to
+ * provide automatic hardware detection capabilities to the #LdmManager
+ * and provide the internal API required for #ldm_manager_get_providers to
+ * work.
  */
-void ldm_manager_add_modalias_plugin_for_path(LdmManager *self, const gchar *path)
+void ldm_manager_add_plugin(LdmManager *self, LdmPlugin *plugin)
 {
-        LdmPlugin *plugin = NULL;
         const gchar *plugin_id = NULL;
 
-        plugin = ldm_modalias_plugin_new_from_filename(path);
+        g_return_if_fail(self != NULL);
+        g_return_if_fail(plugin != NULL);
+
         plugin_id = ldm_plugin_get_name(plugin);
         if (g_hash_table_contains(self->plugins, plugin_id)) {
-                g_message("replacing plugin '%s' with '%s'", plugin_id, path);
+                g_message("replacing plugin '%s'", plugin_id);
         } else {
-                g_message("new modalias plugin: %s", plugin_id);
+                g_message("new plugin: %s", plugin_id);
         }
         g_hash_table_replace(self->plugins, g_strdup(plugin_id), plugin);
+}
+
+/**
+ * ldm_manager_add_modalias_plugin_for_path:
+ * @path: The fully qualified ".modaliases" file path
+ *
+ * Add a new #LdmModaliasPlugin to the manager for the given path. This is a convenience
+ * wrapper around #ldm_modalias_plugin_new_from_filename and #ldm_manager_add_plugin
+ *
+ * Returns: TRUE if a new plugin was added
+ */
+gboolean ldm_manager_add_modalias_plugin_for_path(LdmManager *self, const gchar *path)
+{
+        LdmPlugin *plugin = NULL;
+
+        if (!g_file_test(path, G_FILE_TEST_EXISTS)) {
+                return FALSE;
+        }
+
+        plugin = ldm_modalias_plugin_new_from_filename(path);
+        ldm_manager_add_plugin(self, plugin);
+
+        return TRUE;
 }
 
 static gint ldm_manager_sort_by_priority(gconstpointer a, gconstpointer b)

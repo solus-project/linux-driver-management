@@ -42,9 +42,6 @@ struct _LdmManager {
         } monitor;
 };
 
-/* Plugin API */
-void ldm_manager_add_modalias_plugin_for_path(LdmManager *self, const gchar *path);
-
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
