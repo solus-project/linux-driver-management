@@ -91,6 +91,22 @@ if with_tests != 'no'
     endif
 endif
 
+# If we have kmod, enable tooling
+with_tools = get_option('with-tools')
+enable_tools = false
+if with_tools != 'no'
+    required_tools = false
+    if with_tools == 'yes'
+        required_tools = true
+    endif
+
+    dep_kmod = dependency('libkmod', version: '>= 24', required: required_test)
+
+    if dep_kmod.found()
+        enable_tools = true
+    endif
+endif
+
 # Sort out compatibility stuff
 with_gl_driver_switch_compat = get_option('with-gl-driver-switch-compat')
 with_ldm_monitor = get_option('with-monitor')
@@ -139,6 +155,7 @@ report = [
     '',
     '    gl-driver-switch-compat:                @0@'.format(with_gl_driver_switch_compat),
     '    hardware plug monitor:                  @0@'.format(with_ldm_monitor),
+    '    tools:                                  @0@'.format(enable_tools),
     '',
     '    enable tests:                           @0@'.format(enable_tests),
     '    enable documentation:                   @0@'.format(with_docs),

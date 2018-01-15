@@ -5,3 +5,4 @@ option('with-monitor', type: 'boolean', value: true, description: 'Enable the ha
 option('with-modalias-dir', type: 'string', description: 'Where to find the modalias directory')
 option('with-tests', type: 'combo', choices: ['auto', 'yes', 'no'], value: 'auto')
 option('with-docs', type: 'boolean', value: true, description: 'Enable building of documentation')
+option('with-tools', type: 'combo', choices: ['auto', 'yes', 'no'], value: 'auto', description: 'Enable support tooling')
