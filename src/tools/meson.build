@@ -5,6 +5,9 @@ mkmodalias_sources = [
 mkmodalias = executable(
     'mkmodalias',
     sources: mkmodalias_sources,
-    dependencies: dep_kmod,
+    dependencies: [
+        dep_glib2,
+        dep_kmod,
+    ],
     install: true,
 )
