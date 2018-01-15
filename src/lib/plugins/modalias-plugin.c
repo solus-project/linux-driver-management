@@ -265,6 +265,22 @@ void ldm_modalias_plugin_add_modalias(LdmModaliasPlugin *self, LdmModalias *moda
 }
 
 /**
+ * ldm_modalias_plugin_is_installed:
+ *
+ * Janky helper to work out if a modalias plugin is installed.
+ * This is only really useful to the monitor.
+ */
+static gboolean ldm_modalias_plugin_is_installed(LdmModalias *modalias)
+{
+        g_autofree gchar *sysfs_path = NULL;
+
+        /* For now we only check kernel modules! */
+        sysfs_path = g_strdup_printf("/sys/module/%s", ldm_modalias_get_driver(modalias));
+
+        return g_file_test(sysfs_path, G_FILE_TEST_EXISTS);
+}
+
+/**
  * ldm_modalias_plugin_get_provider:
  * @device: Test input device
  *
@@ -289,6 +305,7 @@ static LdmProvider *ldm_modalias_plugin_get_provider(LdmPlugin *plugin, LdmDevic
                 }
 
                 ret = ldm_provider_new(plugin, device, ldm_modalias_get_package(modalias));
+                ldm_provider_set_installed(ret, ldm_modalias_plugin_is_installed(modalias));
                 return ret;
         }
 
