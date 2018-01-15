@@ -288,8 +288,7 @@ static LdmProvider *ldm_modalias_plugin_get_provider(LdmPlugin *plugin, LdmDevic
                         continue;
                 }
 
-                /* TODO: Populate with package name and such */
-                ret = ldm_provider_new(plugin, device);
+                ret = ldm_provider_new(plugin, device, ldm_modalias_get_package(modalias));
                 return ret;
         }
 

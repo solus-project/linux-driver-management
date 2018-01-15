@@ -33,6 +33,7 @@ struct _LdmProvider {
 
         LdmDevice *device;
         LdmPlugin *plugin;
+        gchar *package;
 };
 
 static void ldm_provider_set_property(GObject *object, guint id, const GValue *value,
@@ -42,7 +43,7 @@ static void ldm_provider_get_property(GObject *object, guint id, GValue *value, 
 G_DEFINE_TYPE(LdmProvider, ldm_provider, G_TYPE_OBJECT)
 
 /* Property IDs */
-enum { PROP_DEVICE = 1, PROP_PLUGIN, N_PROPS };
+enum { PROP_DEVICE = 1, PROP_PLUGIN, PROP_PACKAGE, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -55,6 +56,9 @@ static GParamSpec *obj_properties[N_PROPS] = {
  */
 static void ldm_provider_dispose(GObject *obj)
 {
+        LdmProvider *self = LDM_PROVIDER(obj);
+        g_clear_pointer(&self->package, g_free);
+
         G_OBJECT_CLASS(ldm_provider_parent_class)->dispose(obj);
 }
 
@@ -96,6 +100,19 @@ static void ldm_provider_class_init(LdmProviderClass *klazz)
                                  "Parent plugin for this provider",
                                  G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
+        /**
+         * LdmDevice:package: (transfer none)
+         *
+         * The package or bundle name required to install support for this
+         * provider.
+         */
+        obj_properties[PROP_PACKAGE] =
+            g_param_spec_string("package",
+                                "Package or bundle name",
+                                "Package or bundle name",
+                                NULL,
+                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -110,6 +127,10 @@ static void ldm_provider_set_property(GObject *object, guint id, const GValue *v
                 break;
         case PROP_PLUGIN:
                 self->plugin = g_value_get_pointer(value);
+                break;
+        case PROP_PACKAGE:
+                g_clear_pointer(&self->package, g_free);
+                self->package = g_value_dup_string(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -127,6 +148,9 @@ static void ldm_provider_get_property(GObject *object, guint id, GValue *value, 
                 break;
         case PROP_PLUGIN:
                 g_value_set_pointer(value, self->plugin);
+                break;
+        case PROP_PACKAGE:
+                g_value_set_string(value, self->package);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -147,15 +171,24 @@ static void ldm_provider_init(__ldm_unused__ LdmProvider *self)
  * ldm_provider_new:
  * @parent_plugin: The plugin to associate this provider with
  * @device: The device to associate this provider with
+ * @package_name: The package or bundle name to install.
  *
  * Construct a new #LdmProvider with the given plugin and device for further
  * processing by the library end user.
  *
  * Returns: (transfer full): A new #LdmProvider instance
  */
-LdmProvider *ldm_provider_new(LdmPlugin *parent_plugin, LdmDevice *device)
+LdmProvider *ldm_provider_new(LdmPlugin *parent_plugin, LdmDevice *device,
+                              const gchar *package_name)
 {
-        return g_object_new(LDM_TYPE_PROVIDER, "plugin", parent_plugin, "device", device, NULL);
+        return g_object_new(LDM_TYPE_PROVIDER,
+                            "plugin",
+                            parent_plugin,
+                            "device",
+                            device,
+                            "package",
+                            package_name,
+                            NULL);
 }
 
 /**
@@ -184,6 +217,19 @@ LdmPlugin *ldm_provider_get_plugin(LdmProvider *self)
 {
         g_return_val_if_fail(self != NULL, NULL);
         return self->plugin;
+}
+
+/**
+ * ldm_provider_get_package:
+ *
+ * Get the package name required to install this provider.
+ *
+ * Returns: (transfer none): The package name.
+ */
+const gchar *ldm_provider_get_package(LdmProvider *self)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+        return (const gchar *)self->package;
 }
 
 /*

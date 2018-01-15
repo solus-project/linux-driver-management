@@ -127,7 +127,8 @@ static void ldm_daemon_discover_existing(LdmDaemon *self)
                 if (ldm_device_has_type(device, LDM_DEVICE_TYPE_GPU)) {
                         continue;
                 }
-                g_message("Device: %s", ldm_device_get_name(device));
+                /* Attempt to discover devices now */
+                ldm_daemon_discover_drivers(self, device);
         }
         g_list_free(existing_devices);
 }
@@ -168,17 +169,14 @@ static void ldm_daemon_discover_drivers(LdmDaemon *self, LdmDevice *device)
 
         providers = ldm_manager_get_providers(self->manager, device);
         if (!providers || providers->len == 0) {
-                g_message("No providers for: %s", ldm_device_get_name(device));
                 return;
         }
 
         g_message("Found %d provider(s) for %s", providers->len, ldm_device_get_name(device));
-        g_message("Device modalias: %s", ldm_device_get_modalias(device));
 
         for (unsigned int i = 0; i < providers->len; i++) {
                 LdmProvider *prov = providers->pdata[i];
-                LdmPlugin *plugin = ldm_provider_get_plugin(prov);
-                g_message("Provider plugin: %s", ldm_plugin_get_name(plugin));
+                g_message("\tInstall package: %s", ldm_provider_get_package(prov));
         }
 }
 

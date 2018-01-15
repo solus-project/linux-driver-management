@@ -35,9 +35,11 @@ GType ldm_provider_get_type(void);
 
 /* API */
 
-LdmProvider *ldm_provider_new(LdmPlugin *parent_plugin, LdmDevice *device);
+LdmProvider *ldm_provider_new(LdmPlugin *parent_plugin, LdmDevice *device,
+                              const gchar *package_name);
 LdmDevice *ldm_provider_get_device(LdmProvider *provider);
 LdmPlugin *ldm_provider_get_plugin(LdmProvider *provider);
+const gchar *ldm_provider_get_package(LdmProvider *provider);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmProvider, g_object_unref)
 
