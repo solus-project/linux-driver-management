@@ -18,6 +18,7 @@
 
 static void ldm_daemon_device_added(LdmDaemon *daemon, LdmDevice *device, gpointer v);
 static void ldm_daemon_device_removed(LdmDaemon *daemon, const gchar *path, gpointer v);
+static void ldm_daemon_discover_existing(LdmDaemon *daemon);
 static void ldm_daemon_discover_gpu(LdmDaemon *daemon);
 static void ldm_daemon_discover_drivers(LdmDaemon *daemon, LdmDevice *device);
 
@@ -71,7 +72,7 @@ static void ldm_daemon_init(LdmDaemon *self)
         /* Ensure we have some plugins */
         ldm_manager_add_modalias_plugins_for_directory(self->manager, MODALIAS_DIR);
 
-        /* Hook up signals so we know whats going on */
+        /* Hook up hot plugging */
         g_signal_connect_swapped(self->manager,
                                  "device-added",
                                  G_CALLBACK(ldm_daemon_device_added),
@@ -81,7 +82,7 @@ static void ldm_daemon_init(LdmDaemon *self)
                                  G_CALLBACK(ldm_daemon_device_removed),
                                  self);
 
-        /* Emit GPU config */
+        ldm_daemon_discover_existing(self);
         ldm_daemon_discover_gpu(self);
 }
 
@@ -115,6 +116,25 @@ static void ldm_daemon_device_removed(__ldm_unused__ LdmDaemon *daemon, const gc
         g_message("ldm_daemon_device_removed: %s", path);
 }
 
+static void ldm_daemon_discover_existing(LdmDaemon *self)
+{
+        GList *existing_devices = NULL;
+
+        /* Iterate all existing non GPU devices */
+        existing_devices = ldm_manager_get_devices(self->manager, LDM_DEVICE_TYPE_ANY);
+        for (GList *elem = existing_devices; elem; elem = elem->next) {
+                LdmDevice *device = elem->data;
+                if (ldm_device_has_type(device, LDM_DEVICE_TYPE_GPU)) {
+                        continue;
+                }
+                g_message("Device: %s", ldm_device_get_name(device));
+        }
+        g_list_free(existing_devices);
+}
+
+/**
+ * Discover explicit GPU configuration separately from the main device checks
+ */
 static void ldm_daemon_discover_gpu(LdmDaemon *self)
 {
         g_autoptr(LdmGPUConfig) gpu_config = NULL;
