@@ -12,10 +12,11 @@ Linux Driver Management is a [Solus project](https://solus-project.com/)
 TODO
 ----
 
- - [ ] Add separate modalias-based detection routine
- - [ ] Split out a library for other consumers
- - [ ] Get it working with other distros (i.e. Arch Linux)
- - [ ] Add on-demand Optimus support (currently "always on" right now)
+ - [ ] Add GPU driver identification ("you need nvidia-glx-driver")
+ - [ ] Emit notification to launch preconfigured binary when actioned (solus-sc, etc.)
+ - [ ] Restore `linux-driver-management configure gpu` behaviour
+ - [ ] Add persistence to prevent spamming about the same devices
+ - [ ] Stabilize library and soname
 
 License
 -------
