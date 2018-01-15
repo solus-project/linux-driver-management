@@ -1,7 +1,7 @@
 /*
  * This file is part of linux-driver-management.
  *
- * Copyright © 2016-2017 Ikey Doherty
+ * Copyright © 2016-2018 Ikey Doherty
  *
  * linux-driver-management is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as

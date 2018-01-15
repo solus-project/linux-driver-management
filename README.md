@@ -20,6 +20,6 @@ TODO
 License
 -------
 
-Copyright © 2016-2017 Ikey Doherty <ikey@solus-project.com>
+Copyright © 2016-2018 Ikey Doherty <ikey@solus-project.com>
 
 `linux-driver-management` is available under the terms of the `LGPL-2.1`

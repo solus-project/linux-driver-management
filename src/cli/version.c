@@ -1,7 +1,7 @@
 /*
  * This file is part of linux-driver-management.
  *
- * Copyright © 2016-2017 Ikey Doherty
+ * Copyright © 2016-2018 Ikey Doherty
  *
  * linux-driver-management is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -19,7 +19,7 @@
 int ldm_cli_version(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
         fprintf(stdout, PACKAGE_NAME " - version " PACKAGE_VERSION "\n\n");
-        fprintf(stdout, "Copyright © 2016-2017 Ikey Doherty\n\n");
+        fprintf(stdout, "Copyright © 2016-2018 Ikey Doherty\n\n");
         fprintf(stdout,
                 PACKAGE_NAME
                 " is free software; you can redistribute it and/or\n"
