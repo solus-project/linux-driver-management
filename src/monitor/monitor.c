@@ -17,6 +17,7 @@
 
 static void ldm_daemon_device_added(LdmDaemon *daemon, LdmDevice *device, gpointer v);
 static void ldm_daemon_device_removed(LdmDaemon *daemon, const gchar *path, gpointer v);
+static void ldm_daemon_discover_gpu(LdmDaemon *daemon);
 
 struct _LdmDaemonClass {
         GObjectClass parent_class;
@@ -75,6 +76,9 @@ static void ldm_daemon_init(LdmDaemon *self)
                                  "device-removed",
                                  G_CALLBACK(ldm_daemon_device_removed),
                                  self);
+
+        /* Emit GPU config */
+        ldm_daemon_discover_gpu(self);
 }
 
 /**
@@ -105,6 +109,27 @@ static void ldm_daemon_device_removed(__ldm_unused__ LdmDaemon *daemon, const gc
                                       __ldm_unused__ gpointer v)
 {
         g_message("ldm_daemon_device_removed: %s", path);
+}
+
+static void ldm_daemon_discover_gpu(LdmDaemon *self)
+{
+        g_autoptr(LdmGPUConfig) gpu_config = NULL;
+        LdmDevice *device = NULL;
+
+        gpu_config = ldm_gpu_config_new(self->manager);
+        device = ldm_gpu_config_get_detection_device(gpu_config);
+        g_message("Detection GPU discovered: %s %s",
+                  ldm_device_get_vendor(device),
+                  ldm_device_get_name(device));
+
+        /* Simple Optimus detection */
+        if (ldm_gpu_config_has_type(gpu_config, LDM_GPU_TYPE_OPTIMUS)) {
+                g_message("Optimus gpu");
+                device = ldm_gpu_config_get_primary_device(gpu_config);
+                g_message("Primary GPU in Optimus config: %s %s",
+                          ldm_device_get_vendor(device),
+                          ldm_device_get_name(device));
+        }
 }
 
 /*
