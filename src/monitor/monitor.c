@@ -19,6 +19,7 @@
 static void ldm_daemon_device_added(LdmDaemon *daemon, LdmDevice *device, gpointer v);
 static void ldm_daemon_device_removed(LdmDaemon *daemon, const gchar *path, gpointer v);
 static void ldm_daemon_discover_gpu(LdmDaemon *daemon);
+static void ldm_daemon_discover_drivers(LdmDaemon *daemon, LdmDevice *device);
 
 struct _LdmDaemonClass {
         GObjectClass parent_class;
@@ -125,6 +126,9 @@ static void ldm_daemon_discover_gpu(LdmDaemon *self)
                   ldm_device_get_vendor(device),
                   ldm_device_get_name(device));
 
+        /* Just check for drivers for now */
+        ldm_daemon_discover_drivers(self, device);
+
         /* Simple Optimus detection */
         if (ldm_gpu_config_has_type(gpu_config, LDM_GPU_TYPE_OPTIMUS)) {
                 g_message("Optimus gpu");
@@ -132,6 +136,29 @@ static void ldm_daemon_discover_gpu(LdmDaemon *self)
                 g_message("Primary GPU in Optimus config: %s %s",
                           ldm_device_get_vendor(device),
                           ldm_device_get_name(device));
+        }
+}
+
+/**
+ * Attempt to discover all providers for the given device.
+ */
+static void ldm_daemon_discover_drivers(LdmDaemon *self, LdmDevice *device)
+{
+        g_autoptr(GPtrArray) providers = NULL;
+
+        providers = ldm_manager_get_providers(self->manager, device);
+        if (!providers || providers->len == 0) {
+                g_message("No providers for: %s", ldm_device_get_name(device));
+                return;
+        }
+
+        g_message("Found %d provider(s) for %s", providers->len, ldm_device_get_name(device));
+        g_message("Device modalias: %s", ldm_device_get_modalias(device));
+
+        for (unsigned int i = 0; i < providers->len; i++) {
+                LdmProvider *prov = providers->pdata[i];
+                LdmPlugin *plugin = ldm_provider_get_plugin(prov);
+                g_message("Provider plugin: %s", ldm_plugin_get_name(plugin));
         }
 }
 
