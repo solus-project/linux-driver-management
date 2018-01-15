@@ -12,6 +12,7 @@
 #define _GNU_SOURCE
 
 #include "monitor.h"
+#include "config.h"
 #include "ldm.h"
 #include "util.h"
 
@@ -66,6 +67,8 @@ static void ldm_daemon_class_init(LdmDaemonClass *klazz)
 static void ldm_daemon_init(LdmDaemon *self)
 {
         self->manager = ldm_manager_new(LDM_MANAGER_FLAGS_NONE);
+        /* Ensure we have some plugins */
+        ldm_manager_add_modalias_plugins_for_directory(self->manager, MODALIAS_DIR);
 
         /* Hook up signals so we know whats going on */
         g_signal_connect_swapped(self->manager,
