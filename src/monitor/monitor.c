@@ -176,7 +176,9 @@ static void ldm_daemon_discover_drivers(LdmDaemon *self, LdmDevice *device)
 
         for (unsigned int i = 0; i < providers->len; i++) {
                 LdmProvider *prov = providers->pdata[i];
-                g_message("\tInstall package: %s", ldm_provider_get_package(prov));
+                g_message("\tPackage: %s (%s)",
+                          ldm_provider_get_package(prov),
+                          ldm_provider_get_installed(prov) ? "installed" : "uninstalled");
         }
 }
 

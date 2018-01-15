@@ -56,9 +56,11 @@ LIBLDM_0 {
     ldm_plugin_set_name;
     ldm_plugin_set_priority;
     ldm_provider_get_device;
+    ldm_provider_get_installed;
     ldm_provider_get_package;
     ldm_provider_get_plugin;
     ldm_provider_get_type;
+    ldm_provider_set_installed;
     ldm_provider_new;
     ldm_usb_device_get_type;
   local:
