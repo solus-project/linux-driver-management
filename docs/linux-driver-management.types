@@ -4,6 +4,7 @@ ldm_device_type_get_type
 ldm_dmi_device_get_type
 ldm_gpu_config_get_type
 ldm_gpu_type_get_type
+ldm_hid_device_get_type
 ldm_manager_get_type
 ldm_manager_flags_get_type
 ldm_modalias_get_type
