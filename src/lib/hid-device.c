@@ -11,7 +11,6 @@
 
 #define _GNU_SOURCE
 
-#include <libusb.h>
 #include <stdlib.h>
 
 #include "device.h"
