@@ -266,9 +266,7 @@ static void ldm_manager_init_udev_static(LdmManager *self)
         autofree(udev_enum) *ue = NULL;
         udev_list *list = NULL, *entry = NULL;
         static const char *subsystems[] = {
-                "dmi",
-                "usb",
-                "pci",
+                "dmi", "usb", "pci", "hid", /*< As child of USB typically */
         };
 
         /* Set up the enumerator */
@@ -311,9 +309,16 @@ static void ldm_manager_init_udev_monitor(LdmManager *self)
                 return;
         }
 
-        /* We only want hotplug events for USB right now */
+        /* We want hotplugs for the USB system */
         if (udev_monitor_filter_add_match_subsystem_devtype(self->monitor.udev, "usb", NULL) != 0) {
                 g_warning("Unable to install USB filter");
+                g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
+                return;
+        }
+
+        /* We want HID devices, when USB */
+        if (udev_monitor_filter_add_match_subsystem_devtype(self->monitor.udev, "hid", NULL) != 0) {
+                g_warning("Unable to install HID filter");
                 g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
                 return;
         }
@@ -463,23 +468,17 @@ static void ldm_manager_push_sysfs(LdmManager *self, const char *sysfs_path)
 }
 
 /**
- * ldm_manager_get_device_parent:
+ * ldm_manager_get_usb_parent:
  *
- * Get the associated LdmDevice that is the parent candidate for a newly
- * added device or interface.
+ * Return the USB parent device for this usb_interface
  */
-static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
-                                                udev_device *device)
+static LdmDevice *ldm_manager_get_usb_parent(LdmManager *self, udev_device *device)
 {
         udev_device *udev_parent = NULL;
         const char *sysfs_path = NULL;
         const char *devtype = NULL;
         LdmDevice *node = NULL;
 
-        /* Must be a USB interface */
-        if (!g_str_equal(subsystem, "usb")) {
-                return NULL;
-        }
         devtype = udev_device_get_devtype(device);
         if (!devtype || !g_str_equal(devtype, "usb_interface")) {
                 return NULL;
@@ -497,6 +496,58 @@ static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *su
         };
 
         return node;
+}
+
+/**
+ * ldm_manager_get_hid_parent:
+ *
+ * Return the parent device node for a HID subsystem device.
+ */
+static LdmDevice *ldm_manager_get_hid_parent(LdmManager *self, udev_device *device)
+{
+        udev_device *udev_parent = NULL;
+        LdmDevice *parent_usb_device = NULL;
+        LdmDevice *parent_interface = NULL;
+        const char *sysfs_path = NULL;
+
+        /* Grab immediate udev usb_interface parent */
+        udev_parent = udev_device_get_parent_with_subsystem_devtype(device, "usb", "usb_interface");
+        if (!udev_parent) {
+                return NULL;
+        }
+
+        /* Find the root level USB device */
+        sysfs_path = udev_device_get_syspath(udev_parent);
+        parent_usb_device = ldm_manager_get_usb_parent(self, udev_parent);
+        if (!parent_usb_device) {
+                return NULL;
+        }
+
+        /* Grab our device version of the parent interface */
+        parent_interface = ldm_device_get_child_by_path(parent_usb_device, sysfs_path);
+        if (!parent_interface) {
+                return NULL;
+        }
+
+        return parent_interface;
+}
+
+/**
+ * ldm_manager_get_device_parent:
+ *
+ * Get the associated LdmDevice that is the parent candidate for a newly
+ * added device or interface.
+ */
+static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
+                                                udev_device *device)
+{
+        if (g_str_equal(subsystem, "hid")) {
+                return ldm_manager_get_hid_parent(self, device);
+        } else if (g_str_equal(subsystem, "usb")) {
+                return ldm_manager_get_usb_parent(self, device);
+        }
+
+        return NULL;
 }
 
 /**
@@ -566,6 +617,7 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device, gbool
 
         /* Build the actual device now */
         ldm_device = ldm_device_new_from_udev(parent, device, properties);
+
         if (parent) {
                 ldm_device_add_child(parent, ldm_device);
                 return;

@@ -32,6 +32,7 @@ libldm_main_sources = [
     'dmi-device.c',
     'plugin.c',
     'gpu-config.c',
+    'hid-device.c',
     'manager.c',
     'manager-plugins.c',
     'modalias.c',
@@ -44,6 +45,7 @@ libldm_main_sources = [
 libldm_headers = [
     'device.h',
     'dmi-device.h',
+    'hid-device.h',
     'plugin.h',
     'gpu-config.h',
     'manager.h',

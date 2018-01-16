@@ -317,8 +317,7 @@ gboolean ldm_modalias_matches_device(LdmModalias *self, LdmDevice *match_device)
                 LdmDevice *child_device = NULL;
 
                 child_device = LDM_DEVICE(elem->data);
-                id = ldm_device_get_modalias(child_device);
-                if (id && ldm_modalias_matches(self, id)) {
+                if (ldm_modalias_matches_device(self, child_device)) {
                         return TRUE;
                 }
         }

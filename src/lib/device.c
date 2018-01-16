@@ -18,6 +18,7 @@
 
 /* Supported device types */
 #include "dmi-device.h"
+#include "hid-device.h"
 #include "pci-device.h"
 #include "usb-device.h"
 
@@ -445,6 +446,8 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
                 special_type = LDM_TYPE_PCI_DEVICE;
         } else if (g_str_equal(subsystem, "dmi")) {
                 special_type = LDM_TYPE_DMI_DEVICE;
+        } else if (g_str_equal(subsystem, "hid")) {
+                special_type = LDM_TYPE_HID_DEVICE;
         } else {
                 special_type = LDM_TYPE_DEVICE;
         }
@@ -662,6 +665,19 @@ void ldm_device_remove_child_by_path(LdmDevice *self, const gchar *path)
                 return;
         }
         g_signal_emit(self, obj_signals[SIGNAL_CHILD_REMOVED], 0, path);
+}
+
+/**
+ * ldm_device_get_child_by_path:
+ * @path: Path of the child
+ *
+ * Return a pointer ot the child referenced by path, if it exists.
+ */
+LdmDevice *ldm_device_get_child_by_path(LdmDevice *self, const gchar *path)
+{
+        g_return_val_if_fail(self != NULL, NULL);
+
+        return g_hash_table_lookup(self->tree.kids, path);
 }
 
 /*

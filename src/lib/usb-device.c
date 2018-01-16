@@ -136,6 +136,11 @@ static void ldm_usb_device_rebuild_info(LdmDevice *self)
                 }
                 self->os.devtype |= child->os.devtype;
         }
+
+        /* We're USB, our parent is USB, and we got a child. Tell parent to update from us */
+        if (self->tree.parent != NULL && LDM_IS_USB_DEVICE(self->tree.parent)) {
+                ldm_usb_device_rebuild_info(self->tree.parent);
+        }
 }
 
 static void ldm_usb_device_child_added(LdmDevice *device, __ldm_unused__ LdmDevice *child)

@@ -29,6 +29,9 @@ DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 #define NV_340_MODALIAS TEST_DATA_ROOT "/nvidia-340-glx-driver.modaliases"
 #define MODALIAS_DIR TEST_DATA_ROOT "/"
 
+#define RAZER_MOCKDEV_FILE TEST_DATA_ROOT "/razer-ornata-chroma.umockdev"
+#define RAZER_MODALIAS TEST_DATA_ROOT "razer-drivers.modaliases"
+
 static UMockdevTestbed *create_bed_from(const char *mockdevname)
 {
         UMockdevTestbed *bed = NULL;
@@ -150,6 +153,43 @@ START_TEST(test_plugins_nvidia_multiple_glob)
 END_TEST
 
 /**
+ * This test ensures we're able to identify `hid:` style modaliases on HID
+ * devices in a USB device tree.
+ *
+ * Specifically we're trying to match the Razer Chroma Ornata device.
+ */
+START_TEST(test_plugins_razer)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GList) devices = NULL;
+        g_autoptr(GPtrArray) providers = NULL;
+        LdmDevice *device = NULL;
+        const gchar *provider_id = NULL;
+
+        bed = create_bed_from(RAZER_MOCKDEV_FILE);
+        manager = ldm_manager_new(0);
+
+        /* Modalias plugins preserve the priority from the insert order. */
+        fail_if(!ldm_manager_add_modalias_plugins_for_directory(manager, MODALIAS_DIR),
+                "Failed to add main modalias directory");
+
+        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_HID);
+        fail_if(g_list_length(devices) != 1, "Failed to find HID device!");
+
+        device = g_list_nth_data(devices, 0);
+
+        providers = ldm_manager_get_providers(manager, device);
+        fail_if(providers->len != 1, "Expected 1 provider, got %u providers", providers->len);
+        provider_id = ldm_provider_get_package(providers->pdata[0]);
+
+        fail_if(!g_str_equal(provider_id, "razer-drivers"),
+                "Expected 'razer-drivers', got '%s'",
+                provider_id);
+}
+END_TEST
+
+/**
  * Standard helper for running a test suite
  */
 static int ldm_test_run(Suite *suite)
@@ -177,6 +217,7 @@ static Suite *test_create(void)
         tcase_add_test(tc, test_plugins_nvidia);
         tcase_add_test(tc, test_plugins_nvidia_multiple);
         tcase_add_test(tc, test_plugins_nvidia_multiple_glob);
+        tcase_add_test(tc, test_plugins_razer);
 
         return s;
 }
