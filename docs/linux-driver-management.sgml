@@ -25,6 +25,7 @@
     <title>Device API</title>
     <xi:include href="xml/device.xml"/>
     <xi:include href="xml/dmi-device.xml"/>
+    <xi:include href="xml/hid-device.xml"/>
     <xi:include href="xml/pci-device.xml"/>
     <xi:include href="xml/usb-device.xml"/>
   </chapter>
