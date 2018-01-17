@@ -138,6 +138,8 @@ if with_docs == true
     subdir('docs')
 endif
 
+subdir('man')
+
 report = [
     '    Build configuration:',
     '    ====================',
