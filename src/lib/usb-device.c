@@ -200,6 +200,28 @@ static void ldm_usb_device_assign_class(LdmDevice *self, int bDeviceClass)
         }
 }
 
+static void ldm_usb_device_assign_pvid(LdmDevice *self, udev_device *device)
+{
+        const char *sysattr = NULL;
+
+        /* Grab the idVendor (hex) */
+        sysattr = udev_device_get_sysattr_value(device, "idVendor");
+        if (!sysattr) {
+                goto product;
+        }
+        self->id.vendor_id = (gint)(strtoll(sysattr, NULL, 16));
+        sysattr = NULL;
+
+product:
+
+        /* Grab the idProduct (hex) */
+        sysattr = udev_device_get_sysattr_value(device, "idProduct");
+        if (!sysattr) {
+                return;
+        }
+        self->id.product_id = (gint)(strtoll(sysattr, NULL, 16));
+}
+
 /**
  * ldm_usb_device_init_private:
  * @device: The udev device that we're being created from
@@ -221,6 +243,8 @@ void ldm_usb_device_init_private(LdmDevice *self, udev_device *device)
         } else {
                 sysattr = udev_device_get_sysattr_value(device, "bDeviceClass");
         }
+
+        ldm_usb_device_assign_pvid(self, device);
 
         if (!sysattr) {
                 return;
