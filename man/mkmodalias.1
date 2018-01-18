@@ -16,7 +16,30 @@
 These are used by the LDM library to provide automatic matching of hardware devices to kernel modules\.
 .
 .P
-Upon success, the modalias file is emitted to the stdout\.
+Upon success, the modalias file is emitted to the stdout, unless the \fB\-o\fR option is provided to write to a specific file\.
+.
+.SH "OPTIONS"
+The following options are applicable to \fBmkmodalias(1)\fR\.
+.
+.IP "\(bu" 4
+\fB\-o\fR, \fB\-\-output\fR
+.
+.IP
+Redirect the output to a named file, generating a modalias in that path instead of on the default stdout\.
+.
+.IP "\(bu" 4
+\fB\-v\fR, \fB\-\-version\fR
+.
+.IP
+Print the mkmodalias version and exit\.
+.
+.IP "\(bu" 4
+\fB\-h\fR, \fB\-\-help\fR
+.
+.IP
+Print the help message, displaying all supported options, and exit\.
+.
+.IP "" 0
 .
 .SH "EXIT STATUS"
 On success, 0 is returned\. A non\-zero return code signals a failure\.

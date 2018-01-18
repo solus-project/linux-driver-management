@@ -16,7 +16,27 @@ entry per line, defining the modalias pattern match and kernel module names.
 These are used by the LDM library to provide automatic matching of hardware
 devices to kernel modules.
 
-Upon success, the modalias file is emitted to the stdout.
+Upon success, the modalias file is emitted to the stdout, unless the `-o` option
+is provided to write to a specific file.
+
+## OPTIONS
+
+The following options are applicable to `mkmodalias(1)`.
+
+
+ * `-o`, `--output`
+
+   Redirect the output to a named file, generating a modalias in that path
+   instead of on the default stdout.
+ 
+ * `-v`, `--version`
+
+   Print the mkmodalias version and exit.
+
+ * `-h`, `--help`
+
+   Print the help message, displaying all supported options, and exit.
+   
    
 ## EXIT STATUS
 

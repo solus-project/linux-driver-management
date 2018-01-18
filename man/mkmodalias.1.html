@@ -56,6 +56,7 @@
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
+    <a href="#OPTIONS">OPTIONS</a>
     <a href="#EXIT-STATUS">EXIT STATUS</a>
     <a href="#COPYRIGHT">COPYRIGHT</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
@@ -86,7 +87,26 @@ entry per line, defining the modalias pattern match and kernel module names.</p>
 <p>These are used by the LDM library to provide automatic matching of hardware
 devices to kernel modules.</p>
 
-<p>Upon success, the modalias file is emitted to the stdout.</p>
+<p>Upon success, the modalias file is emitted to the stdout, unless the <code>-o</code> option
+is provided to write to a specific file.</p>
+
+<h2 id="OPTIONS">OPTIONS</h2>
+
+<p>The following options are applicable to <code>mkmodalias(1)</code>.</p>
+
+<ul>
+<li><p><code>-o</code>, <code>--output</code></p>
+
+<p>Redirect the output to a named file, generating a modalias in that path
+instead of on the default stdout.</p></li>
+<li><p><code>-v</code>, <code>--version</code></p>
+
+<p>Print the mkmodalias version and exit.</p></li>
+<li><p><code>-h</code>, <code>--help</code></p>
+
+<p>Print the help message, displaying all supported options, and exit.</p></li>
+</ul>
+
 
 <h2 id="EXIT-STATUS">EXIT STATUS</h2>
 
