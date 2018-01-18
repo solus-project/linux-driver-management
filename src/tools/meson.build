@@ -1,10 +1,10 @@
-mkmodalias_sources = [
-    'mkmodalias.c',
+mkmodaliases_sources = [
+    'mkmodaliases.c',
 ]
 
-mkmodalias = executable(
-    'mkmodalias',
-    sources: mkmodalias_sources,
+mkmodaliases = executable(
+    'mkmodaliases',
+    sources: mkmodaliases_sources,
     dependencies: [
         dep_glib2,
         dep_kmod,

@@ -1,15 +1,15 @@
-mkmodalias(1) -- Construct modaliases file for kernel modules
+mkmodaliases(1) -- Construct modaliases file for kernel modules
 =============================================================
 
 
 ## SYNOPSIS
 
-`mkmodalias package-name [.ko file] [.ko file]`
+`mkmodaliases package-name [.ko file] [.ko file]`
 
 
 ## DESCRIPTION
 
-`mkmodalias` is a tool to generate `.modaliases` files used for hardware
+`mkmodaliases` is a tool to generate `.modaliases` files used for hardware
 detection when using linux-driver-management. These files contain a modalias
 entry per line, defining the modalias pattern match and kernel module names.
 
@@ -21,7 +21,7 @@ is provided to write to a specific file.
 
 ## OPTIONS
 
-The following options are applicable to `mkmodalias(1)`.
+The following options are applicable to `mkmodaliases(1)`.
 
 
  * `-o`, `--output`
@@ -31,7 +31,7 @@ The following options are applicable to `mkmodalias(1)`.
  
  * `-v`, `--version`
 
-   Print the mkmodalias version and exit.
+   Print the mkmodaliases version and exit.
 
  * `-h`, `--help`
 

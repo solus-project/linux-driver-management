@@ -109,7 +109,7 @@ cleanup:
 /**
  * Construct a modaliases file for the given package name and module paths.
  */
-static int mkmodalias(const char *package_name, gchar **paths, guint n_paths)
+static int mkmodaliases(const char *package_name, gchar **paths, guint n_paths)
 {
         FILE *output_file = NULL;
         struct kmod_ctx *ctx = NULL;
@@ -222,7 +222,7 @@ int main(int argc, char **argv)
         }
 
         /* All good, proceed. */
-        ret = mkmodalias(package_name, opt_strings + 1, n_strings - 1);
+        ret = mkmodaliases(package_name, opt_strings + 1, n_strings - 1);
 
 cleanup:
         if (opt_filename) {

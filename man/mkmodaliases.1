@@ -1,16 +1,16 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "MKMODALIAS" "1" "January 2018" "" ""
+.TH "MKMODALIASES" "1" "January 2018" "" ""
 .
 .SH "NAME"
-\fBmkmodalias\fR \- Construct modaliases file for kernel modules
+\fBmkmodaliases\fR \- Construct modaliases file for kernel modules
 .
 .SH "SYNOPSIS"
-\fBmkmodalias package\-name [\.ko file] [\.ko file]\fR
+\fBmkmodaliases package\-name [\.ko file] [\.ko file]\fR
 .
 .SH "DESCRIPTION"
-\fBmkmodalias\fR is a tool to generate \fB\.modaliases\fR files used for hardware detection when using linux\-driver\-management\. These files contain a modalias entry per line, defining the modalias pattern match and kernel module names\.
+\fBmkmodaliases\fR is a tool to generate \fB\.modaliases\fR files used for hardware detection when using linux\-driver\-management\. These files contain a modalias entry per line, defining the modalias pattern match and kernel module names\.
 .
 .P
 These are used by the LDM library to provide automatic matching of hardware devices to kernel modules\.
@@ -19,7 +19,7 @@ These are used by the LDM library to provide automatic matching of hardware devi
 Upon success, the modalias file is emitted to the stdout, unless the \fB\-o\fR option is provided to write to a specific file\.
 .
 .SH "OPTIONS"
-The following options are applicable to \fBmkmodalias(1)\fR\.
+The following options are applicable to \fBmkmodaliases(1)\fR\.
 .
 .IP "\(bu" 4
 \fB\-o\fR, \fB\-\-output\fR
@@ -31,7 +31,7 @@ Redirect the output to a named file, generating a modalias in that path instead 
 \fB\-v\fR, \fB\-\-version\fR
 .
 .IP
-Print the mkmodalias version and exit\.
+Print the mkmodaliases version and exit\.
 .
 .IP "\(bu" 4
 \fB\-h\fR, \fB\-\-help\fR
