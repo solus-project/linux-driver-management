@@ -9,5 +9,8 @@ mkmodalias = executable(
         dep_glib2,
         dep_kmod,
     ],
+    include_directories: [
+        config_h_dir,
+    ],
     install: true,
 )
