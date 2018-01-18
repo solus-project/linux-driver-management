@@ -20,6 +20,15 @@
                 "kind": "test",
                 "isDefault": true,
             }
+        },
+        {
+            "label": "Run monitor",
+            "type": "shell",
+            "command": "./build/src/monitor/ldm-monitor",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }
