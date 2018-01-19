@@ -11,6 +11,7 @@
 
 #define _GNU_SOURCE
 
+#include "../lib/util.h"
 #include "config.h"
 
 #include <errno.h>
@@ -20,6 +21,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+typedef struct kmod_ctx kmod_ctx;
+typedef struct kmod_module kmod_module;
+typedef struct kmod_list kmod_list;
+
+DEF_AUTOFREE(kmod_ctx, kmod_unref)
+DEF_AUTOFREE(kmod_module, kmod_module_unref)
+DEF_AUTOFREE(kmod_list, kmod_module_info_free_list)
 
 static void print_usage(const char *progname)
 {
@@ -69,12 +78,11 @@ static GOptionEntry cli_entries[] = {
 /**
  * Examine just one kmod module and emit the info to the output file.
  */
-static gboolean examine_module(const gchar *package_name, FILE *fileh, struct kmod_module *module)
+static gboolean examine_module(const gchar *package_name, FILE *fileh, kmod_module *module)
 {
         const char *kname = NULL;
-        struct kmod_list *list = NULL;
-        struct kmod_list *iter = NULL;
-        gboolean ret = FALSE;
+        autofree(kmod_list) *list = NULL;
+        kmod_list *iter = NULL;
 
         kname = kmod_module_get_name(module);
 
@@ -93,17 +101,11 @@ static gboolean examine_module(const gchar *package_name, FILE *fileh, struct km
                 }
                 const char *value = kmod_module_info_get_value(iter);
                 if (fprintf(fileh, "alias %s %s %s\n", value, kname, package_name) < 0) {
-                        goto cleanup;
+                        return FALSE;
                 }
         };
 
-        /* All good */
-        ret = TRUE;
-
-cleanup:
-
-        kmod_module_info_free_list(list);
-        return ret;
+        return TRUE;
 }
 
 /**
@@ -112,7 +114,7 @@ cleanup:
 static int mkmodaliases(const char *package_name, gchar **paths, guint n_paths)
 {
         FILE *output_file = NULL;
-        struct kmod_ctx *ctx = NULL;
+        autofree(kmod_ctx) *ctx = NULL;
         int ret = EXIT_FAILURE;
 
         /* Default to stdout if no path is set */
@@ -138,17 +140,15 @@ static int mkmodaliases(const char *package_name, gchar **paths, guint n_paths)
         /* Walk all modules and pass our fileh */
         for (guint i = 0; i < n_paths; i++) {
                 const gchar *kpath = paths[i];
-                struct kmod_module *module = NULL;
-                gboolean success = FALSE;
+                autofree(kmod_module) *module = NULL;
 
                 int ret = kmod_module_new_from_path(ctx, kpath, &module);
                 if (ret != 0) {
                         fprintf(stderr, "Couldn't open module: %s %s\n", kpath, strerror(errno));
                         goto cleanup;
                 }
-                success = examine_module(package_name, output_file, module);
-                kmod_module_unref(module);
-                if (!success) {
+
+                if (!examine_module(package_name, output_file, module)) {
                         goto cleanup;
                 }
         }
@@ -167,10 +167,6 @@ cleanup:
                                 opt_filename,
                                 strerror(errno));
                 }
-        }
-
-        if (ctx) {
-                kmod_unref(ctx);
         }
 
         return ret;
