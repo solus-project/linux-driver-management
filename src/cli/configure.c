@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void print_usage(void)
+static inline void print_usage(void)
 {
         fputs("configure takes exactly one argument: gpu\n", stderr);
 }
