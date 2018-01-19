@@ -9,6 +9,7 @@
  * of the License, or (at your option) any later version.
  */
 
+#include "cli.h"
 #include "config.h"
 
 #include <glib.h>
@@ -16,43 +17,86 @@
 #include <stdlib.h>
 
 static gboolean opt_version = FALSE;
+static gchar **opt_strings = NULL;
 
 static GOptionEntry cli_entries[] = {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &opt_version, "Print version and exit", NULL },
+        { G_OPTION_REMAINING,
+          0,
+          0,
+          G_OPTION_ARG_STRING_ARRAY,
+          &opt_strings,
+          "Options",
+          "- [subcommand]" },
         { 0 },
 };
 
-static void print_version(void)
+static void print_usage(const char *progname)
 {
-        fputs(PACKAGE_NAME " version " PACKAGE_VERSION "\n\n", stdout);
-        fputs("Copyright © 2017-2018 Solus Project\n\n", stdout);
-        fputs(PACKAGE_NAME
-              " "
-              "is free software; you can redistribute it and/or modify\n\
-it under the terms of the GNU Lesser General Public License as published by\n\
-the Free Software Foundation; either version 2.1 of the License, or\n\
-(at your option) any later version.\n",
-              stdout);
+        fprintf(stderr, "%s usage: [status]\n", progname);
+        fprintf(stderr, "Run '%s --help' for further information\n", progname);
 }
 
 int main(int argc, char **argv)
 {
         g_autoptr(GError) error = NULL;
         g_autoptr(GOptionContext) opt_context = NULL;
+        guint n_strings = 0;
+        int ret = EXIT_FAILURE;
+        ldm_cli_command command = NULL;
 
         opt_context = g_option_context_new(NULL);
         g_option_context_add_main_entries(opt_context, cli_entries, "linux-driver-management");
+        g_option_context_set_summary(opt_context,
+                                     "Interface with the linux-driver-management library");
+        g_option_context_set_description(opt_context,
+                                         "This tool accepts a number of subcommands:\n\
+\n\
+        configure   - Attempt configuration of a subsystem\n\
+        status      - Emit the status for known, detected devices\n\
+        version     - Print the version and quit\n\
+");
 
         if (!g_option_context_parse(opt_context, &argc, &argv, &error)) {
                 fprintf(stderr, "Failed to parse arguments: %s\n", error->message);
                 return EXIT_FAILURE;
         }
 
+        n_strings = opt_strings ? g_strv_length(opt_strings) : 0;
+
+        /* Early handle version request */
         if (opt_version) {
-                print_version();
+                ret = ldm_cli_version((int)n_strings, opt_strings);
+                goto cleanup;
         }
 
-        return EXIT_SUCCESS;
+        /* We expect at least one argument */
+        if (n_strings < 1) {
+                print_usage(argv[0]);
+                goto cleanup;
+        }
+
+        if (g_str_equal(opt_strings[0], "status")) {
+                command = &ldm_cli_status;
+        } else if (g_str_equal(opt_strings[0], "configure")) {
+                command = &ldm_cli_configure;
+        } else if (g_str_equal(opt_strings[0], "version")) {
+                command = &ldm_cli_version;
+        } else {
+                fprintf(stderr, "Unknown command '%s'\n", opt_strings[0]);
+                ret = EXIT_FAILURE;
+                goto cleanup;
+        }
+
+        /* Execute helper */
+        ret = command((int)n_strings, opt_strings);
+
+cleanup:
+        if (opt_strings && *opt_strings) {
+                g_strfreev(opt_strings);
+        }
+
+        return ret;
 }
 
 /*
