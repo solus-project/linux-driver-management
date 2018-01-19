@@ -12,10 +12,33 @@
 #include "../lib/util.h"
 #include "cli.h"
 
+#include <glib.h>
+#include <stdio.h>
 #include <stdlib.h>
 
-int ldm_cli_configure(__ldm_unused__ int argc, __ldm_unused__ char **argv)
+static void print_usage(void)
 {
+        fputs("configure takes exactly one argument: gpu\n", stderr);
+}
+
+static int ldm_cli_configure_gpu(void)
+{
+        fputs("Not yet implemented\n", stderr);
+        return EXIT_FAILURE;
+}
+
+int ldm_cli_configure(int argc, char **argv)
+{
+        if (argc != 2) {
+                print_usage();
+                return EXIT_FAILURE;
+        }
+
+        if (g_str_equal(argv[1], "gpu")) {
+                return ldm_cli_configure_gpu();
+        }
+
+        print_usage();
         return EXIT_FAILURE;
 }
 
