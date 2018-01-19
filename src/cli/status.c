@@ -9,14 +9,37 @@
  * of the License, or (at your option) any later version.
  */
 
+#include "cli.h"
+#include "config.h"
 #include "ldm.h"
 #include "util.h"
-
-#include "cli.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
+static void print_drivers(LdmManager *manager, LdmDevice *device)
+{
+        g_autoptr(GPtrArray) providers = NULL;
+
+        /* Look for provider options */
+        providers = ldm_manager_get_providers(manager, device);
+        if (providers->len < 1) {
+                return;
+        }
+
+        fprintf(stdout,
+                "\nLDM Providers for %s: %d\n",
+                ldm_device_get_name(device),
+                providers->len);
+
+        for (guint i = 0; i < providers->len; i++) {
+                LdmProvider *provider = providers->pdata[i];
+                const gchar *name = NULL;
+
+                name = ldm_provider_get_package(provider);
+                fprintf(stdout, " -  %s\n", name);
+        }
+}
 /**
  * Handle pretty printing of a single device to the display
  */
@@ -36,6 +59,7 @@ static void print_device(LdmDevice *device)
                 " %s Vendor ID     : %x\n",
                 gpu ? "\u255E" : "\u2558",
                 ldm_device_get_vendor_id(device));
+
         if (!gpu) {
                 return;
         }
@@ -49,7 +73,7 @@ static void print_device(LdmDevice *device)
 /**
  * Handle pretty printing of the GPU configuration to the display
  */
-static void print_gpu_config(LdmGPUConfig *config)
+static void print_gpu_config(LdmManager *manager, LdmGPUConfig *config)
 {
         LdmDevice *primary = NULL, *secondary = NULL;
 
@@ -76,18 +100,22 @@ static void print_gpu_config(LdmGPUConfig *config)
         fprintf(stdout,
                 " \u2552 Primary GPU%s\n",
                 ldm_gpu_config_has_type(config, LDM_GPU_TYPE_HYBRID) ? " (iGPU)" : "");
-        ;
         print_device(primary);
 
         if (!secondary) {
-                return;
+                goto emit_gpu_drivers;
         }
 
         fprintf(stdout,
                 " \u2552 Primary GPU%s\n",
                 ldm_gpu_config_has_type(config, LDM_GPU_TYPE_HYBRID) ? " (dGPU)" : "");
-        ;
+
         print_device(secondary);
+
+emit_gpu_drivers:
+
+        /* Only emit the drivers for the primary detection device */
+        print_drivers(manager, ldm_gpu_config_get_detection_device(config));
 }
 
 int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
@@ -102,13 +130,19 @@ int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
                 return EXIT_FAILURE;
         }
 
+        /* Add system modalias plugins */
+        if (!ldm_manager_add_modalias_plugins_for_directory(manager, MODALIAS_DIR)) {
+                fprintf(stderr, "Failed to add modalias plugins for %s\n", MODALIAS_DIR);
+                return EXIT_FAILURE;
+        }
+
         gpu_config = ldm_gpu_config_new(manager);
         if (!gpu_config) {
                 fprintf(stderr, "Failed to obtain LdmGPUConfig\n");
                 return EXIT_FAILURE;
         }
 
-        print_gpu_config(gpu_config);
+        print_gpu_config(manager, gpu_config);
 
         /* TODO: Emit any other devices with potential matches */
 
