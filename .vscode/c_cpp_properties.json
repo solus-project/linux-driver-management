@@ -35,9 +35,11 @@
                 "${workspaceRoot}",
                 "/usr/include/glib-2.0",
                 "${workspaceRoot}/src/lib",
+                "${workspaceRoot}/build/src/lib",
+                "${workspaceRoot}/build/",
                 "/usr/include/libusb-1.0"
             ],
-            "defines": [],
+            "defines": ["_GNU_SOURCE"],
             "intelliSenseMode": "clang-x64",
             "browse": {
                 "path": [
