@@ -36,9 +36,9 @@ void ldm_manager_add_plugin(LdmManager *self, LdmPlugin *plugin)
 
         plugin_id = ldm_plugin_get_name(plugin);
         if (g_hash_table_contains(self->plugins, plugin_id)) {
-                g_message("replacing plugin '%s'", plugin_id);
+                g_debug("replacing plugin '%s'", plugin_id);
         } else {
-                g_message("new plugin: %s", plugin_id);
+                g_debug("new plugin: %s", plugin_id);
         }
 
         g_hash_table_replace(self->plugins, g_strdup(plugin_id), g_object_ref_sink(plugin));
