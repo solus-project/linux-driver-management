@@ -54,9 +54,9 @@ static void print_device(LdmDevice *device)
         fprintf(stdout, " \u255E Manufacturer  : %s\n", ldm_device_get_vendor(device));
 
         /* Ids */
-        fprintf(stdout, " \u255E Product ID    : %x\n", ldm_device_get_product_id(device));
+        fprintf(stdout, " \u255E Product ID    : 0x%04x\n", ldm_device_get_product_id(device));
         fprintf(stdout,
-                " %s Vendor ID     : %x\n",
+                " %s Vendor ID     : 0x%04x\n",
                 gpu ? "\u255E" : "\u2558",
                 ldm_device_get_vendor_id(device));
 
