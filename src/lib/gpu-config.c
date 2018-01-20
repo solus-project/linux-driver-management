@@ -531,6 +531,7 @@ GPtrArray *ldm_gpu_config_get_providers(LdmGPUConfig *self)
          */
         return ldm_manager_get_providers(self->manager, ldm_gpu_config_get_detection_device(self));
 }
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

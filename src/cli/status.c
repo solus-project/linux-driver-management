@@ -46,6 +46,9 @@ static void print_drivers(LdmManager *manager, LdmDevice *device)
 static void print_device(LdmDevice *device)
 {
         gboolean gpu = FALSE;
+        /* PCI specific */
+        guint bus = 0, dev = 0;
+        gint func = 0;
 
         gpu = ldm_device_has_type(device, LDM_DEVICE_TYPE_GPU);
 
@@ -62,6 +65,13 @@ static void print_device(LdmDevice *device)
 
         if (!gpu) {
                 return;
+        }
+
+        if (ldm_device_has_type(device, LDM_DEVICE_TYPE_PCI)) {
+                LdmPCIDevice *pci = LDM_PCI_DEVICE(device);
+                ldm_pci_device_get_address(pci, &bus, &dev, &func);
+                /* X.Org Address is decimal, not hex */
+                fprintf(stdout, " \u255E X.Org PCI ID  : PCI:%u:%u:%d\n", bus, dev, func);
         }
 
         /* GPU Specifics */

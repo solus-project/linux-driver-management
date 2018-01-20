@@ -48,6 +48,7 @@ LIBLDM_0 {
     ldm_modalias_plugin_new;
     ldm_modalias_plugin_new_from_file;
     ldm_modalias_plugin_new_from_filename;
+    ldm_pci_device_get_address;
     ldm_pci_device_get_type;
     ldm_pci_vendor_id_get_type;
     ldm_plugin_get_name;

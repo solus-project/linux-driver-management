@@ -11,6 +11,9 @@
 
 #define _GNU_SOURCE
 
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "ldm-private.h"
@@ -54,6 +57,13 @@ struct _LdmPCIDeviceClass {
  */
 struct _LdmPCIDevice {
         LdmDevice parent;
+
+        /* Store address so an X.Org PCI Address can be extracted */
+        struct {
+                guint bus;
+                guint dev;
+                gint func;
+        } address;
 };
 
 G_DEFINE_TYPE(LdmPCIDevice, ldm_pci_device, LDM_TYPE_DEVICE)
@@ -120,6 +130,27 @@ product:
 }
 
 /**
+ * ldm_pci_device_assign_address:
+ *
+ * Query and set up our PCI device address.
+ */
+static void ldm_pci_device_assign_address(LdmDevice *self, udev_device *device)
+{
+        LdmPCIDevice *pci = LDM_PCI_DEVICE(self);
+        const char *sys = NULL;
+
+        /* Push this address into our internal notation */
+        sys = udev_device_get_sysname(device);
+        if (sscanf(sys,
+                   "0000:%x:%x.%d",
+                   &pci->address.bus,
+                   &pci->address.dev,
+                   &pci->address.func) != 3) {
+                g_warning("Failed to parse PCI address");
+        }
+}
+
+/**
  * ldm_pci_device_init_private:
  * @device: The udev device that we're being created from
  *
@@ -131,6 +162,7 @@ void ldm_pci_device_init_private(LdmDevice *self, udev_device *device)
         int pci_class = 0;
 
         ldm_pci_device_assign_pvid(self, device);
+        ldm_pci_device_assign_address(self, device);
 
         /* Are we boot_vga ? */
         sysattr = udev_device_get_sysattr_value(device, "boot_vga");
@@ -149,6 +181,34 @@ void ldm_pci_device_init_private(LdmDevice *self, udev_device *device)
         pci_class = (int)(strtoll(sysattr, NULL, 0) >> 8);
         if (pci_class >= PCI_CLASS_DISPLAY_VGA && pci_class <= PCI_CLASS_DISPLAY_OTHER) {
                 self->os.devtype |= LDM_DEVICE_TYPE_GPU;
+        }
+}
+
+/**
+ * ldm_pci_device_get_address:
+ * @bus: Pointer to store the bus identifier in
+ * @dev: Pointer to store the dev identifier in
+ * @func: Pointer to store the func identifier in
+ *
+ * Store the PCI device address into the provided parameters.
+ */
+void ldm_pci_device_get_address(LdmPCIDevice *self, guint *bus, guint *dev, gint *func)
+{
+        if (!self) {
+                g_warning("Asked for ldm_pci_device_get_address on NULL ptr");
+                return;
+        }
+
+        if (bus) {
+                *bus = self->address.bus;
+        }
+
+        if (dev) {
+                *dev = self->address.dev;
+        }
+
+        if (func) {
+                *func = self->address.func;
         }
 }
 

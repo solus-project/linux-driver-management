@@ -29,6 +29,8 @@ typedef struct _LdmPCIDeviceClass LdmPCIDeviceClass;
 
 GType ldm_pci_device_get_type(void);
 
+void ldm_pci_device_get_address(LdmPCIDevice *device, guint *bus, guint *dev, gint *func);
+
 G_END_DECLS
 
 /*
