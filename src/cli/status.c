@@ -81,17 +81,17 @@ static void print_gpu_config(LdmManager *manager, LdmGPUConfig *config)
         secondary = ldm_gpu_config_get_secondary_device(config);
 
         if (ldm_gpu_config_has_type(config, LDM_GPU_TYPE_OPTIMUS)) {
-                fputs("NVIDIA Optimus\n", stdout);
+                fputs("\nNVIDIA Optimus\n", stdout);
         } else if (ldm_gpu_config_has_type(config, LDM_GPU_TYPE_HYBRID)) {
-                fputs("Hybrid Graphics\n", stdout);
+                fputs("\nHybrid Graphics\n", stdout);
         } else if (ldm_gpu_config_has_type(config, LDM_GPU_TYPE_CROSSFIRE)) {
-                fputs("AMD Crossfire\n", stdout);
+                fputs("\nAMD Crossfire\n", stdout);
         } else if (ldm_gpu_config_has_type(config, LDM_GPU_TYPE_SLI)) {
-                fputs("NVIDIA SLI\n", stdout);
+                fputs("\nNVIDIA SLI\n", stdout);
         } else if (ldm_gpu_config_has_type(config, LDM_GPU_TYPE_COMPOSITE)) {
-                fputs("Composite GPU\n", stdout);
+                fputs("\nComposite GPU\n", stdout);
         } else {
-                fputs("Simple GPU configuration\n", stdout);
+                fputs("\nSimple GPU configuration\n", stdout);
         }
 
         fputs("\n", stdout);
@@ -118,10 +118,83 @@ emit_gpu_drivers:
         print_drivers(manager, ldm_gpu_config_get_detection_device(config));
 }
 
+/**
+ * Handle pretty printing of the core DMI platform device.
+ */
+static void print_platform_device(LdmDevice *device)
+{
+        fprintf(stdout, " \u2552 %s\n", "Hardware Platform");
+        fprintf(stdout, " \u255E %s : %s\n", "Platform Vendor", ldm_device_get_vendor(device));
+        fprintf(stdout, " \u2558 %s  : %s\n", "Platform Model", ldm_device_get_name(device));
+        /* TODO: Add chassis */
+}
+
+/**
+ * Handle pretty printing of the remaining devices.
+ */
+static void print_non_gpu(LdmManager *manager, LdmDevice *device)
+{
+        const gchar *device_title = NULL;
+        g_autoptr(GPtrArray) providers = NULL;
+
+        /* We've already handled GPU devices in a special fashion */
+        if (ldm_device_has_type(device, LDM_DEVICE_TYPE_GPU)) {
+                return;
+        }
+
+        if (ldm_device_has_type(device, LDM_DEVICE_TYPE_PLATFORM)) {
+                print_platform_device(device);
+                return;
+        }
+
+        /* Only emit actionable items here */
+        providers = ldm_manager_get_providers(manager, device);
+        if (providers->len < 1) {
+                return;
+        }
+
+        /* Try to ascertain the primary role */
+        if (ldm_device_has_type(device, LDM_DEVICE_TYPE_AUDIO)) {
+                device_title = "Audio Device";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_HID)) {
+                device_title = "HID Device";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_IMAGE)) {
+                device_title = "Image Device";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_PRINTER)) {
+                device_title = "Printer";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_STORAGE)) {
+                device_title = "Storage Device";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_VIDEO)) {
+                device_title = "Video Device";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_WIRELESS)) {
+                device_title = "Wireless Device";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_PCI)) {
+                device_title = "PCI Device";
+        } else if (ldm_device_has_type(device, LDM_DEVICE_TYPE_USB)) {
+                device_title = "USB Device";
+        } else {
+                device_title = "Device";
+        }
+
+        fprintf(stdout, " \u2552 %s\n", device_title);
+        print_device(device);
+
+        for (guint i = 0; i < providers->len; i++) {
+                LdmProvider *provider = providers->pdata[i];
+                fprintf(stdout,
+                        "  \u2558 Provider %02u   : %s\n",
+                        i + 1,
+                        ldm_provider_get_package(provider));
+        }
+
+        fputs("\n", stdout);
+}
+
 int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
         g_autoptr(LdmManager) manager = NULL;
         g_autoptr(LdmGPUConfig) gpu_config = NULL;
+        g_autoptr(GList) devices = NULL;
 
         /* No need for hot plug events */
         manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR);
@@ -142,9 +215,14 @@ int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
                 return EXIT_FAILURE;
         }
 
-        print_gpu_config(manager, gpu_config);
+        /* Emit non GPU items here, platform first */
+        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_ANY);
+        for (GList *elem = devices; elem; elem = elem->next) {
+                print_non_gpu(manager, elem->data);
+        }
 
-        /* TODO: Emit any other devices with potential matches */
+        /* Emit GPU config last for consistency */
+        print_gpu_config(manager, gpu_config);
 
         return EXIT_SUCCESS;
 }
