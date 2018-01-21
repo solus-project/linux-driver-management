@@ -9,14 +9,7 @@ Linux Driver Management is a [Solus project](https://solus-project.com/)
 
 ![logo](https://build.solus-project.com/logo.png)
 
-TODO
-----
-
- - [ ] Add GPU driver identification ("you need nvidia-glx-driver")
- - [ ] Emit notification to launch preconfigured binary when actioned (solus-sc, etc.)
- - [ ] Restore `linux-driver-management configure gpu` behaviour
- - [ ] Add persistence to prevent spamming about the same devices
- - [ ] Stabilize library and soname
+THIS LIBRARY IS UNDERGOING HEAVY REWORK. CHECK BACK LATER.
 
 License
 -------
