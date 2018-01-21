@@ -9,6 +9,7 @@ project(
         'c_std=c11',
         'prefix=/usr',
         'sysconfdir=/etc',
+        'localstatedir=/var',
     ],
 )
 
@@ -38,6 +39,7 @@ path_libdir = join_paths(path_prefix, get_option('libdir'))
 path_mandir = join_paths(path_prefix, get_option('mandir'))
 path_datadir = join_paths(path_prefix, get_option('datadir'))
 path_bindir = join_paths(path_prefix, get_option('bindir'))
+path_vardir = join_paths(path_prefix, get_option('localstatedir'), 'lib', meson.project_name())
 
 # For stateless distros this is changed to /usr/share/xdg/autostart
 path_autostartdir = get_option('with-autostart-dir')
@@ -76,6 +78,11 @@ if get_option('with-emul32') == true
     cdata.set_quoted('EMUL32LIBDIR', get_option('emul32-libdir'))
 endif
 cdata.set_quoted('MODALIAS_DIR', path_modalias_dir)
+
+# Track dirs
+cdata.set_quoted('LDM_TRACK_DIR', path_vardir)
+with_hybrid_file = join_paths(path_vardir, 'hybrid') 
+cdata.set_quoted('LDM_HYBRID_FILE', with_hybrid_file)
 
 # Write config.h now
 config_h = configure_file(
@@ -174,6 +181,7 @@ report = [
     '    modaliasdir:                            @0@'.format(path_modalias_dir),
     '    xorg module directory:                  @0@'.format(xorg_module_dir),
     '    XDG autostart directory:                @0@'.format(path_autostartdir),
+    '    status directory:                       @0@'.format(path_vardir),
     '',
     '    Extra modules:',
     '    ==============',
