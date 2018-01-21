@@ -21,6 +21,7 @@
 
 #include "device.h"
 #include "glx-manager.h"
+#include "pci-device.h"
 #include "util.h"
 
 struct _LdmGLXManagerClass {
@@ -76,12 +77,15 @@ struct _LdmGLXManager {
 
 G_DEFINE_TYPE(LdmGLXManager, ldm_glx_manager, G_TYPE_OBJECT)
 
+/* Helpers for xorg configurations */
 static gboolean ldm_xorg_config_has_driver(const gchar *path, const gchar *driver);
 static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *device);
+static gboolean ldm_xorg_config_write_optimus(const gchar *path, LdmDevice *device);
 static gboolean ldm_xorg_driver_present(LdmDevice *device);
+
+/* Private helpers for our class */
 static gboolean ldm_glx_manager_configure_optimus(LdmGLXManager *self, LdmGPUConfig *config);
 static gboolean ldm_glx_manager_configure_simple(LdmGLXManager *self, LdmGPUConfig *config);
-
 /**
  * ldm_glx_manager_dispose:
  *
@@ -248,7 +252,6 @@ static inline const gchar *ldm_xorg_config_driver(LdmDevice *device)
  * ldm_xorg_config_write_simple:
  * @path: File path to alter
  * @device: Device to emit into the X.Org configuration
- * @driver: The driver name to use
  */
 static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *device)
 {
@@ -301,6 +304,86 @@ static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *devic
 }
 
 /**
+ * ldm_xorg_config_write_optimus:
+ * @path: File path to alter
+ * @device: Confguration for the Optimus setup
+ */
+static gboolean ldm_xorg_config_write_optimus(const gchar *path, LdmDevice *device)
+{
+        g_autoptr(GError) error = NULL;
+        g_autofree gchar *dirname = NULL;
+        g_autofree gchar *contents = NULL;
+        const gchar *device_id = NULL;
+        const gchar *driver = NULL;
+        guint bus = 0, dev = 0;
+        gint func = 0;
+
+        dirname = g_path_get_dirname(path);
+        if (!dirname) {
+                return FALSE;
+        }
+
+        /* Make sure we have the leading directory first */
+        if (!g_file_test(dirname, G_FILE_TEST_IS_DIR) &&
+            g_mkdir_with_parents(dirname, 00755) != 0) {
+                g_warning("Failed to construct leading directory %s: %s", dirname, strerror(errno));
+                return FALSE;
+        }
+
+        /* Bit of sanity if you please. */
+        if (ldm_device_get_vendor_id(device) != LDM_PCI_VENDOR_ID_NVIDIA) {
+                g_message("Something is insane with configuration: %s is not an NVIDIA device!",
+                          ldm_device_get_name(device));
+                return FALSE;
+        }
+        if (!ldm_device_has_type(device, LDM_DEVICE_TYPE_PCI)) {
+                g_message("Something is insane with configuration: %s is not a PCI device!",
+                          ldm_device_get_name(device));
+                return FALSE;
+        }
+
+        /* Stash address for DRM style PCI ID */
+        ldm_pci_device_get_address(LDM_PCI_DEVICE(device), &bus, &dev, &func);
+
+        /* Construct prettified simple x.org configuration */
+        device_id = ldm_xorg_config_id(device);
+        driver = ldm_xorg_config_driver(device);
+        if (!driver) {
+                g_warning("SHOULD NOT HAPPEN: Missing driver translation on %s",
+                          ldm_device_get_path(device));
+                return FALSE;
+        }
+
+        contents = g_strdup_printf(
+            "Section \"Module\"\n"
+            "        Load \"modesetting\"\n"
+            "EndSection\n\n"
+            "Section \"Device\"\n"
+            "        Identifier \"%s Card\"\n"
+            "        Driver \"%s\"\n"
+            "        BusID \"PCI:%u:%u:%d\"\n"
+            "        Option \"AllowEmptyInitialConfiguration\"\n"
+            "        VendorName \"%s\"\n"
+            "        BoardName \"%s\"\n"
+            "EndSection\n",
+            device_id,
+            driver,
+            bus,
+            dev,
+            func,
+            ldm_device_get_vendor(device),
+            ldm_device_get_name(device));
+
+        /* Write the file */
+        if (!g_file_set_contents(path, contents, (gssize)strlen(contents), &error)) {
+                g_warning("Failed to set X.Org config %s: %s", path, error->message);
+                return FALSE;
+        }
+
+        return TRUE;
+}
+
+/**
  * ldm_xorg_driver_present:
  *
  * Work out if the X.Org driver for the given device is actually present.
@@ -334,6 +417,23 @@ static gboolean ldm_xorg_driver_present(LdmDevice *device)
         }
 
         return g_file_test(test_path, G_FILE_TEST_EXISTS);
+}
+
+/**
+ * ldm_glx_manager_nuke_optimus:
+ *
+ * Nuke traces of the optimus configuration
+ */
+static void ldm_glx_manager_nuke_optimus(void)
+{
+        /* Remove any existing hybrid tracking file */
+        if (g_file_test(LDM_HYBRID_FILE, G_FILE_TEST_EXISTS)) {
+                if (unlink(LDM_HYBRID_FILE) != 0) {
+                        g_warning("Failed to remove hybrid tracking file %s: %s",
+                                  LDM_HYBRID_FILE,
+                                  strerror(errno));
+                }
+        }
 }
 
 /**
@@ -380,6 +480,7 @@ static gboolean ldm_glx_manager_nuke_user_configurations(LdmGLXManager *self)
 static void ldm_glx_manager_nuke_configurations(LdmGLXManager *self)
 {
         ldm_glx_manager_nuke_user_configurations(self);
+        ldm_glx_manager_nuke_optimus();
 
         if (g_file_test(self->glx_xorg_config, G_FILE_TEST_EXISTS)) {
                 fprintf(stderr, "Removing now invalid X11 GLX config %s\n", self->glx_xorg_config);
@@ -398,8 +499,41 @@ static void ldm_glx_manager_nuke_configurations(LdmGLXManager *self)
  */
 static gboolean ldm_glx_manager_configure_optimus(LdmGLXManager *self, LdmGPUConfig *config)
 {
-        g_message("ldm_glx_manager_configure_optimus: Not yet implemented");
-        return FALSE;
+        g_autoptr(GError) error = NULL;
+        g_autofree gchar *dirname = NULL;
+
+        /* For now we just write a 1 to touch the file and don't care about the contents. */
+        static const gchar *contents = "1";
+
+        ldm_glx_manager_nuke_user_configurations(self);
+
+        /* Before we can write the hybrid bit, we have to be able to set the xorg config */
+        if (!ldm_xorg_config_write_optimus(self->glx_xorg_config,
+                                           ldm_gpu_config_get_secondary_device(config))) {
+                return FALSE;
+        }
+
+        dirname = g_path_get_dirname(LDM_HYBRID_FILE);
+        if (!dirname) {
+                return FALSE;
+        }
+
+        /* Make sure we have the leading directory first */
+        if (!g_file_test(dirname, G_FILE_TEST_IS_DIR) &&
+            g_mkdir_with_parents(dirname, 00755) != 0) {
+                g_warning("Failed to construct leading directory %s: %s", dirname, strerror(errno));
+                return FALSE;
+        }
+
+        /* Write the hybrid file contents now */
+        if (!g_file_set_contents(LDM_HYBRID_FILE, contents, (gssize)strlen(contents), &error)) {
+                g_warning("Failed to set hybrid file contents %s: %s",
+                          LDM_HYBRID_FILE,
+                          error->message);
+                return FALSE;
+        }
+
+        return TRUE;
 }
 
 /**
@@ -409,6 +543,9 @@ static gboolean ldm_glx_manager_configure_optimus(LdmGLXManager *self, LdmGPUCon
  */
 static gboolean ldm_glx_manager_configure_simple(LdmGLXManager *self, LdmGPUConfig *config)
 {
+        /* Make sure we don't have Optimus! */
+        ldm_glx_manager_nuke_optimus();
+
         /* Try to write new config first */
         if (!ldm_xorg_config_write_simple(self->glx_xorg_config,
                                           ldm_gpu_config_get_detection_device(config))) {
@@ -449,11 +586,24 @@ gboolean ldm_glx_manager_apply_configuration(LdmGLXManager *self, LdmGPUConfig *
 
         /* TODO: Support SLI/Crossfire + Hybrid etc. */
         if (ldm_gpu_config_has_type(config, LDM_GPU_TYPE_OPTIMUS)) {
-                return ldm_glx_manager_configure_optimus(self, config);
+                if (!ldm_glx_manager_configure_optimus(self, config)) {
+                        goto failed;
+                }
+                return TRUE;
         }
 
         /* Assume we're just a simple device. */
-        return ldm_glx_manager_configure_simple(self, config);
+        if (!ldm_glx_manager_configure_simple(self, config)) {
+                goto failed;
+        }
+
+        return TRUE;
+
+failed:
+
+        g_warning("Encountered fatal issue in driver configuration, restoring defaults");
+        ldm_glx_manager_nuke_configurations(self);
+        return FALSE;
 }
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
