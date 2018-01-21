@@ -12,6 +12,7 @@
 #pragma once
 
 #include <device.h>
+#include <glx-manager.h>
 #include <gpu-config.h>
 #include <ldm-enums.h>
 #include <manager.h>
