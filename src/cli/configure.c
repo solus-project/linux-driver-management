@@ -66,6 +66,24 @@ int ldm_cli_configure(int argc, char **argv)
                 print_usage();
                 return EXIT_FAILURE;
         }
+        static const gchar *required_paths[] = {
+                "/sys/bus/pci",
+                "/proc/sys",
+                "/sys/class",
+        };
+
+        for (guint i = 0; i < G_N_ELEMENTS(required_paths); i++) {
+                const gchar *path = required_paths[i];
+                if (!g_file_test(path, G_FILE_TEST_EXISTS)) {
+                        fprintf(stderr,
+                                "Cowardly refusing to continue as path %s is not present\n",
+                                path);
+                        fprintf(stderr,
+                                "This is deliberately avoided so that we don't break your "
+                                "configuration\n");
+                        return EXIT_FAILURE;
+                }
+        }
 
         if (g_str_equal(argv[1], "gpu")) {
                 if (geteuid() != 0) {
