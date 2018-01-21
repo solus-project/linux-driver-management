@@ -32,6 +32,8 @@ GType ldm_glx_manager_get_type(void);
 /* API */
 LdmGLXManager *ldm_glx_manager_new(void);
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmGLXManager, g_object_unref)
+
 G_END_DECLS
 
 /*

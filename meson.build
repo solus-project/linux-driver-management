@@ -34,6 +34,7 @@ add_global_arguments(am_cflags, language: 'c')
 
 path_prefix = get_option('prefix')
 path_sysconfdir = join_paths(path_prefix, get_option('sysconfdir'))
+path_libdir = join_paths(path_prefix, get_option('libdir'))
 path_mandir = join_paths(path_prefix, get_option('mandir'))
 path_datadir = join_paths(path_prefix, get_option('datadir'))
 path_bindir = join_paths(path_prefix, get_option('bindir'))
@@ -51,7 +52,8 @@ endif
 cdata = configuration_data()
 cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 cdata.set_quoted('PACKAGE_NAME', meson.project_name())
-cdata.set_quoted('LIBDIR', join_paths(get_option('prefix'), get_option('libdir')))
+cdata.set_quoted('LIBDIR', path_libdir)
+cdata.set_quoted('SYSCONFDIR', path_sysconfdir)
 if get_option('with-emul32') == true
     cdata.set('WITH_EMUL32', '1')
     cdata.set_quoted('EMUL32LIBDIR', get_option('emul32-libdir'))
