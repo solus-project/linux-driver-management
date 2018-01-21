@@ -81,7 +81,7 @@ int ldm_cli_configure(int argc, char **argv)
                         fprintf(stderr,
                                 "This is deliberately avoided so that we don't break your "
                                 "configuration\n");
-                        return EXIT_FAILURE;
+                        return EXIT_SUCCESS;
                 }
         }
 
