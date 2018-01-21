@@ -129,16 +129,18 @@ libldm_gir = gnome.generate_gir(
     ],
 )
 
-libldm_vapi = gnome.generate_vapi(
-    'ldm-0.1',
-    sources: [libldm_gir[0]],
-    packages: [
-        'glib-2.0',
-        'gio-unix-2.0',
-    ],
-    metadata_dirs: meson.current_source_dir(),
-    install: true,
-)
+if enable_vapigen
+    libldm_vapi = gnome.generate_vapi(
+        'ldm-0.1',
+        sources: [libldm_gir[0]],
+        packages: [
+            'glib-2.0',
+            'gio-unix-2.0',
+        ],
+        metadata_dirs: meson.current_source_dir(),
+        install: true,
+    )
+endif
 
 # Install pkgconfig file to enable building against libldm
 pkgconfig.generate(

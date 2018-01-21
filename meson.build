@@ -112,6 +112,13 @@ if with_tests != 'no'
     endif
 endif
 
+enable_vapigen = true
+run_vapigen = find_program('vapigen', required: false)
+if not run_vapigen.found()
+    message('Disabling vala binding generation as vapigen is not installed')
+    enable_vapigen = false
+endif
+
 # If we have kmod, enable tooling
 with_tools = get_option('with-tools')
 enable_tools = false
@@ -185,6 +192,7 @@ report = [
     '    gl-driver-switch-compat:                @0@'.format(with_gl_driver_switch_compat),
     '    hardware plug monitor:                  @0@'.format(with_ldm_monitor),
     '    tools:                                  @0@'.format(enable_tools),
+    '    vala bindings:                          @0@'.format(enable_vapigen),
     '',
     '    enable tests:                           @0@'.format(enable_tests),
     '    enable documentation:                   @0@'.format(with_docs),
