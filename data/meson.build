@@ -9,6 +9,14 @@ configure_file(
     install_dir: path_lightdm,
 )
 
+path_sddm = join_paths(path_datadir, 'sddm', 'scripts')
+configure_file(
+    configuration: data_conf,
+    input: 'Xsetup.in',
+    output: 'Xsetup',
+    install_dir: path_sddm,
+)
+
 paths_gdm = [
     join_paths(path_datadir, 'gdm', 'greeter', 'autostart'),
     path_autostartdir,
