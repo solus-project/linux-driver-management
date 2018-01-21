@@ -52,7 +52,7 @@ with_modalias_dir = get_option('with-modalias-dir')
 if with_modalias_dir != ''
     path_modalias_dir = join_paths(path_prefix, with_modalias_dir)
 else
-    path_modalias_dir = join_paths(path_datadir, 'doflicky', 'modaliases')
+    path_modalias_dir = join_paths(path_datadir, meson.project_name(), 'modaliases')
     warn_modalias = true
 endif
 
