@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv='content-type' value='text/html;charset=utf8'>
   <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
-  <title>mkmodaliases(1) - Construct modaliases file for kernel modules</title>
+  <title>ldm-session-init(1) - Conditionally activate hybrid GPU for X11</title>
   <style type='text/css' media='all'>
   /* style: man */
   body#manpage {margin:0}
@@ -56,7 +56,6 @@
     <a href="#NAME">NAME</a>
     <a href="#SYNOPSIS">SYNOPSIS</a>
     <a href="#DESCRIPTION">DESCRIPTION</a>
-    <a href="#OPTIONS">OPTIONS</a>
     <a href="#EXIT-STATUS">EXIT STATUS</a>
     <a href="#COPYRIGHT">COPYRIGHT</a>
     <a href="#SEE-ALSO">SEE ALSO</a>
@@ -64,49 +63,37 @@
   </div>
 
   <ol class='man-decor man-head man head'>
-    <li class='tl'>mkmodaliases(1)</li>
+    <li class='tl'>ldm-session-init(1)</li>
     <li class='tc'></li>
-    <li class='tr'>mkmodaliases(1)</li>
+    <li class='tr'>ldm-session-init(1)</li>
   </ol>
 
   <h2 id="NAME">NAME</h2>
 <p class="man-name">
-  <code>mkmodaliases</code> - <span class="man-whatis">Construct modaliases file for kernel modules</span>
+  <code>ldm-session-init</code> - <span class="man-whatis">Conditionally activate hybrid GPU for X11</span>
 </p>
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p><code>mkmodaliases package-name [.ko file] [.ko file]</code></p>
+<p><code>ldm-session-init</code></p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p><code>mkmodaliases</code> is a tool to generate <code>.modaliases</code> files used for hardware
-detection when using linux-driver-management. These files contain a modalias
-entry per line, defining the modalias pattern match and kernel module names.</p>
+<p><code>ldm-session-init</code> is unconditionally executed by the display manager
+at the start of the X11 session to <strong>maybe</strong> handle bootstrap of the
+hybrid GPU. If the hybrid GPU driver is not activated, or is missing
+the main driver, this program will exit immediately. This is handled
+very quickly so as not to introduce a login penalty for non hybrid
+GPU users.</p>
 
-<p>These are used by the LDM library to provide automatic matching of hardware
-devices to kernel modules.</p>
+<p>Currently this command only supports Optimus™ graphics that have been
+correctly configured via <code>linux-driver-management(1)</code>. Once this has
+been correctly established, the relevant <code>xrandr(1)</code> calls are made to
+set up the primary output provider to allow the discrete GPU to function
+as the "primary" graphics.</p>
 
-<p>Upon success, the modalias file is emitted to the stdout, unless the <code>-o</code> option
-is provided to write to a specific file.</p>
-
-<h2 id="OPTIONS">OPTIONS</h2>
-
-<p>The following options are applicable to <code>mkmodaliases(1)</code>.</p>
-
-<ul>
-<li><p><code>-o</code>, <code>--output</code></p>
-
-<p>Redirect the output to a named file, generating a modalias in that path
-instead of on the default stdout.</p></li>
-<li><p><code>-v</code>, <code>--version</code></p>
-
-<p>Print the mkmodaliases version and exit.</p></li>
-<li><p><code>-h</code>, <code>--help</code></p>
-
-<p>Print the help message, displaying all supported options, and exit.</p></li>
-</ul>
-
+<p>For users who do not have a display manager, you can safely place a call
+to <code>ldm-session-init</code> in your <code>xinitrc</code> or equivalent.</p>
 
 <h2 id="EXIT-STATUS">EXIT STATUS</h2>
 
@@ -123,7 +110,7 @@ instead of on the default stdout.</p></li>
 
 <ul>
 <li>https://github.com/solus-project/linux-driver-management</li>
-<li><span class="man-ref">linux-driver-management<span class="s">(1)</span></span></li>
+<li><code>linux-driver-management(1)</code></li>
 </ul>
 
 
@@ -140,7 +127,7 @@ instead of on the default stdout.</p></li>
   <ol class='man-decor man-foot man foot'>
     <li class='tl'></li>
     <li class='tc'>January 2018</li>
-    <li class='tr'>mkmodaliases(1)</li>
+    <li class='tr'>ldm-session-init(1)</li>
   </ol>
 
   </div>

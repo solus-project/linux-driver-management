@@ -49,6 +49,7 @@ On success, 0 is returned. A non-zero return code signals a failure.
 ## SEE ALSO
 
  * https://github.com/solus-project/linux-driver-management
+ * linux-driver-management(1)
 
 ## NOTES
 
