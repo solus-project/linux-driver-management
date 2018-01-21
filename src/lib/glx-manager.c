@@ -504,7 +504,9 @@ static gboolean ldm_glx_manager_configure_optimus(LdmGLXManager *self, LdmGPUCon
         g_autoptr(GError) error = NULL;
         g_autofree gchar *dirname = NULL;
 
-        /* For now we just write a 1 to touch the file and don't care about the contents. */
+        /* For now we just write a 1 to touch the file and don't care about the contents.
+           In future we'll use 0 or non-existent to disable, 1 for "always on", and 2 for dynamic.
+        */
         static const gchar *contents = "1";
 
         ldm_glx_manager_nuke_user_configurations(self);
