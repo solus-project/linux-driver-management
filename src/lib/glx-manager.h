@@ -13,6 +13,8 @@
 
 #include <glib-object.h>
 
+#include "gpu-config.h"
+
 G_BEGIN_DECLS
 
 typedef struct _LdmGLXManager LdmGLXManager;
@@ -31,6 +33,8 @@ GType ldm_glx_manager_get_type(void);
 
 /* API */
 LdmGLXManager *ldm_glx_manager_new(void);
+
+gboolean ldm_glx_manager_apply_configuration(LdmGLXManager *manager, LdmGPUConfig *config);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(LdmGLXManager, g_object_unref)
 

@@ -15,6 +15,7 @@
 
 #include <errno.h>
 #include <gio/gio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -78,6 +79,8 @@ G_DEFINE_TYPE(LdmGLXManager, ldm_glx_manager, G_TYPE_OBJECT)
 static gboolean ldm_xorg_config_has_driver(const gchar *path, const gchar *driver);
 static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *device);
 static gboolean ldm_xorg_driver_present(LdmDevice *device);
+static gboolean ldm_glx_manager_configure_optimus(LdmGLXManager *self, LdmGPUConfig *config);
+static gboolean ldm_glx_manager_configure_simple(LdmGLXManager *self, LdmGPUConfig *config);
 
 /**
  * ldm_glx_manager_dispose:
@@ -118,11 +121,8 @@ static void ldm_glx_manager_init(LdmGLXManager *self)
         self->stock_xorg_config = g_build_filename(SYSCONFDIR, "X11", "xorg.conf", NULL);
 
         /* Where we'll make our config changes */
-        self->glx_xorg_config = g_build_filename(SYSCONFDIR,
-                                                 "X11",
-                                                 "xorg.conf.d,"
-                                                 "00-ldm.conf",
-                                                 NULL);
+        self->glx_xorg_config =
+            g_build_filename(SYSCONFDIR, "X11", "xorg.conf.d", "00-ldm.conf", NULL);
 }
 
 /**
@@ -328,7 +328,7 @@ static gboolean ldm_xorg_driver_present(LdmDevice *device)
                 return FALSE;
         }
 
-        test_path = g_build_filename(XORG_MODULE_DIRECTORY, drv_fragment, NULL);
+        test_path = g_build_filename(XORG_MODULE_DIRECTORY, "drivers", drv_fragment, NULL);
         if (!test_path) {
                 return FALSE;
         }
@@ -336,6 +336,125 @@ static gboolean ldm_xorg_driver_present(LdmDevice *device)
         return g_file_test(test_path, G_FILE_TEST_EXISTS);
 }
 
+/**
+ * ldm_glx_manager_nuke_user_configurations:
+ *
+ * Only nuke an existing /etc/X11/xorg.conf if it contains sections for proprietary
+ * drivers.
+ */
+static gboolean ldm_glx_manager_nuke_user_configurations(LdmGLXManager *self)
+{
+        gboolean ret = TRUE;
+
+        static const gchar *xorg_drivers[] = {
+                "nvidia",
+                "fglrx",
+        };
+
+        for (guint i = 0; i < G_N_ELEMENTS(xorg_drivers); i++) {
+                if (!ldm_xorg_config_has_driver(self->stock_xorg_config, xorg_drivers[i])) {
+                        continue;
+                }
+                fprintf(stderr,
+                        "Removing %s as it references X11 driver '%s'\n",
+                        self->stock_xorg_config,
+                        xorg_drivers[i]);
+                /* Need to remove traces of this stock config file */
+                if (unlink(self->stock_xorg_config) != 0) {
+                        g_warning("Failed to remove X11 config %s: %s",
+                                  self->stock_xorg_config,
+                                  strerror(errno));
+                        ret = FALSE;
+                }
+        }
+
+        return ret;
+}
+
+/**
+ * ldm_glx_manager_nuke_configurations:
+ *
+ * Nuke any existing "bad" configurations we may have as we're unsetting
+ * any potential proprietary driver enablings
+ */
+static void ldm_glx_manager_nuke_configurations(LdmGLXManager *self)
+{
+        ldm_glx_manager_nuke_user_configurations(self);
+
+        if (g_file_test(self->glx_xorg_config, G_FILE_TEST_EXISTS)) {
+                fprintf(stderr, "Removing now invalid X11 GLX config %s\n", self->glx_xorg_config);
+                if (unlink(self->glx_xorg_config) != 0) {
+                        g_warning("Failed to remove GLX config %s: %s",
+                                  self->glx_xorg_config,
+                                  strerror(errno));
+                }
+        }
+}
+
+/**
+ * ldm_glx_manager_configure_optimus:
+ *
+ * Attempt configuration of an Optimus system with proprietary drivers
+ */
+static gboolean ldm_glx_manager_configure_optimus(LdmGLXManager *self, LdmGPUConfig *config)
+{
+        g_message("ldm_glx_manager_configure_optimus: Not yet implemented");
+        return FALSE;
+}
+
+/**
+ * ldm_glx_manager_configure_simple:
+ *
+ * Attempt configuration of a simple proprietary driver
+ */
+static gboolean ldm_glx_manager_configure_simple(LdmGLXManager *self, LdmGPUConfig *config)
+{
+        /* Try to write new config first */
+        if (!ldm_xorg_config_write_simple(self->glx_xorg_config,
+                                          ldm_gpu_config_get_detection_device(config))) {
+                return FALSE;
+        }
+        /* Now try to nuke any existing user config */
+        return ldm_glx_manager_nuke_user_configurations(self);
+}
+
+/**
+ * ldm_glx_manager_apply_configuration:
+ * @config: Valid LdmGPUConfiguration
+ *
+ * Attempt to apply the primary portion of the configuration per the systems current configuration.
+ * If proprietary drivers are installed and enabled, they will be configured. If an Optimus system
+ * is encountered then it will also be configured in X11, and in the installed display manager
+ * configurations.
+ *
+ * If it is not possible to "install" a configuration, then any changes we may have made will be
+ * immediately unapplied and we'll go back to a "stock" configuration that intentionally removes any
+ * enabling for the proprietary drivers we may have applied.
+ *
+ * This should only happen when the module isn't present for the primary detection device.
+ */
+gboolean ldm_glx_manager_apply_configuration(LdmGLXManager *self, LdmGPUConfig *config)
+{
+        LdmDevice *detection_device = NULL;
+
+        g_return_val_if_fail(self != NULL, FALSE);
+
+        detection_device = ldm_gpu_config_get_detection_device(config);
+
+        /* If there isn't a valid driver for this device, remove configurations for it */
+        if (!ldm_xorg_driver_present(detection_device)) {
+                ldm_glx_manager_nuke_configurations(self);
+                return TRUE;
+        }
+
+        /* TODO: Support SLI/Crossfire + Hybrid etc. */
+        if (ldm_gpu_config_has_type(config, LDM_GPU_TYPE_OPTIMUS)) {
+                return ldm_glx_manager_configure_optimus(self, config);
+        }
+
+        /* Assume we're just a simple device. */
+        return ldm_glx_manager_configure_simple(self, config);
+}
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

@@ -23,33 +23,6 @@ static inline void print_usage(void)
 }
 
 /**
- * Handle Optimus GPU configuration
- *
- * Effectively this means going the NVIDIA route with some custom hackery applied
- * in the X11 configuration to force switching to another output.
- */
-static int ldm_gpu_configure_optimus(__ldm_unused__ LdmManager *manager,
-                                     __ldm_unused__ LdmGPUConfig *config)
-{
-        fputs("Optimus configuration not yet supported\n", stderr);
-        return EXIT_FAILURE;
-}
-
-/**
- * Perform "simple" GPU configuration.
- *
- * Basically find the appropriate driver configuration to use and ensure that
- * any past configuration attempts are undone, and that the libGL symlinks are
- * all pointing in the right place.
- */
-static int ldm_gpu_configure_simple(__ldm_unused__ LdmManager *manager,
-                                    __ldm_unused__ LdmGPUConfig *config)
-{
-        fputs("Simple configuration not yet supported\n", stderr);
-        return EXIT_FAILURE;
-}
-
-/**
  * Perform configuration of the GPU. Right now this is required explicitly
  * for X11 systems, and those using NVIDIA proprietary drivers with the
  * libGL file conflicts.
@@ -61,6 +34,7 @@ static int ldm_cli_configure_gpu(void)
 {
         g_autoptr(LdmManager) manager = NULL;
         g_autoptr(LdmGPUConfig) gpu_config = NULL;
+        g_autoptr(LdmGLXManager) glx_manager = NULL;
 
         /* Need manager without hotplug capabilities */
         manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR);
@@ -76,21 +50,14 @@ static int ldm_cli_configure_gpu(void)
                 return EXIT_FAILURE;
         }
 
-        /* At this point just dispatch to the appropriate method. */
-        if (ldm_gpu_config_has_type(gpu_config, LDM_GPU_TYPE_OPTIMUS)) {
-                return ldm_gpu_configure_optimus(manager, gpu_config);
+        glx_manager = ldm_glx_manager_new();
+        if (!ldm_glx_manager_apply_configuration(glx_manager, gpu_config)) {
+                fputs("Failed to apply GLX configuration\n", stderr);
+                return EXIT_FAILURE;
         }
 
-        /* Just let them know that we know, but can't do anything with it right now. */
-        if (ldm_gpu_config_has_type(gpu_config, LDM_GPU_TYPE_HYBRID)) {
-                LdmDevice *detection = ldm_gpu_config_get_detection_device(gpu_config);
-                fprintf(stdout,
-                        "Currently treating hybrid detection as simple device: %s\n",
-                        ldm_device_get_name(detection));
-        }
-
-        /* In all other cases we're just dealing with "simple" configs */
-        return ldm_gpu_configure_simple(manager, gpu_config);
+        fputs("Successfully applied GLX configuration\n", stderr);
+        return EXIT_SUCCESS;
 }
 
 int ldm_cli_configure(int argc, char **argv)

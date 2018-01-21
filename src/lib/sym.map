@@ -17,6 +17,7 @@ LIBLDM_0 {
     ldm_device_type_get_type;
     ldm_dmi_device_get_type;
     ldm_glx_manager_get_type;
+    ldm_glx_manager_apply_configuration;
     ldm_glx_manager_new;
     ldm_gpu_config_count;
     ldm_gpu_config_get_detection_device;
