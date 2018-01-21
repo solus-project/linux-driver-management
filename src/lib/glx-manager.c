@@ -329,7 +329,6 @@ static gboolean ldm_xorg_driver_present(LdmDevice *device)
         }
 
         test_path = g_build_filename(XORG_MODULE_DIRECTORY, drv_fragment, NULL);
-        ;
         if (!test_path) {
                 return FALSE;
         }
