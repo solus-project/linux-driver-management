@@ -13,9 +13,12 @@
 
 #include "config.h"
 
+#include <errno.h>
 #include <gio/gio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#include "device.h"
 #include "glx-manager.h"
 #include "util.h"
 
@@ -73,6 +76,7 @@ struct _LdmGLXManager {
 G_DEFINE_TYPE(LdmGLXManager, ldm_glx_manager, G_TYPE_OBJECT)
 
 static gboolean ldm_xorg_config_has_driver(const gchar *path, const gchar *driver);
+static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *device);
 
 /**
  * ldm_glx_manager_dispose:
@@ -196,6 +200,103 @@ emit_error:
         }
 
         return ret;
+}
+
+/**
+ * ldm_xorg_config_id:
+ * @device: Device to find a "pretty" ID for
+ *
+ * Construct a pretty ID for the LdmDevice based on the vendor
+ */
+static inline const gchar *ldm_xorg_config_id(LdmDevice *device)
+{
+        /* Construct fancy short string for xorg configuration */
+        switch (ldm_device_get_vendor_id(device)) {
+        case LDM_PCI_VENDOR_ID_AMD:
+                return "AMD";
+        case LDM_PCI_VENDOR_ID_INTEL:
+                return "Intel";
+        case LDM_PCI_VENDOR_ID_NVIDIA:
+                return "NVIDIA";
+        default:
+                /* No fancy short string. */
+                return "GPU";
+        }
+}
+
+/**
+ * ldm_xorg_config_driver:
+ * @device: Device to translate X config for
+ *
+ * Translate the device vendor ID to a usable module name for X11 configuration
+ */
+static inline const gchar *ldm_xorg_config_driver(LdmDevice *device)
+{
+        /* Determine the xorg driver to use based on the vendor */
+        switch (ldm_device_get_vendor_id(device)) {
+        case LDM_PCI_VENDOR_ID_AMD:
+                return "fglrx";
+        case LDM_PCI_VENDOR_ID_NVIDIA:
+                return "nvidia";
+        default:
+                return NULL;
+        }
+}
+
+/**
+ * ldm_xorg_config_write_simple:
+ * @path: File path to alter
+ * @device: Device to emit into the X.Org configuration
+ * @driver: The driver name to use
+ */
+static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *device)
+{
+        g_autoptr(GError) error = NULL;
+        g_autofree gchar *dirname = NULL;
+        g_autofree gchar *contents = NULL;
+        const gchar *device_id = NULL;
+        const gchar *driver = NULL;
+
+        dirname = g_path_get_dirname(path);
+        if (!dirname) {
+                return FALSE;
+        }
+
+        /* Make sure we have the leading directory first */
+        if (!g_file_test(dirname, G_FILE_TEST_IS_DIR) &&
+            g_mkdir_with_parents(dirname, 00755) != 0) {
+                g_warning("Failed to construct leading directory %s: %s", dirname, strerror(errno));
+                return FALSE;
+        }
+
+        /* Construct prettified simple x.org configuration */
+        device_id = ldm_xorg_config_id(device);
+        driver = ldm_xorg_config_driver(device);
+        if (!driver) {
+                g_warning("SHOULD NOT HAPPEN: Missing driver translation on %s",
+                          ldm_device_get_path(device));
+                return FALSE;
+        }
+
+        contents = g_strdup_printf(
+            "Section \"Device\"\n"
+            "        Identifier \"%s Card\"\n"
+            "        Driver \"%s\"\n"
+            "        VendorName \"%s\"\n"
+            "        BoardName \"%s\"\n"
+            "EndSection\n",
+            device_id,
+            driver,
+            ldm_device_get_vendor(device),
+            ldm_device_get_name(device));
+
+        /* Write the file */
+        if (!g_file_set_contents(path, contents, (gssize)strlen(contents), &error)) {
+                g_warning("Failed to set X.Org config %s: %s", path, error->message);
+                return FALSE;
+        }
+
+        return TRUE;
 }
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
