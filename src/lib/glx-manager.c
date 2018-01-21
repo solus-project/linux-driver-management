@@ -77,6 +77,7 @@ G_DEFINE_TYPE(LdmGLXManager, ldm_glx_manager, G_TYPE_OBJECT)
 
 static gboolean ldm_xorg_config_has_driver(const gchar *path, const gchar *driver);
 static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *device);
+static gboolean ldm_xorg_driver_present(LdmDevice *device);
 
 /**
  * ldm_glx_manager_dispose:
@@ -298,6 +299,44 @@ static gboolean ldm_xorg_config_write_simple(const gchar *path, LdmDevice *devic
 
         return TRUE;
 }
+
+/**
+ * ldm_xorg_driver_present:
+ *
+ * Work out if the X.Org driver for the given device is actually present.
+ * For open source drivers, this is always going to be FALSE. We use this
+ * to detect NVIDIA/AMD proprietary drivers, the presence of the xorg
+ * module indicating that the proprietary driver is installed.
+ *
+ * Note that in a glvnd enabled world all of this stuff is X11 specific.
+ * Wayland world is KMS driven and in NVIDIA requires eglplatform, all of
+ * which is automatic and doesn't require any kind of configuration.
+ */
+static gboolean ldm_xorg_driver_present(LdmDevice *device)
+{
+        g_autofree gchar *test_path = NULL;
+        const gchar *drv_fragment = NULL;
+
+        switch (ldm_device_get_vendor_id(device)) {
+        case LDM_PCI_VENDOR_ID_AMD:
+                drv_fragment = "fglrx_drv.so";
+                break;
+        case LDM_PCI_VENDOR_ID_NVIDIA:
+                drv_fragment = "nvidia_drv.so";
+                break;
+        default:
+                return FALSE;
+        }
+
+        test_path = g_build_filename(XORG_MODULE_DIRECTORY, drv_fragment, NULL);
+        ;
+        if (!test_path) {
+                return FALSE;
+        }
+
+        return g_file_test(test_path, G_FILE_TEST_EXISTS);
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *

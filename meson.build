@@ -48,12 +48,23 @@ else
     warn_modalias = true
 endif
 
+# Find out where xorg modules are installed to
+dep_xorg = dependency('xorg-server', required: false)
+if dep_xorg.found()
+    xorg_module_dir = dep_xorg.get_pkgconfig_variable('moduledir')
+else
+    xorg_module_dir = join_paths(path_libdir, 'xorg', 'modules')
+    message('Warning: Guessing xorg module directory! @0@'.format(xorg_module_dir))
+    message('Rebuild with pkgconfig(xorg-server) to ensure real path is used')
+endif
+
 # Get configuration bits together
 cdata = configuration_data()
 cdata.set_quoted('PACKAGE_VERSION', meson.project_version())
 cdata.set_quoted('PACKAGE_NAME', meson.project_name())
 cdata.set_quoted('LIBDIR', path_libdir)
 cdata.set_quoted('SYSCONFDIR', path_sysconfdir)
+cdata.set_quoted('XORG_MODULE_DIRECTORY', xorg_module_dir)
 if get_option('with-emul32') == true
     cdata.set('WITH_EMUL32', '1')
     cdata.set_quoted('EMUL32LIBDIR', get_option('emul32-libdir'))
@@ -152,6 +163,7 @@ report = [
     '    mandir:                                 @0@'.format(path_mandir),
     '    bindir:                                 @0@'.format(path_bindir),
     '    modaliasdir:                            @0@'.format(path_modalias_dir),
+    '    xorg module directory:                  @0@'.format(xorg_module_dir),
     '',
     '    Extra modules:',
     '    ==============',
