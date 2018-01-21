@@ -86,6 +86,8 @@ static gboolean ldm_xorg_driver_present(LdmDevice *device);
 /* Private helpers for our class */
 static gboolean ldm_glx_manager_configure_optimus(LdmGLXManager *self, LdmGPUConfig *config);
 static gboolean ldm_glx_manager_configure_simple(LdmGLXManager *self, LdmGPUConfig *config);
+static void ldm_glx_manager_nuke_legacy(void);
+
 /**
  * ldm_glx_manager_dispose:
  *
@@ -576,6 +578,9 @@ gboolean ldm_glx_manager_apply_configuration(LdmGLXManager *self, LdmGPUConfig *
 
         g_return_val_if_fail(self != NULL, FALSE);
 
+        /* Clean up before doing anything. */
+        ldm_glx_manager_nuke_legacy();
+
         detection_device = ldm_gpu_config_get_detection_device(config);
 
         /* If there isn't a valid driver for this device, remove configurations for it */
@@ -605,6 +610,35 @@ failed:
         ldm_glx_manager_nuke_configurations(self);
         return FALSE;
 }
+
+/**
+ * ldm_glx_manager_nuke_legacy:
+ *
+ * Nuke previously constructed files from the old LDM implementation that are no longer
+ * needed.
+ */
+static void ldm_glx_manager_nuke_legacy()
+{
+        /* Garbage paths left over from old LDM, make sure they die */
+        static const gchar *bad_paths[] = {
+                "/etc/lightdm/lightdm.conf.d/99-ldm-xrandr.conf",
+                "/etc/lightdm-xrandr-init.sh",
+                "/usr/share/gdm/greeter/autostart/optimus.desktop",
+                "/etc/xdg/autostart/optimus.desktop",
+        };
+
+        for (guint i = 0; i < G_N_ELEMENTS(bad_paths); i++) {
+                const gchar *path = bad_paths[i];
+                if (!g_file_test(path, G_FILE_TEST_EXISTS)) {
+                        continue;
+                }
+                fprintf(stderr, "Removing legacy path %s\n", path);
+                if (unlink(path) != 0) {
+                        g_warning("Failed to remove legacy path %s: %s", path, strerror(errno));
+                }
+        }
+}
+
 /*
  * Editor modelines  -  https://www.wireshark.org/tools/modelines.html
  *
