@@ -6,3 +6,4 @@ option('with-modalias-dir', type: 'string', description: 'Where to find the moda
 option('with-tests', type: 'combo', choices: ['auto', 'yes', 'no'], value: 'auto')
 option('with-docs', type: 'boolean', value: true, description: 'Enable building of documentation')
 option('with-tools', type: 'combo', choices: ['auto', 'yes', 'no'], value: 'auto', description: 'Enable support tooling')
+option('with-autostart-dir', type: 'string', description: 'Path to the XDG autostart directory')

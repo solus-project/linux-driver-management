@@ -57,7 +57,7 @@ if [[ ! -d build ]]; then
         MESON_OPTIONS+=" -Dwith-emul32=true -Dwith-emul32-libdir=/usr/lib32"
     fi
     if [[ "${DISTRO_ID}" == "solus" ]]; then
-        MESON_OPTIONS+=" -Dwith-gl-driver-switch=true"
+        MESON_OPTIONS+=" -Dwith-gl-driver-switch=true -Dwith-autostart-dir=/usr/share/xdg/autostart"
     fi
     # TODO: Ubuntu family, use jockey dir?
     configure_meson $MESON_OPTIONS

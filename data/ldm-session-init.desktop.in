@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Linux Driver Management Early Init
+Exec=@BINDIR@/ldm-session-init
+NoDisplay=true
+X-GNOME-Autostart-Phase=DisplayServer

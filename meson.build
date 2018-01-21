@@ -39,6 +39,12 @@ path_mandir = join_paths(path_prefix, get_option('mandir'))
 path_datadir = join_paths(path_prefix, get_option('datadir'))
 path_bindir = join_paths(path_prefix, get_option('bindir'))
 
+# For stateless distros this is changed to /usr/share/xdg/autostart
+path_autostartdir = get_option('with-autostart-dir')
+if path_autostartdir == ''
+    path_autostartdir = join_paths(path_sysconfdir, 'xdg', 'autostart')
+endif
+
 warn_modalias = false
 with_modalias_dir = get_option('with-modalias-dir')
 if with_modalias_dir != ''
@@ -139,6 +145,9 @@ abi_version = '@0@.@1@.@2@'.format(
 # Maybe build compat
 subdir('compat')
 
+# Always build data
+subdir('data')
+
 # Now go build the source
 subdir('src')
 
@@ -164,6 +173,7 @@ report = [
     '    bindir:                                 @0@'.format(path_bindir),
     '    modaliasdir:                            @0@'.format(path_modalias_dir),
     '    xorg module directory:                  @0@'.format(xorg_module_dir),
+    '    XDG autostart directory:                @0@'.format(path_autostartdir),
     '',
     '    Extra modules:',
     '    ==============',

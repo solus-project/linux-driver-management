@@ -1,0 +1,2 @@
+[Seat:*]
+display-setup-script=@BINDIR@/ldm-session-init
