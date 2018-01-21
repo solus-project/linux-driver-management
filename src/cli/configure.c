@@ -101,6 +101,10 @@ int ldm_cli_configure(int argc, char **argv)
         }
 
         if (g_str_equal(argv[1], "gpu")) {
+                if (geteuid() != 0) {
+                        fputs("You must be root to use this function\n", stderr);
+                        return EXIT_FAILURE;
+                }
                 return ldm_cli_configure_gpu();
         }
 
