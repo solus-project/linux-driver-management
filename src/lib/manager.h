@@ -25,6 +25,7 @@ typedef struct _LdmManagerClass LdmManagerClass;
  * LdmManagerFlags
  * @LDM_MANAGER_FLAGS_NONE: No special behaviour required
  * @LDM_MANAGER_FLAGS_NO_MONITOR: Disable hotplug events
+ * @LDM_MANAGER_FLAGS_GPU_QUICK: Only allow GPU devices for fast initialisation
  *
  * Override the behaviour of the new LdmManager to allow disabling
  * of hotplug events, etc.
@@ -32,6 +33,7 @@ typedef struct _LdmManagerClass LdmManagerClass;
 typedef enum {
         LDM_MANAGER_FLAGS_NONE = 0,
         LDM_MANAGER_FLAGS_NO_MONITOR = 1 << 0,
+        LDM_MANAGER_FLAGS_GPU_QUICK = 1 << 1,
 } LdmManagerFlags;
 
 #define LDM_TYPE_MANAGER ldm_manager_get_type()

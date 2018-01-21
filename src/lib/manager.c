@@ -268,15 +268,28 @@ static void ldm_manager_init_udev_static(LdmManager *self)
         static const char *subsystems[] = {
                 "dmi", "usb", "pci", "hid", /*< As child of USB typically */
         };
+        /* For LDM_MANAGER_FLAGS_GPU_QUICK */
+        static const char *subsystems_minimal[] = {
+                "pci",
+        };
 
         /* Set up the enumerator */
         ue = udev_enumerate_new(self->udev);
         g_assert(ue != NULL);
 
-        for (size_t i = 0; i < G_N_ELEMENTS(subsystems); i++) {
-                const char *sub = subsystems[i];
-                if (udev_enumerate_add_match_subsystem(ue, sub) != 0) {
-                        g_warning("Failed to add subsystem match: %s", sub);
+        if ((self->flags & LDM_MANAGER_FLAGS_NO_MONITOR) == LDM_MANAGER_FLAGS_NO_MONITOR) {
+                for (size_t i = 0; i < G_N_ELEMENTS(subsystems_minimal); i++) {
+                        const char *sub = subsystems_minimal[i];
+                        if (udev_enumerate_add_match_subsystem(ue, sub) != 0) {
+                                g_warning("Failed to add subsystem match: %s", sub);
+                        }
+                }
+        } else {
+                for (size_t i = 0; i < G_N_ELEMENTS(subsystems); i++) {
+                        const char *sub = subsystems[i];
+                        if (udev_enumerate_add_match_subsystem(ue, sub) != 0) {
+                                g_warning("Failed to add subsystem match: %s", sub);
+                        }
                 }
         }
 

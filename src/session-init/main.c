@@ -53,7 +53,7 @@ static int ldm_session_init_configure(void)
         g_autoptr(LdmGPUConfig) config = NULL;
 
         /* Grab manager now */
-        manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR);
+        manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR | LDM_MANAGER_FLAGS_GPU_QUICK);
         if (!manager) {
                 return EXIT_FAILURE;
         }
