@@ -8,7 +8,7 @@ required_tests = [
 ]
 
 test_dependencies = [
-    link_libldm_main,
+    link_libldm,
     dep_check,
     dep_umockdev,
 ]

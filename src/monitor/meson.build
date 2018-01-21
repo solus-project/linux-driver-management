@@ -6,7 +6,7 @@ monitor_sources = [
 executable('ldm-monitor',
     sources: monitor_sources,
     dependencies: [
-        link_libldm_main,
+        link_libldm,
         dep_gio_unix,
         dep_glib2,
     ],

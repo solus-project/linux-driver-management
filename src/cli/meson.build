@@ -8,7 +8,7 @@ cli_sources = [
 executable('linux-driver-management',
     sources: cli_sources,
     dependencies: [
-        link_libldm_main,
+        link_libldm,
         dep_glib2,
     ],
     install: true,

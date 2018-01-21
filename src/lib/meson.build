@@ -27,7 +27,7 @@ link_libenum = declare_dependency(
     include_directories: include_directories('.'),
 )
 
-libldm_main_sources = [
+libldm_sources = [
     'device.c',
     'dmi-device.c',
     'plugin.c',
@@ -60,7 +60,7 @@ libldm_plugin_headers = [
     'plugins/modalias-plugin.h',
 ]
 
-libldm_main_includes = [
+libldm_includes = [
     include_directories('.'),
     config_h_dir,
 ]
@@ -76,24 +76,24 @@ libldm_dependencies = [
 # Manually maintained symbol list.
 sym_map = join_paths(meson.current_source_dir(), 'sym.map')
 
-libldm_main = shared_library(
+libldm = shared_library(
     'ldm',
     version: abi_version,
-    sources: libldm_main_sources,
+    sources: libldm_sources,
     link_args: ['-Wl,--version-script=@0@'.format(sym_map)],
-    include_directories: libldm_main_includes,
+    include_directories: libldm_includes,
     dependencies: libldm_dependencies,
     install: true,
 )
 
-link_libldm_main = declare_dependency(
-    link_with: libldm_main,
+link_libldm = declare_dependency(
+    link_with: libldm,
     dependencies: [
         link_libenum,
         dep_glib2,
         dep_gio_unix,
     ],
-    include_directories: libldm_main_includes,
+    include_directories: libldm_includes,
 )
 
 # Install our main headers
@@ -109,8 +109,8 @@ install_headers(
 
 # Generate .gir
 libldm_gir = gnome.generate_gir(
-    libldm_main,
-    sources: libldm_main_sources + libldm_headers + libldm_plugin_headers + libldm_enums,
+    libldm,
+    sources: libldm_sources + libldm_headers + libldm_plugin_headers + libldm_enums,
     namespace: 'Ldm',
     nsversion: '0.1',
     dependencies: libldm_dependencies,

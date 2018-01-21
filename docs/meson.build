@@ -10,5 +10,5 @@ gnome.gtkdoc(
         '--ignore-headers=ldm-private.h util.h',
     ],
     gobject_typesfile : '@0@.types'.format(meson.project_name()),
-    dependencies: link_libldm_main,
+    dependencies: link_libldm,
 )
