@@ -1,6 +1,4 @@
 option('with-gl-driver-switch-compat', type: 'boolean', value: false, description: 'Enable (Solus specific) gl-driver-switch compatability')
-option('emul32-libdir', type: 'string', value: '/usr/lib32', description: 'The emul32 library directory')
-option('with-emul32', type: 'boolean', value: true, description: 'Enable emul32 (/usr/lib32) support for drivers')
 option('with-monitor', type: 'boolean', value: true, description: 'Enable the hardware plug monitor')
 option('with-modalias-dir', type: 'string', description: 'Where to find the modalias directory')
 option('with-tests', type: 'combo', choices: ['auto', 'yes', 'no'], value: 'auto')

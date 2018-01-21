@@ -73,10 +73,6 @@ cdata.set_quoted('PACKAGE_NAME', meson.project_name())
 cdata.set_quoted('LIBDIR', path_libdir)
 cdata.set_quoted('SYSCONFDIR', path_sysconfdir)
 cdata.set_quoted('XORG_MODULE_DIRECTORY', xorg_module_dir)
-if get_option('with-emul32') == true
-    cdata.set('WITH_EMUL32', '1')
-    cdata.set_quoted('EMUL32LIBDIR', get_option('emul32-libdir'))
-endif
 cdata.set_quoted('MODALIAS_DIR', path_modalias_dir)
 
 # Track dirs
