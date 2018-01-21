@@ -583,6 +583,12 @@ gboolean ldm_glx_manager_apply_configuration(LdmGLXManager *self, LdmGPUConfig *
 
         detection_device = ldm_gpu_config_get_detection_device(config);
 
+        /* No primary device, this is fine, could be a chroot. */
+        if (!detection_device) {
+                ldm_glx_manager_nuke_configurations(self);
+                return TRUE;
+        }
+
         /* If there isn't a valid driver for this device, remove configurations for it */
         if (!ldm_xorg_driver_present(detection_device)) {
                 ldm_glx_manager_nuke_configurations(self);
