@@ -117,7 +117,7 @@ static void print_gpu_config(LdmManager *manager, LdmGPUConfig *config)
         }
 
         fprintf(stdout,
-                " \u2552 Primary GPU%s\n",
+                "\n \u2552 Secondary GPU%s\n",
                 ldm_gpu_config_has_type(config, LDM_GPU_TYPE_HYBRID) ? " (dGPU)" : "");
 
         print_device(secondary);
