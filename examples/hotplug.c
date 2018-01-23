@@ -14,8 +14,8 @@
  *
  * Note, the device is valid for the duration of this callback.
  */
-static void device_added(__attribute((unused)) LdmManager *manager, LdmDevice *device,
-                         __attribute((unused)) gpointer v)
+static void device_added(__attribute__((unused)) LdmManager *manager, LdmDevice *device,
+                         __attribute__((unused)) gpointer v)
 {
         g_message("New device added: %s %s",
                   ldm_device_get_vendor(device),
