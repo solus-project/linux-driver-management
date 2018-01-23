@@ -636,7 +636,7 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device, gbool
                 return;
         }
 
-        g_ptr_array_add(self->devices, ldm_device);
+        g_ptr_array_add(self->devices, g_object_ref_sink(ldm_device));
 
         /*  Emit signal for the new device. */
         if (!emit_signal) {

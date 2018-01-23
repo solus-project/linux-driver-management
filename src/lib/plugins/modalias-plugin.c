@@ -71,6 +71,10 @@ G_DEFINE_TYPE(LdmModaliasPlugin, ldm_modalias_plugin, LDM_TYPE_PLUGIN)
  */
 static void ldm_modalias_plugin_dispose(GObject *obj)
 {
+        LdmModaliasPlugin *self = LDM_MODALIAS_PLUGIN(obj);
+
+        g_clear_pointer(&self->modaliases, g_hash_table_unref);
+
         G_OBJECT_CLASS(ldm_modalias_plugin_parent_class)->dispose(obj);
 }
 
