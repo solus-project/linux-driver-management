@@ -152,11 +152,12 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
         /**
          * LdmManager::device-removed
          * @manager: The manager owning the device
-         * @path: The device #LdmDevice:path being removed.
+         * @device: The device being removed
          *
          * Connect to this signal to be notified when a device is about to
-         * be removed from the #LdmManager. Only the ID is provided as you
-         * should not attempt to directly use the #LdmDevice anymore.
+         * be removed from the #LdmManager. The device being passed will
+         * be unreffed after this signal is emitted, so do not attempt to
+         * hold any references to it.
          */
         obj_signals[SIGNAL_DEVICE_REMOVED] =
             g_signal_new("device-removed",
@@ -168,7 +169,7 @@ static void ldm_manager_class_init(LdmManagerClass *klazz)
                          NULL,
                          G_TYPE_NONE,
                          1,
-                         G_TYPE_STRING);
+                         LDM_TYPE_DEVICE);
 
         /**
          * LdmManager:flags
@@ -459,7 +460,7 @@ static void ldm_manager_remove_device(LdmManager *self, udev_device *device)
         };
 
         /*  Emit signal for the device removal */
-        g_signal_emit(self, obj_signals[SIGNAL_DEVICE_REMOVED], 0, sysfs_path);
+        g_signal_emit(self, obj_signals[SIGNAL_DEVICE_REMOVED], 0, node);
 
         /* Remove from our known devices */
         g_ptr_array_remove_index(self->devices, index);

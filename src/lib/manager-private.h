@@ -22,7 +22,7 @@ struct _LdmManagerClass {
 
         /* Signals */
         void (*device_added)(LdmManager *self, LdmDevice *device);
-        void (*device_removed)(LdmManager *self, const gchar *id);
+        void (*device_removed)(LdmManager *self, LdmDevice *device);
 };
 
 struct _LdmManager {
