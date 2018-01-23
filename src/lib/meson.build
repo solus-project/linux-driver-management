@@ -150,5 +150,6 @@ pkgconfig.generate(
     libraries: ['-L${libdir}', '-lldm'],
     requires: [
         'glib-2.0 @0@'.format(glib_min_version),
+        'gobject-2.0 @0@'.format(glib_min_version),
     ],
 )
