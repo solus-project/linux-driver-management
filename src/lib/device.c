@@ -508,6 +508,10 @@ post_hwdb:
                 ldm_dmi_device_init_private(self, device);
         }
 
+        if (!self->id.name) {
+                self->id.name = g_strdup_printf("Device %x", self->id.vendor_id);
+        }
+
         return self;
 }
 
