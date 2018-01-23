@@ -137,8 +137,6 @@ endif
 
 # Sort out compatibility stuff
 with_gl_driver_switch_compat = get_option('with-gl-driver-switch-compat')
-with_ldm_monitor = get_option('with-monitor')
-
 with_docs = get_option('with-docs')
 
 # Define our ABI
@@ -190,7 +188,6 @@ report = [
     '    ==============',
     '',
     '    gl-driver-switch-compat:                @0@'.format(with_gl_driver_switch_compat),
-    '    hardware plug monitor:                  @0@'.format(with_ldm_monitor),
     '    tools:                                  @0@'.format(enable_tools),
     '    vala bindings:                          @0@'.format(enable_vapigen),
     '',

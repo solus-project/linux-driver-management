@@ -1,5 +1,4 @@
 option('with-gl-driver-switch-compat', type: 'boolean', value: false, description: 'Enable (Solus specific) gl-driver-switch compatability')
-option('with-monitor', type: 'boolean', value: true, description: 'Enable the hardware plug monitor')
 option('with-modalias-dir', type: 'string', description: 'Where to find the modalias directory')
 option('with-tests', type: 'combo', choices: ['auto', 'yes', 'no'], value: 'auto')
 option('with-docs', type: 'boolean', value: true, description: 'Enable building of documentation')

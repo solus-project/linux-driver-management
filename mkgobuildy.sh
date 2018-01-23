@@ -6,8 +6,6 @@ JOBCOUNT=$(getconf _NPROCESSORS_ONLN)
 
 # Brain-dead default library directory
 LIBDIR="/usr/lib"
-MULTIARCH=0
-HOST64=0
 DISTRO_ID=""
 DISTRO_LIKE=""
 
@@ -29,13 +27,11 @@ detect_os()
     if [[ "$ID_LIKE" == "debian" ]]; then
         # We'll just ask dpkg for the architecture
         LIBDIR="/usr/lib/`dpkg-architecture -qDEB_HOST_MULTIARCH`"
-        MULTIARCH="1"
         echo "Multiarch host"
     else
         # Everyone but Debian follows LSB FHS, so we'll just check if it's a known 64-bit arch and /usr/lib64 is in use...
         if ([[ `uname -m` == "x86_64" ]] || [[ `uname -m` == "aarch64" ]] || [[ `uname -m` =~ "ppc64" ]]) && [[ -e "/usr/lib64" ]]; then
             LIBDIR="/usr/lib64"
-            HOST64=1
         fi
     fi
 }
@@ -47,19 +43,14 @@ configure_meson()
     meson build  --buildtype debugoptimized --prefix=/usr --libdir="${LIBDIR}" --sysconfdir=/etc $*
 }
 
-MESON_OPTIONS="-Dwith-monitor=true -Dwith-tests=yes"
+MESON_OPTIONS="-Dwith-tests=yes"
 
 # Configure with our requirements
 if [[ ! -d build ]]; then
     detect_os
-
-    if [[ "${MULTIARCH}" -eq 0 && "${HOST64}" -eq 1 ]]; then
-        MESON_OPTIONS+=" -Dwith-emul32=true -Dwith-emul32-libdir=/usr/lib32"
-    fi
     if [[ "${DISTRO_ID}" == "solus" ]]; then
         MESON_OPTIONS+=" -Dwith-gl-driver-switch=true -Dwith-autostart-dir=/usr/share/xdg/autostart"
     fi
-    # TODO: Ubuntu family, use jockey dir?
     configure_meson $MESON_OPTIONS
 fi
 
