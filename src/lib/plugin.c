@@ -213,7 +213,7 @@ LdmProvider *ldm_plugin_get_provider(LdmPlugin *self, LdmDevice *device)
         g_assert(self != NULL);
         g_return_val_if_fail(device != NULL, NULL);
         LdmPluginClass *klazz = LDM_PLUGIN_GET_CLASS(self);
-        g_assert(klazz->get_provider != NULL);
+        g_return_val_if_fail(klazz->get_provider != NULL, NULL);
         return klazz->get_provider(self, device);
 }
 
