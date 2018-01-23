@@ -92,7 +92,7 @@ dep_usb = dependency('libusb-1.0', version: '1.0.21')
 
 glib_min_version = '>= 2.54.0'
 dep_glib2 = dependency('glib-2.0', version: glib_min_version)
-dep_gio_unix = dependency('gio-unix-2.0', version: glib_min_version)
+dep_gobject = dependency('gobject-2.0', version: glib_min_version)
 dep_udev = dependency('libudev', version: '>= 215')
 
 with_tests = get_option('with-tests')

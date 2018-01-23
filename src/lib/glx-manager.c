@@ -14,10 +14,11 @@
 #include "config.h"
 
 #include <errno.h>
-#include <gio/gio.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "device.h"
 #include "glx-manager.h"
@@ -142,66 +143,53 @@ LdmGLXManager *ldm_glx_manager_new()
 
 static gboolean ldm_xorg_config_has_driver(const gchar *path, const gchar *driver)
 {
-        g_autoptr(GError) error = NULL;
-        g_autoptr(GFile) file = NULL;
-        g_autoptr(GDataInputStream) dis = NULL;
-        g_autoptr(GFileInputStream) fis = NULL;
-        gsize length = 0;
-        gboolean ret = FALSE;
-        gchar *read = NULL;
+        FILE *fp = NULL;
+        char *bfr = NULL;
+        size_t n = 0;
+        ssize_t read = 0;
         g_autofree gchar *driv_name = NULL;
+        gboolean ret = FALSE;
 
-        file = g_file_new_for_path(path);
-        if (!file) {
+        if (access(path, F_OK) != 0) {
                 return FALSE;
         }
 
-        if (!g_file_query_exists(file, NULL)) {
+        fp = fopen(path, "r");
+        if (!fp) {
                 return FALSE;
-        }
-
-        fis = g_file_read(file, NULL, &error);
-        if (!fis || error) {
-                goto emit_error;
-        }
-
-        dis = g_data_input_stream_new(G_INPUT_STREAM(fis));
-        if (!dis) {
-                goto emit_error;
         }
 
         driv_name = g_strdup_printf("\"%s\"", driver);
 
-        while ((read = g_data_input_stream_read_line(dis, &length, NULL, &error)) != NULL) {
-                char *tmp = g_strstrip(read);
-                if (!g_str_has_prefix(tmp, "Driver")) {
-                        goto next_line;
+        while ((read = getline(&bfr, &n, fp)) > 0) {
+                gchar *work = NULL;
+
+                /* Strip the newline from it */
+                if (bfr[read - 1] == '\n') {
+                        bfr[read - 1] = '\0';
+                        --read;
                 }
 
-                if (!g_str_has_suffix(tmp, driv_name)) {
-                        goto next_line;
+                /* Empty lines are uninteresting. */
+                if (read < 1) {
+                        continue;
                 }
 
-                ret = TRUE;
-
-        next_line:
-                g_free(read);
-                read = NULL;
-
-                if (ret) {
+                work = g_strstrip(bfr);
+                if (g_str_has_prefix(work, "Driver") && g_str_has_suffix(work, driv_name)) {
+                        ret = TRUE;
                         break;
                 }
+
+                free(bfr);
+                bfr = NULL;
         }
 
-        if (read) {
-                g_free(read);
+        if (bfr) {
+                free(bfr);
         }
 
-emit_error:
-        if (error) {
-                g_warning("Failed to parse X11 config %s: %s", path, error->message);
-                return FALSE;
-        }
+        fclose(fp);
 
         return ret;
 }

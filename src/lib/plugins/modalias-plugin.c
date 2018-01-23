@@ -11,7 +11,12 @@
 
 #define _GNU_SOURCE
 
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "modalias-plugin.h"
 #include "util.h"
@@ -120,57 +125,60 @@ LdmPlugin *ldm_modalias_plugin_new(const gchar *name)
 }
 
 /**
- * ldm_modalias_plugin_new_from_file:
- * @file: A valid GFile
+ * ldm_modalias_plugin_new_from_filename:
+ * @filename: Path to a modaliases file
  *
- * Create a new LdmPlugin for modalias detection, which is seeded with all
- * the modalias definitions referenced in the given file.
+ * Create a new LdmPlugin for modalias detection. The named file will be
+ * opened and the resulting plugin will be seeded from that file.
  *
  * Returns: (transfer full): A newly initialised LdmModaliasPlugin
  */
-LdmPlugin *ldm_modalias_plugin_new_from_file(GFile *file)
+LdmPlugin *ldm_modalias_plugin_new_from_filename(const gchar *filename)
 {
-        g_autoptr(GFileInputStream) fis = NULL;
-        g_autoptr(GDataInputStream) dis = NULL;
-        g_autoptr(GError) error = NULL;
-        g_autofree gchar *filename = NULL;
-        gchar *line = NULL;
-        gsize len = 0;
+        FILE *fp = NULL;
+        char *bfr = NULL;
+        size_t n = 0;
+        ssize_t read = 0;
         LdmPlugin *ret = NULL;
+        g_autofree gchar *path = NULL;
 
-        g_return_val_if_fail(file != NULL, NULL);
-
-        if (!g_file_query_exists(file, NULL)) {
+        g_return_val_if_fail(filename != NULL, NULL);
+        if (access(filename, F_OK) != 0) {
                 return NULL;
         }
 
-        filename = g_file_get_basename(file);
-
-        fis = g_file_read(file, NULL, &error);
-        if (!fis) {
-                goto failed;
-        }
-        dis = g_data_input_stream_new(G_INPUT_STREAM(fis));
-        if (!dis) {
-                goto failed;
+        fp = fopen(filename, "r");
+        if (!fp) {
+                fprintf(stderr, "Failed to open %s: %s\n", filename, strerror(errno));
+                return NULL;
         }
 
         /* Strip suffix if set */
-        if (g_str_has_suffix(filename, ".modaliases")) {
-                filename[strlen(filename) - strlen(".modaliases")] = '\0';
+        path = g_path_get_basename(filename);
+        if (g_str_has_suffix(path, ".modaliases")) {
+                path[strlen(path) - strlen(".modaliases")] = '\0';
         }
 
-        ret = ldm_modalias_plugin_new(filename);
+        ret = ldm_modalias_plugin_new(path);
 
-        while ((line = g_data_input_stream_read_line_utf8(dis, &len, NULL, &error)) != NULL) {
-                gchar *work = g_strstrip(line);
+        /* Walk the line. */
+        while ((read = getline(&bfr, &n, fp)) > 0) {
+                gchar *work = NULL;
                 gchar **splits = NULL;
                 g_autoptr(LdmModalias) alias = NULL;
 
-                /* Skip blank lines */
-                if (len < 1) {
-                        goto next_line;
+                /* Strip the newline from it */
+                if (bfr[read - 1] == '\n') {
+                        bfr[read - 1] = '\0';
+                        --read;
                 }
+
+                /* Empty lines are uninteresting. */
+                if (read < 1) {
+                        continue;
+                }
+
+                work = g_strstrip(bfr);
 
                 /* Comment? */
                 if (g_str_has_prefix(work, "#")) {
@@ -200,52 +208,17 @@ LdmPlugin *ldm_modalias_plugin_new_from_file(GFile *file)
                 if (splits) {
                         g_strfreev(splits);
                 }
-                g_free(line);
-                line = NULL;
+                free(bfr);
+                bfr = NULL;
         }
 
-        if (line) {
-                g_free(line);
+        if (bfr) {
+                free(bfr);
         }
 
-        if (error) {
-                goto failed;
-        }
+        fclose(fp);
 
         return ret;
-
-failed:
-        if (error) {
-                g_printerr("ldm_modalias_plugin_new_from_file(): %s", error->message);
-        }
-
-        if (ret) {
-                g_object_unref(ret);
-                ret = NULL;
-        }
-
-        return NULL;
-}
-
-/**
- * ldm_modalias_plugin_new_from_filename:
- * @filename: Path to a modaliases file
- *
- * Create a new LdmPlugin for modalias detection. The named file will be
- * opened and the resulting plugin will be seeded from that file.
- *
- * Returns: (transfer full): A newly initialised LdmModaliasPlugin
- */
-LdmPlugin *ldm_modalias_plugin_new_from_filename(const gchar *filename)
-{
-        g_autoptr(GFile) file = NULL;
-
-        file = g_file_new_for_path(filename);
-        if (!file) {
-                return NULL;
-        }
-
-        return ldm_modalias_plugin_new_from_file(file);
 }
 
 /**

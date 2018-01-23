@@ -70,8 +70,8 @@ libldm_includes = [
 libldm_dependencies = [
     link_libenum,
     dep_glib2,
+    dep_gobject,
     dep_usb,
-    dep_gio_unix,
     dep_udev,
 ]
 
@@ -93,7 +93,7 @@ link_libldm = declare_dependency(
     dependencies: [
         link_libenum,
         dep_glib2,
-        dep_gio_unix,
+        dep_gobject,
     ],
     include_directories: libldm_includes,
 )
@@ -118,7 +118,6 @@ libldm_gir = gnome.generate_gir(
     dependencies: libldm_dependencies,
     includes: [
         'GObject-2.0',
-        'Gio-2.0',
     ],
     symbol_prefix: 'ldm',
     identifier_prefix: 'Ldm',
@@ -135,7 +134,6 @@ if enable_vapigen
         sources: [libldm_gir[0]],
         packages: [
             'glib-2.0',
-            'gio-unix-2.0',
         ],
         metadata_dirs: meson.current_source_dir(),
         install: true,
@@ -152,6 +150,5 @@ pkgconfig.generate(
     libraries: ['-L${libdir}', '-lldm'],
     requires: [
         'glib-2.0 @0@'.format(glib_min_version),
-        'gio-unix-2.0 @0@'.format(glib_min_version),
     ],
 )

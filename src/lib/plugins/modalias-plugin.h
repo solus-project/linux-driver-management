@@ -11,7 +11,6 @@
 
 #pragma once
 
-#include <gio/gio.h>
 #include <glib-object.h>
 
 #include <modalias.h>
@@ -37,7 +36,6 @@ GType ldm_modalias_plugin_get_type(void);
 /* API */
 
 LdmPlugin *ldm_modalias_plugin_new(const gchar *name);
-LdmPlugin *ldm_modalias_plugin_new_from_file(GFile *file);
 LdmPlugin *ldm_modalias_plugin_new_from_filename(const gchar *filename);
 
 void ldm_modalias_plugin_add_modalias(LdmModaliasPlugin *driver, LdmModalias *modalias);
