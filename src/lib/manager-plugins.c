@@ -34,13 +34,19 @@ void ldm_manager_add_plugin(LdmManager *self, LdmPlugin *plugin)
         g_return_if_fail(self != NULL);
         g_return_if_fail(plugin != NULL);
 
+        /* If a plugin id is unspecified, make it the class name */
         plugin_id = ldm_plugin_get_name(plugin);
+        if (!plugin_id) {
+                plugin_id = G_OBJECT_CLASS_NAME(LDM_PLUGIN_GET_CLASS(plugin));
+        }
+
         if (g_hash_table_contains(self->plugins, plugin_id)) {
                 g_debug("replacing plugin '%s'", plugin_id);
         } else {
                 g_debug("new plugin: %s", plugin_id);
         }
 
+        /* Handle pythonic apis with non floating references */
         g_hash_table_replace(self->plugins, g_strdup(plugin_id), g_object_ref_sink(plugin));
 }
 
@@ -153,7 +159,8 @@ GPtrArray *ldm_manager_get_providers(LdmManager *self, LdmDevice *device)
                 if (!provider) {
                         continue;
                 }
-                g_ptr_array_add(ret, provider);
+
+                g_ptr_array_add(ret, g_object_ref_sink(provider));
         }
 
         g_ptr_array_sort(ret, ldm_manager_sort_by_priority);

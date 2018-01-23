@@ -25,11 +25,11 @@
  */
 
 struct _LdmProviderClass {
-        GObjectClass parent_class;
+        GInitiallyUnownedClass parent_class;
 };
 
 struct _LdmProvider {
-        GObject parent;
+        GInitiallyUnowned parent;
 
         LdmDevice *device;
         LdmPlugin *plugin;
@@ -41,7 +41,7 @@ static void ldm_provider_set_property(GObject *object, guint id, const GValue *v
                                       GParamSpec *spec);
 static void ldm_provider_get_property(GObject *object, guint id, GValue *value, GParamSpec *spec);
 
-G_DEFINE_TYPE(LdmProvider, ldm_provider, G_TYPE_OBJECT)
+G_DEFINE_TYPE(LdmProvider, ldm_provider, G_TYPE_INITIALLY_UNOWNED)
 
 /* Property IDs */
 enum { PROP_DEVICE = 1, PROP_PLUGIN, PROP_PACKAGE, PROP_INSTALLED, N_PROPS };

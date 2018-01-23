@@ -165,7 +165,7 @@ LdmPlugin *ldm_modalias_plugin_new_from_filename(const gchar *filename)
         while ((read = getline(&bfr, &n, fp)) > 0) {
                 gchar *work = NULL;
                 gchar **splits = NULL;
-                g_autoptr(LdmModalias) alias = NULL;
+                LdmModalias *alias = NULL;
 
                 /* Strip the newline from it */
                 if (bfr[read - 1] == '\n') {

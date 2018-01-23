@@ -17,7 +17,7 @@
 #include "util.h"
 
 struct _LdmModaliasClass {
-        GObjectClass parent_class;
+        GInitiallyUnownedClass parent_class;
 };
 
 /**
@@ -58,7 +58,7 @@ struct _LdmModaliasClass {
  * activated. This helps immensely in detecting support for drivers.
  */
 struct _LdmModalias {
-        GObject parent;
+        GInitiallyUnowned parent;
 
         /* What do we match? */
         gchar *match;
@@ -70,7 +70,7 @@ struct _LdmModalias {
         gchar *package;
 };
 
-G_DEFINE_TYPE(LdmModalias, ldm_modalias, G_TYPE_OBJECT)
+G_DEFINE_TYPE(LdmModalias, ldm_modalias, G_TYPE_INITIALLY_UNOWNED)
 
 enum { PROP_MATCH = 1, PROP_DRIVER, PROP_PACKAGE, N_PROPS };
 
