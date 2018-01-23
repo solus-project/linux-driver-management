@@ -277,7 +277,7 @@ static void ldm_manager_init_udev_static(LdmManager *self)
         ue = udev_enumerate_new(self->udev);
         g_assert(ue != NULL);
 
-        if ((self->flags & LDM_MANAGER_FLAGS_NO_MONITOR) == LDM_MANAGER_FLAGS_NO_MONITOR) {
+        if ((self->flags & LDM_MANAGER_FLAGS_GPU_QUICK) == LDM_MANAGER_FLAGS_GPU_QUICK) {
                 for (size_t i = 0; i < G_N_ELEMENTS(subsystems_minimal); i++) {
                         const char *sub = subsystems_minimal[i];
                         if (udev_enumerate_add_match_subsystem(ue, sub) != 0) {
