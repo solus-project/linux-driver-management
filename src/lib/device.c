@@ -509,7 +509,7 @@ post_hwdb:
         }
 
         if (!self->id.name) {
-                self->id.name = g_strdup_printf("Device %x", self->id.vendor_id);
+                self->id.name = g_strdup_printf("Device %x", self->id.product_id);
         }
 
         return self;
