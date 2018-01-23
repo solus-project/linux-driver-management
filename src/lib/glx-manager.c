@@ -34,31 +34,28 @@ struct _LdmGLXManagerClass {
  * @see_also: #LdmGPUConfig
  * @Title: LdmGLXManager
  *
- * An LdmGLXManager is used to provide control over the GL(X) system implementation.
- * Whilst most of what is controlled applies to "pure" GL implementations, the real
- * requirement is in dealing with explicit GLX implementations such as the NVIDIA
- * proprietary libGL.
+ * An LdmGLXManager is used to manage the X11 configuration for the OpenGL providers,
+ * i.e. GLX implementations such as the NVIDIA proprietary driver. It is assumed that
+ * the host system is using automatically managed drivers for the most part, i.e. glvnd
+ * style, and not "alternatives" style.
  *
- * To make these "work", usually requires a very explicit X11 configuration as well
- * as the control of library availability. On non GLVND systems, the libGL files
- * from mesa (technically a GLX implementation in this instance) will conflict
- * on the filesystem with the ones from the proprietary driver.
+ * The older versions of LDM would manually manage the GL links, but this has been dropped
+ * in favour of static packaging and GLVND. While GLVND isn't a strict requirement, it is
+ * recommended.
  *
- * In the "new world" of GLVND these paths no longer conflict, however this does
- * not alter the fact that an X11 configuration needs writing explicitly for these
- * cases. Additionally the X11 `libglx.so` extension from X.Org is typically replaced
- * by the proprietary driver's own libglx.so implementation. This is usually handled
- * by either a filesystem mangling, or by using a patched X.Org server which understands
- * special directives to point to the real libglx.so.
+ * LdmGLXManager will remove existing X11 configurations if they reference a driver that
+ * isn't considered valid, such as `/etc/X11/xorg.conf`, and manage a single snippet within
+ * `/etc/X11/xorg.conf.d/00-ldm.conf`. This snippet will contain the bare minimum to "enable"
+ * the drivers.
  *
- * In short we have two worlds:
+ * Additionally a hybrid control file is written in the presence of enabled NVIDIA Proprietary
+ * drivers for Optimus systems. This control file is used by `ldm-session-init(1)` to provide
+ * xrandr bootstrap during the early initialisation of an X11 desktop session.
  *
- * - "Alternatives" links: Filesystem butchery is performed and `ld.so.conf` may also be used.
- * - GLVND: No filesystem butchery, and requiring patched X.Org for Extensions directory support.
- *
- * The LdmGLXManager requires privileges to be used, and will perform configurations as
- * the system dictates. This is only really intended for use by `linux-driver-management configure
- * gpu`
+ * This manager does not, and will not, control the specifics for Wayland. It is assumed that
+ * Wayland compositors will set up offscreen surfaces with libGL_nvidia via glvnd and then
+ * render the final result to the Intel device GL context (libGL_mesa). For non Optimus systems
+ * they would simply use the primary GPU and GL implementation.
  */
 
 /*
