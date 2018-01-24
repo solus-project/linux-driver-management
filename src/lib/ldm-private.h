@@ -28,10 +28,6 @@ typedef struct udev_monitor udev_monitor;
 
 struct _LdmDeviceClass {
         GInitiallyUnownedClass parent_class;
-
-        /* Signals */
-        void (*child_added)(LdmDevice *self, LdmDevice *child);
-        void (*child_removed)(LdmDevice *self, const gchar *id);
 };
 
 /*

@@ -68,11 +68,6 @@ static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
 };
 
-/* Signal IDs */
-enum { SIGNAL_CHILD_ADDED = 0, SIGNAL_CHILD_REMOVED, N_SIGNALS };
-
-static guint obj_signals[N_SIGNALS] = { 0 };
-
 /**
  * ldm_device_dispose:
  *
@@ -105,47 +100,6 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
         obj_class->dispose = ldm_device_dispose;
         obj_class->get_property = ldm_device_get_property;
         obj_class->set_property = ldm_device_set_property;
-
-        /**
-         * LdmDevice::child-added:
-         * @device: The device owning the new child
-         * @child: The newly available child
-         *
-         * Notify interested parties that a new child device was added.
-         * This signal is used internally and would rarely need to be used
-         * outside of the primary APIs.
-         */
-        obj_signals[SIGNAL_CHILD_ADDED] = g_signal_new("child-added",
-                                                       LDM_TYPE_DEVICE,
-                                                       G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-                                                       G_STRUCT_OFFSET(LdmDeviceClass, child_added),
-                                                       NULL,
-                                                       NULL,
-                                                       NULL,
-                                                       G_TYPE_NONE,
-                                                       1,
-                                                       LDM_TYPE_DEVICE);
-
-        /**
-         * LdmDevice::child-removed:
-         * @device: The device that owned the child
-         * @id: The child ID being removed.
-         *
-         * Notify interested parties that a child was removed.
-         * This signal is used internally and would rarely need to be used
-         * outside of the primary APIs.
-         */
-        obj_signals[SIGNAL_CHILD_REMOVED] =
-            g_signal_new("child-removed",
-                         LDM_TYPE_DEVICE,
-                         G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
-                         G_STRUCT_OFFSET(LdmDeviceClass, child_removed),
-                         NULL,
-                         NULL,
-                         NULL,
-                         G_TYPE_NONE,
-                         1,
-                         G_TYPE_STRING);
 
         /**
          * LdmDevice:parent: (type LdmDevice) (transfer none)
@@ -549,12 +503,26 @@ LdmDeviceType ldm_device_get_device_type(LdmDevice *self)
  */
 gboolean ldm_device_has_type(LdmDevice *self, LdmDeviceType mask)
 {
+        GHashTableIter iter = { 0 };
+        __ldm_unused__ void *key = NULL;
+        LdmDevice *value = NULL;
+
         g_return_val_if_fail(self != NULL, FALSE);
 
+        /* Do we match? */
         if ((self->os.devtype & mask) == mask) {
                 return TRUE;
         }
 
+        /* Walk children */
+        g_hash_table_iter_init(&iter, self->tree.kids);
+        while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&value)) {
+                if (ldm_device_has_type(value, mask)) {
+                        return TRUE;
+                }
+        }
+
+        /* No match */
         return FALSE;
 }
 
@@ -586,12 +554,26 @@ LdmDeviceAttribute ldm_device_get_attributes(LdmDevice *self)
  */
 gboolean ldm_device_has_attribute(LdmDevice *self, LdmDeviceAttribute mask)
 {
+        GHashTableIter iter = { 0 };
+        __ldm_unused__ void *key = NULL;
+        LdmDevice *value = NULL;
+
         g_return_val_if_fail(self != NULL, FALSE);
 
+        /* Do we match? */
         if ((self->os.attributes & mask) == mask) {
                 return TRUE;
         }
 
+        /* Walk children */
+        g_hash_table_iter_init(&iter, self->tree.kids);
+        while (g_hash_table_iter_next(&iter, (void **)&key, (void **)&value)) {
+                if (ldm_device_has_type(value, mask)) {
+                        return TRUE;
+                }
+        }
+
+        /* No match */
         return FALSE;
 }
 
@@ -641,7 +623,6 @@ void ldm_device_add_child(LdmDevice *self, LdmDevice *child)
         if (!g_hash_table_replace(self->tree.kids, g_strdup(id), g_object_ref_sink(child))) {
                 return;
         }
-        g_signal_emit(self, obj_signals[SIGNAL_CHILD_ADDED], 0, child);
 }
 
 /**
@@ -673,7 +654,6 @@ void ldm_device_remove_child_by_path(LdmDevice *self, const gchar *path)
         if (!g_hash_table_remove(self->tree.kids, path)) {
                 return;
         }
-        g_signal_emit(self, obj_signals[SIGNAL_CHILD_REMOVED], 0, path);
 }
 
 /**
