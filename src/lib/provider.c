@@ -44,7 +44,7 @@ static void ldm_provider_get_property(GObject *object, guint id, GValue *value, 
 G_DEFINE_TYPE(LdmProvider, ldm_provider, G_TYPE_INITIALLY_UNOWNED)
 
 /* Property IDs */
-enum { PROP_DEVICE = 1, PROP_PLUGIN, PROP_PACKAGE, PROP_INSTALLED, N_PROPS };
+enum { PROP_DEVICE = 1, PROP_PLUGIN, PROP_PACKAGE, N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
         NULL,
@@ -114,17 +114,6 @@ static void ldm_provider_class_init(LdmProviderClass *klazz)
                                 NULL,
                                 G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
-        /**
-         * LdmProvider:installed
-         *
-         * Whether or not the provider is installed
-         */
-        obj_properties[PROP_INSTALLED] = g_param_spec_boolean("installed",
-                                                              "Installed",
-                                                              "Installation status",
-                                                              FALSE,
-                                                              G_PARAM_READWRITE);
-
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -143,9 +132,6 @@ static void ldm_provider_set_property(GObject *object, guint id, const GValue *v
         case PROP_PACKAGE:
                 g_clear_pointer(&self->package, g_free);
                 self->package = g_value_dup_string(value);
-                break;
-        case PROP_INSTALLED:
-                self->installed = g_value_get_boolean(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -166,9 +152,6 @@ static void ldm_provider_get_property(GObject *object, guint id, GValue *value, 
                 break;
         case PROP_PACKAGE:
                 g_value_set_string(value, self->package);
-                break;
-        case PROP_INSTALLED:
-                g_value_set_boolean(value, self->installed);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -248,32 +231,6 @@ const gchar *ldm_provider_get_package(LdmProvider *self)
 {
         g_return_val_if_fail(self != NULL, NULL);
         return (const gchar *)self->package;
-}
-
-/**
- * ldm_provider_get_installed:
- *
- * Determine if the provider is known to be installed
- *
- * Returns: TRUE if the provider is already installed.
- */
-gboolean ldm_provider_get_installed(LdmProvider *self)
-{
-        g_return_val_if_fail(self != NULL, FALSE);
-        return self->installed;
-}
-
-/**
- * ldm_provider_set_installed:
- * @installed: TRUE if this provider is considered installed.
- *
- * Mark this provider as installed
- */
-void ldm_provider_set_installed(LdmProvider *self, gboolean installed)
-{
-        g_return_if_fail(self != NULL);
-        /* Allow property bindings to work */
-        g_object_set(self, "installed", installed, NULL);
 }
 
 /*
