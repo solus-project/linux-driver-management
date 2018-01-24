@@ -22,6 +22,17 @@ Effectively LDM provides a core library and some tooling around it. The library 
  - GL/X11 configuration for proprietary drivers/Optimus ("always on" support)
  - Abstraction of system GPU configuration to determine iGPU vs dGPU, hybrid/optimus identification, simple classification, etc.
 
+## TODO
+
+Currently LDM library does the minimum work needed to enumerate devices and access very basic properties, whilst providing fairly complex matching systems. However, there are some things left to do in future:
+
+ - Expose udev/system properties of devices
+ - Add APIs to deal with each individual device child type
+ - Further expose `LdmWifiDevice`, etc.
+
+In short the enumeration functions currently focus on detecting capabilities, and for the first release advanced introspection has been omitted.
+
+
 ## Library
 
 The core library provides a GObject API to query and discover devices. The `LdmManager` type is the main library entry point and supports library-level plugins to extend the detection capabilities. 
