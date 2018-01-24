@@ -31,7 +31,7 @@ public class MyLister : Gtk.Window
         scroll.add(listing);
 
         // Whack all devices in as simple labels (ugly)
-        foreach (var device in manager.get_devices()) {
+        manager.get_devices().foreach((device)=> {
             var label = new Gtk.Label(@"$(device.vendor) - $(device.name)");
             listing.add(label);
             label.margin = 10;
@@ -40,7 +40,7 @@ public class MyLister : Gtk.Window
             if (device.has_type(Ldm.DeviceType.GPU)) {
                 message("Found a GPU: %s", device.name);
             }
-        }
+        });
 
         destroy.connect(Gtk.main_quit);
         show_all();

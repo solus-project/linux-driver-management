@@ -21,18 +21,15 @@ static void print_device(LdmDevice *device)
 int main(int argc, char **argv)
 {
         g_autoptr(LdmManager) manager = NULL;
-        g_autoptr(GList) devices = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
 
         /* Construct with 0 for hotplug support */
         manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR);
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_ANY);
 
-        for (GList *elem = devices; elem; elem = elem->next) {
-                print_device(elem->data);
+        for (guint i = 0; i < devices->len; i++) {
+                print_device(devices->pdata[i]);
         }
-
-        g_object_unref(manager);
-        manager = NULL;
 
         return EXIT_SUCCESS;
 }
