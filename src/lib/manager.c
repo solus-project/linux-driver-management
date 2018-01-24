@@ -678,7 +678,7 @@ LdmManager *ldm_manager_new(LdmManagerFlags flags)
  * advisable to not rely on the device list staying valid for any duration
  * of time, and instead use it for basic probing, not persistence.
  *
- * Returns: (element-type Ldm.Device) (transfer full): a list of all currently known devices
+ * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices
  */
 GPtrArray *ldm_manager_get_devices(LdmManager *self, LdmDeviceType class_mask)
 {
