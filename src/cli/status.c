@@ -213,10 +213,9 @@ int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
                 return EXIT_FAILURE;
         }
 
-        /* Add system modalias plugins */
-        if (!ldm_manager_add_modalias_plugins_for_directory(manager, MODALIAS_DIR)) {
-                fprintf(stderr, "Failed to add modalias plugins for %s\n", MODALIAS_DIR);
-                return EXIT_FAILURE;
+        /* Add system modalias plugins - not fatal really. */
+        if (!ldm_manager_add_system_modalias_plugins(manager)) {
+                fprintf(stderr, "Failed to find any system modalias plugins\n");
         }
 
         gpu_config = ldm_gpu_config_new(manager);
