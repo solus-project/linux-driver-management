@@ -2,7 +2,7 @@
 set -e
 
 # Script for ikey because he went with meson. *shrug*
-VERSION="0.1.0"
+VERSION="1.0.0"
 NAME="linux-driver-management"
 git-archive-all.sh --format tar --prefix ${NAME}-${VERSION}/ --verbose -t HEAD ${NAME}-${VERSION}.tar
 xz -9 "${NAME}-${VERSION}.tar"
