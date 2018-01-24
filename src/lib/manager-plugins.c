@@ -13,6 +13,7 @@
 
 #include <glob.h>
 
+#include "config.h"
 #include "manager-private.h"
 #include "plugin.h"
 
@@ -122,6 +123,21 @@ gboolean ldm_manager_add_modalias_plugins_for_directory(LdmManager *self, const 
 cleanup:
         globfree(&glo);
         return ret;
+}
+
+/**
+ * ldm_manager_add_system_modalias_plugins:
+ *
+ * Attempt to add all modalias plugins directory from the modalias directory
+ * set when the library was compiled.
+ *
+ * This is a convenience wrapper around #ldm_manager_add_modalias_plugins_for_directory.
+ *
+ * Returns: TRUE if any modalias plugins were added.
+ */
+gboolean ldm_manager_add_system_modalias_plugins(LdmManager *self)
+{
+        return ldm_manager_add_modalias_plugins_for_directory(self, MODALIAS_DIR);
 }
 
 static gint ldm_manager_sort_by_priority(gconstpointer a, gconstpointer b)
