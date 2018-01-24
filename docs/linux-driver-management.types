@@ -1,3 +1,4 @@
+ldm_bluetooth_device_get_type
 ldm_device_attribute_get_type
 ldm_device_get_type
 ldm_device_type_get_type

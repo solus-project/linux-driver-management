@@ -1,5 +1,6 @@
 LIBLDM_0 {
   global:
+    ldm_bluetooth_device_get_type;
     ldm_device_attribute_get_type;
     ldm_device_get_attributes;
     ldm_device_get_children;

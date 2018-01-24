@@ -266,7 +266,7 @@ static void ldm_manager_init_udev_static(LdmManager *self)
         autofree(udev_enum) *ue = NULL;
         udev_list *list = NULL, *entry = NULL;
         static const char *subsystems[] = {
-                "dmi", "usb", "pci", "hid", /*< As child of USB typically */
+                "dmi", "usb", "pci", "bluetooth", "hid", /*< As child of USB typically */
         };
         /* For LDM_MANAGER_FLAGS_GPU_QUICK */
         static const char *subsystems_minimal[] = {
@@ -315,6 +315,11 @@ static void ldm_manager_init_udev_static(LdmManager *self)
 static void ldm_manager_init_udev_monitor(LdmManager *self)
 {
         int fd = 0;
+        static const char *subsystem_filters[] = {
+                "usb",
+                "hid",
+                "bluetooth",
+        };
 
         self->monitor.udev = udev_monitor_new_from_netlink(self->udev, "udev");
         if (!self->monitor.udev) {
@@ -322,18 +327,17 @@ static void ldm_manager_init_udev_monitor(LdmManager *self)
                 return;
         }
 
-        /* We want hotplugs for the USB system */
-        if (udev_monitor_filter_add_match_subsystem_devtype(self->monitor.udev, "usb", NULL) != 0) {
-                g_warning("Unable to install USB filter");
-                g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
-                return;
-        }
+        /* Install hotplug filters */
+        for (guint i = 0; i < G_N_ELEMENTS(subsystem_filters); i++) {
+                const char *subsystem = subsystem_filters[i];
 
-        /* We want HID devices, when USB */
-        if (udev_monitor_filter_add_match_subsystem_devtype(self->monitor.udev, "hid", NULL) != 0) {
-                g_warning("Unable to install HID filter");
-                g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
-                return;
+                if (udev_monitor_filter_add_match_subsystem_devtype(self->monitor.udev,
+                                                                    subsystem,
+                                                                    NULL) != 0) {
+                        g_warning("Unable to install %s filter", subsystem);
+                        g_clear_pointer(&self->monitor.udev, udev_monitor_unref);
+                        return;
+                }
         }
 
         if (udev_monitor_enable_receiving(self->monitor.udev) != 0) {
@@ -512,11 +516,11 @@ static LdmDevice *ldm_manager_get_usb_parent(LdmManager *self, udev_device *devi
 }
 
 /**
- * ldm_manager_get_hid_parent:
+ * ldm_manager_get_interface_parent:
  *
- * Return the parent device node for a HID subsystem device.
+ * Return the parent device node for a subsystem device on the USB interface
  */
-static LdmDevice *ldm_manager_get_hid_parent(LdmManager *self, udev_device *device)
+static LdmDevice *ldm_manager_get_interface_parent(LdmManager *self, udev_device *device)
 {
         udev_device *udev_parent = NULL;
         LdmDevice *parent_usb_device = NULL;
@@ -554,8 +558,8 @@ static LdmDevice *ldm_manager_get_hid_parent(LdmManager *self, udev_device *devi
 static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
                                                 udev_device *device)
 {
-        if (g_str_equal(subsystem, "hid")) {
-                return ldm_manager_get_hid_parent(self, device);
+        if (g_str_equal(subsystem, "hid") || g_str_equal(subsystem, "bluetooth")) {
+                return ldm_manager_get_interface_parent(self, device);
         } else if (g_str_equal(subsystem, "usb")) {
                 return ldm_manager_get_usb_parent(self, device);
         }

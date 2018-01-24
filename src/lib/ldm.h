@@ -20,6 +20,7 @@
 #include <provider.h>
 
 /* Specialised devices */
+#include <bluetooth-device.h>
 #include <dmi-device.h>
 #include <pci-device.h>
 #include <usb-device.h>

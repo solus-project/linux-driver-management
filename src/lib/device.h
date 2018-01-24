@@ -37,6 +37,7 @@ typedef enum {
  * LdmDeviceType:
  * @LDM_DEVICE_TYPE_ANY: Device type is either unknown or unhandled
  * @LDM_DEVICE_TYPE_AUDIO: Audio device
+ * @LDM_DEVICE_TYPE_BLUETOOTH: Bluetooth communication device
  * @LDM_DEVICE_TYPE_BOOT_VGA: Special attribute marking the GPU used to boot the system
  * @LDM_DEVICE_TYPE_GPU: A graphics device (onboard, NVIDIA, etc.)
  * @LDM_DEVICE_TYPE_HID: Human interface device (mouse, keyboard, etc.)
@@ -59,23 +60,25 @@ typedef enum {
 typedef enum {
         LDM_DEVICE_TYPE_ANY = 0,
         LDM_DEVICE_TYPE_AUDIO = 1 << 0,
-        LDM_DEVICE_TYPE_GPU = 1 << 1,
-        LDM_DEVICE_TYPE_HID = 1 << 2,
-        LDM_DEVICE_TYPE_IMAGE = 1 << 3,
-        LDM_DEVICE_TYPE_PCI = 1 << 4,
-        LDM_DEVICE_TYPE_PLATFORM = 1 << 5,
-        LDM_DEVICE_TYPE_PRINTER = 1 << 6,
-        LDM_DEVICE_TYPE_STORAGE = 1 << 7,
-        LDM_DEVICE_TYPE_VIDEO = 1 << 8,
-        LDM_DEVICE_TYPE_WIRELESS = 1 << 9,
-        LDM_DEVICE_TYPE_USB = 1 << 10,
-        LDM_DEVICE_TYPE_MAX = 1 << 11,
+        LDM_DEVICE_TYPE_BLUETOOTH = 1 << 1,
+        LDM_DEVICE_TYPE_GPU = 1 << 2,
+        LDM_DEVICE_TYPE_HID = 1 << 3,
+        LDM_DEVICE_TYPE_IMAGE = 1 << 4,
+        LDM_DEVICE_TYPE_PCI = 1 << 5,
+        LDM_DEVICE_TYPE_PLATFORM = 1 << 6,
+        LDM_DEVICE_TYPE_PRINTER = 1 << 7,
+        LDM_DEVICE_TYPE_STORAGE = 1 << 8,
+        LDM_DEVICE_TYPE_VIDEO = 1 << 9,
+        LDM_DEVICE_TYPE_WIRELESS = 1 << 10,
+        LDM_DEVICE_TYPE_USB = 1 << 11,
+        LDM_DEVICE_TYPE_MAX = 1 << 12,
 } LdmDeviceType;
 
 /**
  * LdmDeviceAttribute
  * @LDM_DEVICE_ATTRIBUTE_ANY: No explicitly set attributes
  * @LDM_DEVICE_ATTRIBUTE_BOOT_VGA: This device is the GPU used to boot the system
+ * @LDM_DEVICE_ATTRIBUTE_HOST: Enable differentiation between host and non host controllers
  * @LDM_DEVICE_ATTRIBUTE_INTERFACE: Pseudo-device (USB interface, etc.)
  *
  * A device have one or more special attributes that need to be queried beyond
@@ -84,8 +87,9 @@ typedef enum {
 typedef enum {
         LDM_DEVICE_ATTRIBUTE_ANY = 0,
         LDM_DEVICE_ATTRIBUTE_BOOT_VGA = 1 << 0,
-        LDM_DEVICE_ATTRIBUTE_INTERFACE = 1 << 1,
-        LDM_DEVICE_ATTRIBUTE_MAX = 1 << 2,
+        LDM_DEVICE_ATTRIBUTE_HOST = 1 << 1,
+        LDM_DEVICE_ATTRIBUTE_INTERFACE = 1 << 2,
+        LDM_DEVICE_ATTRIBUTE_MAX = 1 << 3,
 } LdmDeviceAttribute;
 
 #define LDM_TYPE_DEVICE ldm_device_get_type()

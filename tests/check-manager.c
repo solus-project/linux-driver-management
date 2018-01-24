@@ -24,6 +24,7 @@ DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 
 #define NV_MOCKDEV_FILE TEST_DATA_ROOT "/nvidia1060.umockdev"
 #define OPTIMUS_MOCKDEV_FILE TEST_DATA_ROOT "/optimus765m.umockdev"
+#define BLUETOOTH_UMOCKDEV_FILE TEST_DATA_ROOT "/bluetoothUSB.umockdev"
 
 START_TEST(test_manager_simple)
 {
@@ -129,6 +130,34 @@ START_TEST(test_manager_optimus)
 END_TEST
 
 /**
+ * Find a bluetooth controller connected via USB (can be internal)
+ */
+START_TEST(test_manager_bluetooth_usb)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
+        LdmDevice *device = NULL;
+
+        bed = umockdev_testbed_new();
+        fail_if(!umockdev_testbed_add_from_file(bed, BLUETOOTH_UMOCKDEV_FILE, NULL),
+                "Failed to create Bluetooth device");
+        manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR);
+        fail_if(!manager, "Failed to get the LdmManager");
+
+        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_BLUETOOTH);
+        fail_if(!devices, "Failed to obtain devices");
+        fail_if(devices->len != 1, "Invalid device set");
+
+        device = devices->pdata[0];
+        fail_if(!ldm_device_has_type(device, LDM_DEVICE_TYPE_USB),
+                "Device should be identified as USB!");
+        fail_if(!ldm_device_has_attribute(device, LDM_DEVICE_ATTRIBUTE_HOST),
+                "Bluetooth device not marked as a host controller");
+}
+END_TEST
+
+/**
  * Standard helper for running a test suite
  */
 static int ldm_test_run(Suite *suite)
@@ -155,6 +184,7 @@ static Suite *test_create(void)
 
         tcase_add_test(tc, test_manager_simple);
         tcase_add_test(tc, test_manager_optimus);
+        tcase_add_test(tc, test_manager_bluetooth_usb);
 
         return s;
 }

@@ -80,6 +80,7 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
 void ldm_dmi_device_init_private(LdmDevice *self, udev_device *device);
 void ldm_pci_device_init_private(LdmDevice *self, udev_device *device);
 void ldm_usb_device_init_private(LdmDevice *self, udev_device *device);
+void ldm_bluetooth_device_init_private(LdmDevice *self, udev_device *device);
 
 /* private child APIs */
 void ldm_device_add_child(LdmDevice *device, LdmDevice *child);

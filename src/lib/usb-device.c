@@ -87,6 +87,7 @@ struct _LdmUSBDeviceClass {
 struct _LdmUSBDevice {
         LdmDevice parent;
         guint original_class;
+        guint original_attributes;
 };
 
 G_DEFINE_TYPE(LdmUSBDevice, ldm_usb_device, LDM_TYPE_DEVICE)
@@ -127,6 +128,7 @@ static void ldm_usb_device_rebuild_info(LdmDevice *self)
         LdmDevice *child = NULL;
 
         self->os.devtype = usb->original_class;
+        self->os.attributes = usb->original_attributes;
 
         /* Apply all child attributes to our main type. */
         g_hash_table_iter_init(&iter, self->tree.kids);
@@ -135,6 +137,7 @@ static void ldm_usb_device_rebuild_info(LdmDevice *self)
                         continue;
                 }
                 self->os.devtype |= child->os.devtype;
+                self->os.attributes |= child->os.attributes;
         }
 
         /* We're USB, our parent is USB, and we got a child. Tell parent to update from us */

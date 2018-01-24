@@ -17,6 +17,7 @@
 #include "util.h"
 
 /* Supported device types */
+#include "bluetooth-device.h"
 #include "dmi-device.h"
 #include "hid-device.h"
 #include "pci-device.h"
@@ -448,6 +449,8 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
                 special_type = LDM_TYPE_DMI_DEVICE;
         } else if (g_str_equal(subsystem, "hid")) {
                 special_type = LDM_TYPE_HID_DEVICE;
+        } else if (g_str_equal(subsystem, "bluetooth")) {
+                special_type = LDM_TYPE_BLUETOOTH_DEVICE;
         } else {
                 special_type = LDM_TYPE_DEVICE;
         }
@@ -506,6 +509,8 @@ post_hwdb:
                 ldm_usb_device_init_private(self, device);
         } else if (special_type == LDM_TYPE_DMI_DEVICE) {
                 ldm_dmi_device_init_private(self, device);
+        } else if (special_type == LDM_TYPE_BLUETOOTH_DEVICE) {
+                ldm_bluetooth_device_init_private(self, device);
         }
 
         if (!self->id.name) {

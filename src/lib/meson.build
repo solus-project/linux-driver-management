@@ -28,6 +28,7 @@ link_libenum = declare_dependency(
 )
 
 libldm_sources = [
+    'bluetooth-device.c',
     'device.c',
     'dmi-device.c',
     'plugin.c',
@@ -44,6 +45,7 @@ libldm_sources = [
 ]
 
 libldm_headers = [
+    'bluetooth-device.h',
     'device.h',
     'dmi-device.h',
     'hid-device.h',
