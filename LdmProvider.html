@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>LdmProvider</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="linux-driver-management Reference Manual">
+<link rel="up" href="linux-driver-management.html" title="Linux Driver Management">
+<link rel="prev" href="LdmModalias.html" title="LdmModalias">
+<link rel="next" href="LdmGLXManager.html" title="LdmGLXManager">
+<meta name="generator" content="GTK-Doc V1.26 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#LdmProvider.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#LdmProvider.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#LdmProvider.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="linux-driver-management.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="LdmModalias.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="LdmGLXManager.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="LdmProvider"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="LdmProvider.top_of_page"></a>LdmProvider</span></h2>
+<p>LdmProvider — Hardware enabling information</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="LdmProvider.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmProvider.html" title="LdmProvider"><span class="returnvalue">LdmProvider</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmProvider.html#ldm-provider-new" title="ldm_provider_new ()">ldm_provider_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmDevice.html" title="LdmDevice"><span class="returnvalue">LdmDevice</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmProvider.html#ldm-provider-get-device" title="ldm_provider_get_device ()">ldm_provider_get_device</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="returnvalue">LdmPlugin</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmProvider.html#ldm-provider-get-plugin" title="ldm_provider_get_plugin ()">ldm_provider_get_plugin</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmProvider.html#ldm-provider-get-package" title="ldm_provider_get_package ()">ldm_provider_get_package</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmProvider.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><span class="type">gpointer</span></td>
+<td class="property_name"><a class="link" href="LdmProvider.html#LdmProvider--device" title="The “device” property">device</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmProvider.html#LdmProvider--package" title="The “package” property">package</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gpointer</span></td>
+<td class="property_name"><a class="link" href="LdmProvider.html#LdmProvider--plugin" title="The “plugin” property">plugin</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmProvider.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GInitiallyUnowned
+        <span class="lineart">╰──</span> LdmProvider
+</pre>
+</div>
+<div class="refsect1">
+<a name="LdmProvider.description"></a><h2>Description</h2>
+<p>An LdmProvider is the result type when searching for hardware providers
+using the <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> plugins.</p>
+</div>
+<div class="refsect1">
+<a name="LdmProvider.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ldm-provider-new"></a><h3>ldm_provider_new ()</h3>
+<pre class="programlisting"><a class="link" href="LdmProvider.html" title="LdmProvider"><span class="returnvalue">LdmProvider</span></a> *
+ldm_provider_new (<em class="parameter"><code><a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a> *parent_plugin</code></em>,
+                  <em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>,
+                  <em class="parameter"><code>const <span class="type">gchar</span> *package_name</code></em>);</pre>
+<p>Construct a new <a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a> with the given plugin and device for further
+processing by the library end user.</p>
+<div class="refsect3">
+<a name="ldm-provider-new.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>parent_plugin</p></td>
+<td class="parameter_description"><p>The plugin to associate this provider with</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device</p></td>
+<td class="parameter_description"><p>The device to associate this provider with</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>package_name</p></td>
+<td class="parameter_description"><p>The package or bundle name to install.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-provider-new.returns"></a><h4>Returns</h4>
+<p>A new <a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a> instance. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-provider-get-device"></a><h3>ldm_provider_get_device ()</h3>
+<pre class="programlisting"><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="returnvalue">LdmDevice</span></a> *
+ldm_provider_get_device (<em class="parameter"><code><a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a> *provider</code></em>);</pre>
+<p>Get the device for this particular provider instance. This device is
+the one that was used by the <a class="link" href="LdmProvider.html#LdmProvider--plugin" title="The “plugin” property"><span class="type">“plugin”</span></a> to construct this
+particular <a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a> instance.</p>
+<div class="refsect3">
+<a name="ldm-provider-get-device.returns"></a><h4>Returns</h4>
+<p>The associated <a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a>. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-provider-get-plugin"></a><h3>ldm_provider_get_plugin ()</h3>
+<pre class="programlisting"><a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="returnvalue">LdmPlugin</span></a> *
+ldm_provider_get_plugin (<em class="parameter"><code><a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a> *provider</code></em>);</pre>
+<p>Get the <a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a> that constructed this provider instance.</p>
+<div class="refsect3">
+<a name="ldm-provider-get-plugin.returns"></a><h4>Returns</h4>
+<p>The parent <a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a>. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-provider-get-package"></a><h3>ldm_provider_get_package ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_provider_get_package (<em class="parameter"><code><a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a> *provider</code></em>);</pre>
+<p>Get the package name required to install this provider.</p>
+<div class="refsect3">
+<a name="ldm-provider-get-package.returns"></a><h4>Returns</h4>
+<p>The package name. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmProvider.other_details"></a><h2>Types and Values</h2>
+</div>
+<div class="refsect1">
+<a name="LdmProvider.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="LdmProvider--device"></a><h3>The <code class="literal">“device”</code> property</h3>
+<pre class="programlisting">  “device”                   <span class="type">gpointer</span></pre>
+<p>Device associated with this <a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a></p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmProvider--package"></a><h3>The <code class="literal">“package”</code> property</h3>
+<pre class="programlisting">  “package”                  <span class="type">gchar</span> *</pre>
+<p>The package or bundle name required to install support for this
+provider.</p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmProvider--plugin"></a><h3>The <code class="literal">“plugin”</code> property</h3>
+<pre class="programlisting">  “plugin”                   <span class="type">gpointer</span></pre>
+<p>Plugin associated with this <a class="link" href="LdmProvider.html" title="LdmProvider"><span class="type">LdmProvider</span></a>. This is the <a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a>
+instance responsible for creating this provider, and provided the
+initial detection routine.</p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmProvider.see-also"></a><h2>See Also</h2>
+<p><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a>, <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a></p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.26</div>
+</body>
+</html>

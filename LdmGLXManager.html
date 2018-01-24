@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>LdmGLXManager</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="linux-driver-management Reference Manual">
+<link rel="up" href="linux-driver-management.html" title="Linux Driver Management">
+<link rel="prev" href="LdmProvider.html" title="LdmProvider">
+<link rel="next" href="devices.html" title="Device API">
+<meta name="generator" content="GTK-Doc V1.26 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#LdmGLXManager.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#LdmGLXManager.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="linux-driver-management.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="LdmProvider.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="devices.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="LdmGLXManager"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="LdmGLXManager.top_of_page"></a>LdmGLXManager</span></h2>
+<p>LdmGLXManager — GL(X) configuration management</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="LdmGLXManager.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmGLXManager.html" title="LdmGLXManager"><span class="returnvalue">LdmGLXManager</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmGLXManager.html#ldm-glx-manager-new" title="ldm_glx_manager_new ()">ldm_glx_manager_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmGLXManager.html#ldm-glx-manager-apply-configuration" title="ldm_glx_manager_apply_configuration ()">ldm_glx_manager_apply_configuration</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmGLXManager.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> LdmGLXManager
+</pre>
+</div>
+<div class="refsect1">
+<a name="LdmGLXManager.description"></a><h2>Description</h2>
+<p>An LdmGLXManager is used to manage the X11 configuration for the OpenGL providers,
+i.e. GLX implementations such as the NVIDIA proprietary driver. It is assumed that
+the host system is using automatically managed drivers for the most part, i.e. glvnd
+style, and not "alternatives" style.</p>
+<p>The older versions of LDM would manually manage the GL links, but this has been dropped
+in favour of static packaging and GLVND. While GLVND isn't a strict requirement, it is
+recommended.</p>
+<p>LdmGLXManager will remove existing X11 configurations if they reference a driver that
+isn't considered valid, such as <code class="literal">/etc/X11/xorg.conf</code>, and manage a single snippet within
+<code class="literal">/etc/X11/xorg.conf.d/00-ldm.conf</code>. This snippet will contain the bare minimum to "enable"
+the drivers.</p>
+<p>Additionally a hybrid control file is written in the presence of enabled NVIDIA Proprietary
+drivers for Optimus systems. This control file is used by <code class="literal">ldm-session-init(1)</code> to provide
+xrandr bootstrap during the early initialisation of an X11 desktop session.</p>
+<p>This manager does not, and will not, control the specifics for Wayland. It is assumed that
+Wayland compositors will set up offscreen surfaces with libGL_nvidia via glvnd and then
+render the final result to the Intel device GL context (libGL_mesa). For non Optimus systems
+they would simply use the primary GPU and GL implementation.</p>
+</div>
+<div class="refsect1">
+<a name="LdmGLXManager.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ldm-glx-manager-new"></a><h3>ldm_glx_manager_new ()</h3>
+<pre class="programlisting"><a class="link" href="LdmGLXManager.html" title="LdmGLXManager"><span class="returnvalue">LdmGLXManager</span></a> *
+ldm_glx_manager_new (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Create a new LdmGLXManager instance</p>
+<div class="refsect3">
+<a name="ldm-glx-manager-new.returns"></a><h4>Returns</h4>
+<p>An <a class="link" href="LdmGLXManager.html" title="LdmGLXManager"><span class="type">LdmGLXManager</span></a> instance. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-glx-manager-apply-configuration"></a><h3>ldm_glx_manager_apply_configuration ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_glx_manager_apply_configuration (<em class="parameter"><code><a class="link" href="LdmGLXManager.html" title="LdmGLXManager"><span class="type">LdmGLXManager</span></a> *manager</code></em>,
+                                     <em class="parameter"><code><a class="link" href="LdmGPUConfig.html" title="LdmGPUConfig"><span class="type">LdmGPUConfig</span></a> *config</code></em>);</pre>
+<p>Attempt to apply the primary portion of the configuration per the systems current configuration.
+If proprietary drivers are installed and enabled, they will be configured. If an Optimus system
+is encountered then it will also be configured in X11, and in the installed display manager
+configurations.</p>
+<p>If it is not possible to "install" a configuration, then any changes we may have made will be
+immediately unapplied and we'll go back to a "stock" configuration that intentionally removes any
+enabling for the proprietary drivers we may have applied.</p>
+<p>This should only happen when the module isn't present for the primary detection device.</p>
+<div class="refsect3">
+<a name="ldm-glx-manager-apply-configuration.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>config</p></td>
+<td class="parameter_description"><p>Valid LdmGPUConfiguration</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmGLXManager.other_details"></a><h2>Types and Values</h2>
+</div>
+<div class="refsect1">
+<a name="LdmGLXManager.see-also"></a><h2>See Also</h2>
+<p><a class="link" href="LdmGPUConfig.html" title="LdmGPUConfig"><span class="type">LdmGPUConfig</span></a></p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.26</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<book xmlns="http://www.devhelp.net/book" title="linux-driver-management Reference Manual" link="index.html" author="" name="linux-driver-management" version="2" language="c" online="http://solus-project.github.io/linux-driver-management/index.html">
+  <chapters>
+    <sub name="Linux Driver Management" link="linux-driver-management.html">
+      <sub name="LdmGPUConfig" link="LdmGPUConfig.html"/>
+      <sub name="LdmManager" link="LdmManager.html"/>
+      <sub name="LdmModalias" link="LdmModalias.html"/>
+      <sub name="LdmProvider" link="LdmProvider.html"/>
+      <sub name="LdmGLXManager" link="LdmGLXManager.html"/>
+    </sub>
+    <sub name="Device API" link="devices.html">
+      <sub name="LdmDevice" link="LdmDevice.html"/>
+      <sub name="LdmBluetoothDevice" link="LdmBluetoothDevice.html"/>
+      <sub name="LdmDMIDevice" link="LdmDMIDevice.html"/>
+      <sub name="LdmHIDDevice" link="LdmHIDDevice.html"/>
+      <sub name="LdmPCIDevice" link="LdmPCIDevice.html"/>
+      <sub name="LdmUSBDevice" link="LdmUSBDevice.html"/>
+      <sub name="LdmWifiDevice" link="LdmWifiDevice.html"/>
+    </sub>
+    <sub name="Plugins API" link="plugins.html">
+      <sub name="LdmPlugin" link="LdmPlugin.html"/>
+      <sub name="LdmModaliasPlugin" link="LdmModaliasPlugin.html"/>
+    </sub>
+    <sub name="Object Hierarchy" link="object-tree.html"/>
+    <sub name="API Index" link="api-index-full.html"/>
+    <sub name="Index of deprecated API" link="deprecated-api-index.html"/>
+    <sub name="Annotation Glossary" link="annotation-glossary.html"/>
+  </chapters>
+  <functions>
+    <keyword type="function" name="ldm_gpu_config_new ()" link="LdmGPUConfig.html#ldm-gpu-config-new"/>
+    <keyword type="function" name="ldm_gpu_config_get_manager ()" link="LdmGPUConfig.html#ldm-gpu-config-get-manager"/>
+    <keyword type="function" name="ldm_gpu_config_count ()" link="LdmGPUConfig.html#ldm-gpu-config-count"/>
+    <keyword type="function" name="ldm_gpu_config_get_gpu_type ()" link="LdmGPUConfig.html#ldm-gpu-config-get-gpu-type"/>
+    <keyword type="function" name="ldm_gpu_config_has_type ()" link="LdmGPUConfig.html#ldm-gpu-config-has-type"/>
+    <keyword type="function" name="ldm_gpu_config_get_primary_device ()" link="LdmGPUConfig.html#ldm-gpu-config-get-primary-device"/>
+    <keyword type="function" name="ldm_gpu_config_get_secondary_device ()" link="LdmGPUConfig.html#ldm-gpu-config-get-secondary-device"/>
+    <keyword type="function" name="ldm_gpu_config_get_detection_device ()" link="LdmGPUConfig.html#ldm-gpu-config-get-detection-device"/>
+    <keyword type="function" name="ldm_gpu_config_get_providers ()" link="LdmGPUConfig.html#ldm-gpu-config-get-providers"/>
+    <keyword type="enum" name="enum LdmGPUType" link="LdmGPUConfig.html#LdmGPUType"/>
+    <keyword type="property" name="The “detection-device” property" link="LdmGPUConfig.html#LdmGPUConfig--detection-device"/>
+    <keyword type="property" name="The “gpu-type” property" link="LdmGPUConfig.html#LdmGPUConfig--gpu-type"/>
+    <keyword type="property" name="The “manager” property" link="LdmGPUConfig.html#LdmGPUConfig--manager"/>
+    <keyword type="property" name="The “primary-device” property" link="LdmGPUConfig.html#LdmGPUConfig--primary-device"/>
+    <keyword type="property" name="The “secondary-device” property" link="LdmGPUConfig.html#LdmGPUConfig--secondary-device"/>
+    <keyword type="function" name="ldm_manager_new ()" link="LdmManager.html#ldm-manager-new"/>
+    <keyword type="function" name="ldm_manager_get_devices ()" link="LdmManager.html#ldm-manager-get-devices"/>
+    <keyword type="function" name="ldm_manager_get_providers ()" link="LdmManager.html#ldm-manager-get-providers"/>
+    <keyword type="function" name="ldm_manager_add_modalias_plugin_for_path ()" link="LdmManager.html#ldm-manager-add-modalias-plugin-for-path"/>
+    <keyword type="function" name="ldm_manager_add_modalias_plugins_for_directory ()" link="LdmManager.html#ldm-manager-add-modalias-plugins-for-directory"/>
+    <keyword type="function" name="ldm_manager_add_system_modalias_plugins ()" link="LdmManager.html#ldm-manager-add-system-modalias-plugins"/>
+    <keyword type="function" name="ldm_manager_add_plugin ()" link="LdmManager.html#ldm-manager-add-plugin"/>
+    <keyword type="enum" name="enum LdmManagerFlags" link="LdmManager.html#LdmManagerFlags"/>
+    <keyword type="property" name="The “flags” property" link="LdmManager.html#LdmManager--flags"/>
+    <keyword type="signal" name="The “device-added” signal" link="LdmManager.html#LdmManager-device-added"/>
+    <keyword type="signal" name="The “device-removed” signal" link="LdmManager.html#LdmManager-device-removed"/>
+    <keyword type="function" name="ldm_modalias_new ()" link="LdmModalias.html#ldm-modalias-new"/>
+    <keyword type="function" name="ldm_modalias_get_driver ()" link="LdmModalias.html#ldm-modalias-get-driver"/>
+    <keyword type="function" name="ldm_modalias_get_match ()" link="LdmModalias.html#ldm-modalias-get-match"/>
+    <keyword type="function" name="ldm_modalias_get_package ()" link="LdmModalias.html#ldm-modalias-get-package"/>
+    <keyword type="function" name="ldm_modalias_matches ()" link="LdmModalias.html#ldm-modalias-matches"/>
+    <keyword type="function" name="ldm_modalias_matches_device ()" link="LdmModalias.html#ldm-modalias-matches-device"/>
+    <keyword type="property" name="The “driver” property" link="LdmModalias.html#LdmModalias--driver"/>
+    <keyword type="property" name="The “match” property" link="LdmModalias.html#LdmModalias--match"/>
+    <keyword type="property" name="The “package” property" link="LdmModalias.html#LdmModalias--package"/>
+    <keyword type="function" name="ldm_provider_new ()" link="LdmProvider.html#ldm-provider-new"/>
+    <keyword type="function" name="ldm_provider_get_device ()" link="LdmProvider.html#ldm-provider-get-device"/>
+    <keyword type="function" name="ldm_provider_get_plugin ()" link="LdmProvider.html#ldm-provider-get-plugin"/>
+    <keyword type="function" name="ldm_provider_get_package ()" link="LdmProvider.html#ldm-provider-get-package"/>
+    <keyword type="property" name="The “device” property" link="LdmProvider.html#LdmProvider--device"/>
+    <keyword type="property" name="The “package” property" link="LdmProvider.html#LdmProvider--package"/>
+    <keyword type="property" name="The “plugin” property" link="LdmProvider.html#LdmProvider--plugin"/>
+    <keyword type="function" name="ldm_glx_manager_new ()" link="LdmGLXManager.html#ldm-glx-manager-new"/>
+    <keyword type="function" name="ldm_glx_manager_apply_configuration ()" link="LdmGLXManager.html#ldm-glx-manager-apply-configuration"/>
+    <keyword type="function" name="ldm_device_get_modalias ()" link="LdmDevice.html#ldm-device-get-modalias"/>
+    <keyword type="function" name="ldm_device_get_name ()" link="LdmDevice.html#ldm-device-get-name"/>
+    <keyword type="function" name="ldm_device_get_path ()" link="LdmDevice.html#ldm-device-get-path"/>
+    <keyword type="function" name="ldm_device_get_product_id ()" link="LdmDevice.html#ldm-device-get-product-id"/>
+    <keyword type="function" name="ldm_device_get_vendor ()" link="LdmDevice.html#ldm-device-get-vendor"/>
+    <keyword type="function" name="ldm_device_get_vendor_id ()" link="LdmDevice.html#ldm-device-get-vendor-id"/>
+    <keyword type="function" name="ldm_device_get_device_type ()" link="LdmDevice.html#ldm-device-get-device-type"/>
+    <keyword type="function" name="ldm_device_get_attributes ()" link="LdmDevice.html#ldm-device-get-attributes"/>
+    <keyword type="function" name="ldm_device_has_type ()" link="LdmDevice.html#ldm-device-has-type"/>
+    <keyword type="function" name="ldm_device_has_attribute ()" link="LdmDevice.html#ldm-device-has-attribute"/>
+    <keyword type="function" name="ldm_device_get_parent ()" link="LdmDevice.html#ldm-device-get-parent"/>
+    <keyword type="function" name="ldm_device_get_children ()" link="LdmDevice.html#ldm-device-get-children"/>
+    <keyword type="enum" name="enum LdmPCIVendorID" link="LdmDevice.html#LdmPCIVendorID"/>
+    <keyword type="enum" name="enum LdmDeviceType" link="LdmDevice.html#LdmDeviceType"/>
+    <keyword type="enum" name="enum LdmDeviceAttribute" link="LdmDevice.html#LdmDeviceAttribute"/>
+    <keyword type="property" name="The “attributes” property" link="LdmDevice.html#LdmDevice--attributes"/>
+    <keyword type="property" name="The “device-type” property" link="LdmDevice.html#LdmDevice--device-type"/>
+    <keyword type="property" name="The “modalias” property" link="LdmDevice.html#LdmDevice--modalias"/>
+    <keyword type="property" name="The “name” property" link="LdmDevice.html#LdmDevice--name"/>
+    <keyword type="property" name="The “parent” property" link="LdmDevice.html#LdmDevice--parent"/>
+    <keyword type="property" name="The “path” property" link="LdmDevice.html#LdmDevice--path"/>
+    <keyword type="property" name="The “product-id” property" link="LdmDevice.html#LdmDevice--product-id"/>
+    <keyword type="property" name="The “vendor” property" link="LdmDevice.html#LdmDevice--vendor"/>
+    <keyword type="property" name="The “vendor-id” property" link="LdmDevice.html#LdmDevice--vendor-id"/>
+    <keyword type="function" name="ldm_pci_device_get_address ()" link="LdmPCIDevice.html#ldm-pci-device-get-address"/>
+    <keyword type="function" name="ldm_plugin_get_name ()" link="LdmPlugin.html#ldm-plugin-get-name"/>
+    <keyword type="function" name="ldm_plugin_set_name ()" link="LdmPlugin.html#ldm-plugin-set-name"/>
+    <keyword type="function" name="ldm_plugin_get_priority ()" link="LdmPlugin.html#ldm-plugin-get-priority"/>
+    <keyword type="function" name="ldm_plugin_set_priority ()" link="LdmPlugin.html#ldm-plugin-set-priority"/>
+    <keyword type="function" name="ldm_plugin_get_provider ()" link="LdmPlugin.html#ldm-plugin-get-provider"/>
+    <keyword type="struct" name="struct LdmPluginClass" link="LdmPlugin.html#LdmPluginClass"/>
+    <keyword type="property" name="The “name” property" link="LdmPlugin.html#LdmPlugin--name"/>
+    <keyword type="property" name="The “priority” property" link="LdmPlugin.html#LdmPlugin--priority"/>
+    <keyword type="function" name="ldm_modalias_plugin_new ()" link="LdmModaliasPlugin.html#ldm-modalias-plugin-new"/>
+    <keyword type="function" name="ldm_modalias_plugin_new_from_filename ()" link="LdmModaliasPlugin.html#ldm-modalias-plugin-new-from-filename"/>
+    <keyword type="function" name="ldm_modalias_plugin_add_modalias ()" link="LdmModaliasPlugin.html#ldm-modalias-plugin-add-modalias"/>
+    <keyword type="constant" name="LDM_GPU_TYPE_SIMPLE" link="LdmGPUConfig.html#LDM-GPU-TYPE-SIMPLE:CAPS"/>
+    <keyword type="constant" name="LDM_GPU_TYPE_HYBRID" link="LdmGPUConfig.html#LDM-GPU-TYPE-HYBRID:CAPS"/>
+    <keyword type="constant" name="LDM_GPU_TYPE_COMPOSITE" link="LdmGPUConfig.html#LDM-GPU-TYPE-COMPOSITE:CAPS"/>
+    <keyword type="constant" name="LDM_GPU_TYPE_OPTIMUS" link="LdmGPUConfig.html#LDM-GPU-TYPE-OPTIMUS:CAPS"/>
+    <keyword type="constant" name="LDM_GPU_TYPE_SLI" link="LdmGPUConfig.html#LDM-GPU-TYPE-SLI:CAPS"/>
+    <keyword type="constant" name="LDM_GPU_TYPE_CROSSFIRE" link="LdmGPUConfig.html#LDM-GPU-TYPE-CROSSFIRE:CAPS"/>
+    <keyword type="constant" name="LDM_GPU_TYPE_MAX" link="LdmGPUConfig.html#LDM-GPU-TYPE-MAX:CAPS"/>
+    <keyword type="constant" name="LDM_MANAGER_FLAGS_NONE" link="LdmManager.html#LDM-MANAGER-FLAGS-NONE:CAPS"/>
+    <keyword type="constant" name="LDM_MANAGER_FLAGS_NO_MONITOR" link="LdmManager.html#LDM-MANAGER-FLAGS-NO-MONITOR:CAPS"/>
+    <keyword type="constant" name="LDM_MANAGER_FLAGS_GPU_QUICK" link="LdmManager.html#LDM-MANAGER-FLAGS-GPU-QUICK:CAPS"/>
+    <keyword type="constant" name="LDM_PCI_VENDOR_ID_AMD" link="LdmDevice.html#LDM-PCI-VENDOR-ID-AMD:CAPS"/>
+    <keyword type="constant" name="LDM_PCI_VENDOR_ID_INTEL" link="LdmDevice.html#LDM-PCI-VENDOR-ID-INTEL:CAPS"/>
+    <keyword type="constant" name="LDM_PCI_VENDOR_ID_NVIDIA" link="LdmDevice.html#LDM-PCI-VENDOR-ID-NVIDIA:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_ANY" link="LdmDevice.html#LDM-DEVICE-TYPE-ANY:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_AUDIO" link="LdmDevice.html#LDM-DEVICE-TYPE-AUDIO:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_BLUETOOTH" link="LdmDevice.html#LDM-DEVICE-TYPE-BLUETOOTH:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_GPU" link="LdmDevice.html#LDM-DEVICE-TYPE-GPU:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_HID" link="LdmDevice.html#LDM-DEVICE-TYPE-HID:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_IMAGE" link="LdmDevice.html#LDM-DEVICE-TYPE-IMAGE:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_PCI" link="LdmDevice.html#LDM-DEVICE-TYPE-PCI:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_PLATFORM" link="LdmDevice.html#LDM-DEVICE-TYPE-PLATFORM:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_PRINTER" link="LdmDevice.html#LDM-DEVICE-TYPE-PRINTER:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_STORAGE" link="LdmDevice.html#LDM-DEVICE-TYPE-STORAGE:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_VIDEO" link="LdmDevice.html#LDM-DEVICE-TYPE-VIDEO:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_WIRELESS" link="LdmDevice.html#LDM-DEVICE-TYPE-WIRELESS:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_USB" link="LdmDevice.html#LDM-DEVICE-TYPE-USB:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_TYPE_MAX" link="LdmDevice.html#LDM-DEVICE-TYPE-MAX:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_ATTRIBUTE_ANY" link="LdmDevice.html#LDM-DEVICE-ATTRIBUTE-ANY:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_ATTRIBUTE_BOOT_VGA" link="LdmDevice.html#LDM-DEVICE-ATTRIBUTE-BOOT-VGA:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_ATTRIBUTE_HOST" link="LdmDevice.html#LDM-DEVICE-ATTRIBUTE-HOST:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_ATTRIBUTE_INTERFACE" link="LdmDevice.html#LDM-DEVICE-ATTRIBUTE-INTERFACE:CAPS"/>
+    <keyword type="constant" name="LDM_DEVICE_ATTRIBUTE_MAX" link="LdmDevice.html#LDM-DEVICE-ATTRIBUTE-MAX:CAPS"/>
+    <keyword type="member" name="LdmPluginClass.get-provider" link="LdmPlugin.html#LdmPluginClass.get-provider"/>
+  </functions>
+</book>

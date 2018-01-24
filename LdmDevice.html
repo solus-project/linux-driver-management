@@ -1,0 +1,763 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>LdmDevice</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="linux-driver-management Reference Manual">
+<link rel="up" href="devices.html" title="Device API">
+<link rel="prev" href="devices.html" title="Device API">
+<link rel="next" href="LdmBluetoothDevice.html" title="LdmBluetoothDevice">
+<meta name="generator" content="GTK-Doc V1.26 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#LdmDevice.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#LdmDevice.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#LdmDevice.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="devices.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="devices.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="LdmBluetoothDevice.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="LdmDevice"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="LdmDevice.top_of_page"></a>LdmDevice</span></h2>
+<p>LdmDevice — Abstract device encapsulation</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="LdmDevice.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-modalias" title="ldm_device_get_modalias ()">ldm_device_get_modalias</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-name" title="ldm_device_get_name ()">ldm_device_get_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-path" title="ldm_device_get_path ()">ldm_device_get_path</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-product-id" title="ldm_device_get_product_id ()">ldm_device_get_product_id</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-vendor" title="ldm_device_get_vendor ()">ldm_device_get_vendor</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-vendor-id" title="ldm_device_get_vendor_id ()">ldm_device_get_vendor_id</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType"><span class="returnvalue">LdmDeviceType</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-device-type" title="ldm_device_get_device_type ()">ldm_device_get_device_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmDevice.html#LdmDeviceAttribute" title="enum LdmDeviceAttribute"><span class="returnvalue">LdmDeviceAttribute</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-attributes" title="ldm_device_get_attributes ()">ldm_device_get_attributes</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-has-type" title="ldm_device_has_type ()">ldm_device_has_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-has-attribute" title="ldm_device_has_attribute ()">ldm_device_has_attribute</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmDevice.html" title="LdmDevice"><span class="returnvalue">LdmDevice</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-parent" title="ldm_device_get_parent ()">ldm_device_get_parent</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-children" title="ldm_device_get_children ()">ldm_device_get_children</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><a class="link" href="LdmDevice.html#LdmDeviceAttribute" title="enum LdmDeviceAttribute"><span class="type">LdmDeviceAttribute</span></a></td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--attributes" title="The “attributes” property">attributes</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType"><span class="type">LdmDeviceType</span></a></td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--device-type" title="The “device-type” property">device-type</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--modalias" title="The “modalias” property">modalias</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--name" title="The “name” property">name</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gpointer</span></td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--parent" title="The “parent” property">parent</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--path" title="The “path” property">path</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gint</span></td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--product-id" title="The “product-id” property">product-id</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--vendor" title="The “vendor” property">vendor</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gint</span></td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--vendor-id" title="The “vendor-id” property">vendor-id</a></td>
+<td class="property_flags">Read</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="LdmDevice.html#LdmPCIVendorID" title="enum LdmPCIVendorID">LdmPCIVendorID</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType">LdmDeviceType</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="LdmDevice.html#LdmDeviceAttribute" title="enum LdmDeviceAttribute">LdmDeviceAttribute</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GInitiallyUnowned
+        <span class="lineart">╰──</span> LdmDevice
+            <span class="lineart">├──</span> <a class="link" href="LdmBluetoothDevice.html" title="LdmBluetoothDevice">LdmBluetoothDevice</a>
+            <span class="lineart">├──</span> <a class="link" href="LdmDMIDevice.html" title="LdmDMIDevice">LdmDMIDevice</a>
+            <span class="lineart">├──</span> <a class="link" href="LdmHIDDevice.html" title="LdmHIDDevice">LdmHIDDevice</a>
+            <span class="lineart">├──</span> <a class="link" href="LdmPCIDevice.html" title="LdmPCIDevice">LdmPCIDevice</a>
+            <span class="lineart">├──</span> <a class="link" href="LdmUSBDevice.html" title="LdmUSBDevice">LdmUSBDevice</a>
+            <span class="lineart">╰──</span> <a class="link" href="LdmWifiDevice.html" title="LdmWifiDevice">LdmWifiDevice</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.description"></a><h2>Description</h2>
+<p>An LdmDevice is not directly created, it is owned and constructed by an
+<a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> instance. Each <a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> may either be a PCI or USB device,
+and is in reality an abstraction of an underlying udev device.</p>
+<p>This object provides easy access to system devices, allowing the end
+user to easily introspect basic properties such as the <a class="link" href="LdmDevice.html#LdmDevice--name" title="The “name” property"><span class="type">“name”</span></a>,
+<a class="link" href="LdmDevice.html#LdmDevice--vendor-id" title="The “vendor-id” property"><span class="type">“vendor-id”</span></a> or even the <a class="link" href="LdmDevice.html#LdmDevice--modalias" title="The “modalias” property"><span class="type">“modalias”</span></a>.</p>
+<p>Each device returned by the <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> is a composite toplevel device,
+that is to say, it is the sum of all of its properties. This is particularly
+helpful when dealing with <a class="link" href="LdmUSBDevice.html" title="LdmUSBDevice"><span class="type">LdmUSBDevice</span></a>, whereby the root level properties
+of the device are the sum of all child parts. This allows users of the
+library to ignore USB interface internals and directly query an <a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a>
+to determine what capabilities and classes it supports, such as a composite
+device with <a class="link" href="LdmDevice.html#LDM-DEVICE-TYPE-VIDEO:CAPS"><span class="type">LDM_DEVICE_TYPE_VIDEO</span></a> | <a class="link" href="LdmDevice.html#LDM-DEVICE-TYPE-AUDIO:CAPS"><span class="type">LDM_DEVICE_TYPE_AUDIO</span></a> capabilities.</p>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ldm-device-get-modalias"></a><h3>ldm_device_get_modalias ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_device_get_modalias (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>The modalias is unique to the device and is used in identifying potential
+driver candidates.</p>
+<p>The Linux kernel will assign each device (or interface) a modalias, which can
+be matched via <a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> and <a class="link" href="LdmModaliasPlugin.html" title="LdmModaliasPlugin"><span class="type">LdmModaliasPlugin</span></a> to determine which package
+provides the drivers required to enable this device.</p>
+<div class="refsect3">
+<a name="ldm-device-get-modalias.returns"></a><h4>Returns</h4>
+<p>The modalias of the device. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-name"></a><h3>ldm_device_get_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_device_get_name (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>This function will return the name (model) of this device, suitable
+for presentation to a user.</p>
+<div class="refsect3">
+<a name="ldm-device-get-name.returns"></a><h4>Returns</h4>
+<p>The name of the device. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-path"></a><h3>ldm_device_get_path ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_device_get_path (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>This function will return the system-specific path for this device.
+This is the fully qualified <code class="literal">/sys</code> path.</p>
+<div class="refsect3">
+<a name="ldm-device-get-path.returns"></a><h4>Returns</h4>
+<p>The path of the device. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-product-id"></a><h3>ldm_device_get_product_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+ldm_device_get_product_id (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>This function will return the product ID (model) of this device,
+suitable for comparison with known models.</p>
+<div class="refsect3">
+<a name="ldm-device-get-product-id.returns"></a><h4>Returns</h4>
+<p> The product ID of the device</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-vendor"></a><h3>ldm_device_get_vendor ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_device_get_vendor (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>This function will return the vendor (manufacturer) of this device,
+suitable for presentation to a user.</p>
+<div class="refsect3">
+<a name="ldm-device-get-vendor.returns"></a><h4>Returns</h4>
+<p>The vendor of the device. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-vendor-id"></a><h3>ldm_device_get_vendor_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+ldm_device_get_vendor_id (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>This function will return the vendor ID (manufacturer) of this device,
+suitable for comparison with known vendors.</p>
+<p>This is especially useful with the predefined <a class="link" href="LdmDevice.html#LdmPCIVendorID" title="enum LdmPCIVendorID"><span class="type">LdmPCIVendorID</span></a> IDs</p>
+<p>C example:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="LdmDevice.html#ldm-device-get-vendor-id">ldm_device_get_vendor_id</a></span><span class="gtkdoc opt">(</span>device<span class="gtkdoc opt">) ==</span> LDM_PCI_VENDOR_ID_NVIDIA<span class="gtkdoc opt">) {</span>
+        <span class="function">g_message</span><span class="gtkdoc opt">(</span><span class="string">&quot;Found an NVIDIA device!&quot;</span><span class="gtkdoc opt">);</span>
+<span class="gtkdoc opt">}</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<div class="refsect3">
+<a name="ldm-device-get-vendor-id.returns"></a><h4>Returns</h4>
+<p> The vendor ID of the device</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-device-type"></a><h3>ldm_device_get_device_type ()</h3>
+<pre class="programlisting"><a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType"><span class="returnvalue">LdmDeviceType</span></a>
+ldm_device_get_device_type (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>Return the device type (bitwise field)</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-attributes"></a><h3>ldm_device_get_attributes ()</h3>
+<pre class="programlisting"><a class="link" href="LdmDevice.html#LdmDeviceAttribute" title="enum LdmDeviceAttribute"><span class="returnvalue">LdmDeviceAttribute</span></a>
+ldm_device_get_attributes (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>Return the device type (bitwise field)</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-has-type"></a><h3>ldm_device_has_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_device_has_type (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>,
+                     <em class="parameter"><code><a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType"><span class="type">LdmDeviceType</span></a> mask</code></em>);</pre>
+<p>Test whether this device has the given type(s) by testing the mask against
+our known types.</p>
+<p>C example:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="LdmDevice.html#ldm-device-has-type">ldm_device_has_type</a></span><span class="gtkdoc opt">(</span>device<span class="gtkdoc opt">,</span> LDM_DEVICE_TYPE_USB <span class="gtkdoc opt">|</span> LDM_DEVICE_TYPE_PRINTER<span class="gtkdoc opt">) {</span>
+        <span class="function">g_message</span><span class="gtkdoc opt">(</span><span class="string">&quot;Found a USB printer!&quot;</span><span class="gtkdoc opt">);</span>
+<span class="gtkdoc opt">}</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<div class="refsect3">
+<a name="ldm-device-has-type.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>mask</p></td>
+<td class="parameter_description"><p>Bitwise OR combination of <a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType"><span class="type">LdmDeviceType</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-has-attribute"></a><h3>ldm_device_has_attribute ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_device_has_attribute (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>,
+                          <em class="parameter"><code><a class="link" href="LdmDevice.html#LdmDeviceAttribute" title="enum LdmDeviceAttribute"><span class="type">LdmDeviceAttribute</span></a> mask</code></em>);</pre>
+<p>Test whether this device has the given attribute(s) by testing the mask against
+our known attributes</p>
+<p>C example:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="keyword">if</span> <span class="gtkdoc opt">(</span><span class="function"><a href="LdmDevice.html#ldm-device-has-attribute">ldm_device_has_attribute</a></span><span class="gtkdoc opt">(</span>device<span class="gtkdoc opt">,</span> LDM_DEVICE_ATTRIBUTE_BOOT_VGA<span class="gtkdoc opt">)) {</span>
+        <span class="function">g_message</span><span class="gtkdoc opt">(</span><span class="string">&quot;User booted with this GPU: %s&quot;</span><span class="gtkdoc opt">,</span> <span class="function"><a href="LdmDevice.html#ldm-device-get-name">ldm_device_get_name</a></span><span class="gtkdoc opt">(</span>device<span class="gtkdoc opt">));</span>
+<span class="gtkdoc opt">}</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<div class="refsect3">
+<a name="ldm-device-has-attribute.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>mask</p></td>
+<td class="parameter_description"><p>Bitwise OR combination of <a class="link" href="LdmDevice.html#LdmDeviceAttribute" title="enum LdmDeviceAttribute"><span class="type">LdmDeviceAttribute</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-parent"></a><h3>ldm_device_get_parent ()</h3>
+<pre class="programlisting"><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="returnvalue">LdmDevice</span></a> *
+ldm_device_get_parent (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>Get the parent device, if any</p>
+<div class="refsect3">
+<a name="ldm-device-get-parent.returns"></a><h4>Returns</h4>
+<p>The parent device if it exists. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="NULL may be passed as the value in, out, in-out; or as a return value."><span class="acronym">nullable</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-children"></a><h3>ldm_device_get_children ()</h3>
+<pre class="programlisting"><span class="returnvalue">GList</span> *
+ldm_device_get_children (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>Return any child devices, if any</p>
+<div class="refsect3">
+<a name="ldm-device-get-children.returns"></a><h4>Returns</h4>
+<p>a list of all child devices. </p>
+<p><span class="annotation">[<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> Ldm.Device][<acronym title="Free data container after the code is done."><span class="acronym">transfer container</span></acronym>]</span></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="LdmPCIVendorID"></a><h3>enum LdmPCIVendorID</h3>
+<p>Well known vendor IDs that are statically defined here to make future
+lookup and comparisons simpler to users of libldm.</p>
+<div class="refsect3">
+<a name="LdmPCIVendorID.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-PCI-VENDOR-ID-AMD:CAPS"></a>LDM_PCI_VENDOR_ID_AMD</p></td>
+<td class="enum_member_description">
+<p>AMD PCI device ID</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-PCI-VENDOR-ID-INTEL:CAPS"></a>LDM_PCI_VENDOR_ID_INTEL</p></td>
+<td class="enum_member_description">
+<p>Intel PCI device ID</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-PCI-VENDOR-ID-NVIDIA:CAPS"></a>LDM_PCI_VENDOR_ID_NVIDIA</p></td>
+<td class="enum_member_description">
+<p>NVIDIA PCI device id</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDeviceType"></a><h3>enum LdmDeviceType</h3>
+<p>Any device known to LDM may have one or more "types", defining the primary
+use-case for these devices. Simple devices will tend to have a single distinct
+type, such as "GPU". Composite devices, such as a USB camera, may have multiple
+types, such s HID|IMAGE.</p>
+<p>As such - each <a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> stores a composite type which may be queried by
+the API.</p>
+<div class="refsect3">
+<a name="LdmDeviceType.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-ANY:CAPS"></a>LDM_DEVICE_TYPE_ANY</p></td>
+<td class="enum_member_description">
+<p>Device type is either unknown or unhandled</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-AUDIO:CAPS"></a>LDM_DEVICE_TYPE_AUDIO</p></td>
+<td class="enum_member_description">
+<p>Audio device</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-BLUETOOTH:CAPS"></a>LDM_DEVICE_TYPE_BLUETOOTH</p></td>
+<td class="enum_member_description">
+<p>Bluetooth communication device</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-GPU:CAPS"></a>LDM_DEVICE_TYPE_GPU</p></td>
+<td class="enum_member_description">
+<p>A graphics device (onboard, NVIDIA, etc.)</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-HID:CAPS"></a>LDM_DEVICE_TYPE_HID</p></td>
+<td class="enum_member_description">
+<p>Human interface device (mouse, keyboard, etc.)</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-IMAGE:CAPS"></a>LDM_DEVICE_TYPE_IMAGE</p></td>
+<td class="enum_member_description">
+<p>Imaging device such as a camera</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-PCI:CAPS"></a>LDM_DEVICE_TYPE_PCI</p></td>
+<td class="enum_member_description">
+<p>The device is connected via PCI</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-PLATFORM:CAPS"></a>LDM_DEVICE_TYPE_PLATFORM</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-PRINTER:CAPS"></a>LDM_DEVICE_TYPE_PRINTER</p></td>
+<td class="enum_member_description">
+<p>Printer</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-STORAGE:CAPS"></a>LDM_DEVICE_TYPE_STORAGE</p></td>
+<td class="enum_member_description">
+<p>Storage device</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-VIDEO:CAPS"></a>LDM_DEVICE_TYPE_VIDEO</p></td>
+<td class="enum_member_description">
+<p>Video device, perhaps a webcam</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-WIRELESS:CAPS"></a>LDM_DEVICE_TYPE_WIRELESS</p></td>
+<td class="enum_member_description">
+<p>A wireless device, i.e. dongle or mouse</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-USB:CAPS"></a>LDM_DEVICE_TYPE_USB</p></td>
+<td class="enum_member_description">
+<p>The device is connected via USB</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-TYPE-MAX:CAPS"></a>LDM_DEVICE_TYPE_MAX</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDeviceAttribute"></a><h3>enum LdmDeviceAttribute</h3>
+<p>A device have one or more special attributes that need to be queried beyond
+the initial DeviceType search.</p>
+<div class="refsect3">
+<a name="LdmDeviceAttribute.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-ATTRIBUTE-ANY:CAPS"></a>LDM_DEVICE_ATTRIBUTE_ANY</p></td>
+<td class="enum_member_description">
+<p>No explicitly set attributes</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-ATTRIBUTE-BOOT-VGA:CAPS"></a>LDM_DEVICE_ATTRIBUTE_BOOT_VGA</p></td>
+<td class="enum_member_description">
+<p>This device is the GPU used to boot the system</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-ATTRIBUTE-HOST:CAPS"></a>LDM_DEVICE_ATTRIBUTE_HOST</p></td>
+<td class="enum_member_description">
+<p>Enable differentiation between host and non host controllers</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-ATTRIBUTE-INTERFACE:CAPS"></a>LDM_DEVICE_ATTRIBUTE_INTERFACE</p></td>
+<td class="enum_member_description">
+<p>Pseudo-device (USB interface, etc.)</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-DEVICE-ATTRIBUTE-MAX:CAPS"></a>LDM_DEVICE_ATTRIBUTE_MAX</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="LdmDevice--attributes"></a><h3>The <code class="literal">“attributes”</code> property</h3>
+<pre class="programlisting">  “attributes”               <a class="link" href="LdmDevice.html#LdmDeviceAttribute" title="enum LdmDeviceAttribute"><span class="type">LdmDeviceAttribute</span></a></pre>
+<p>The composite attributes of this device, which is a bitwise combination
+of multiple attribute (such as BOOT_VGA)</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--device-type"></a><h3>The <code class="literal">“device-type”</code> property</h3>
+<pre class="programlisting">  “device-type”              <a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType"><span class="type">LdmDeviceType</span></a></pre>
+<p>The composite type of this device, which is a bitwise combination
+of multiple device types (such as PCI|GPU)</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--modalias"></a><h3>The <code class="literal">“modalias”</code> property</h3>
+<pre class="programlisting">  “modalias”                 <span class="type">gchar</span> *</pre>
+<p>The modalias reported by the kernel for this device.</p>
+<p>Flags: Read</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--name"></a><h3>The <code class="literal">“name”</code> property</h3>
+<pre class="programlisting">  “name”                     <span class="type">gchar</span> *</pre>
+<p>The name used to display this device to users, i.e. the model.</p>
+<p>Flags: Read</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--parent"></a><h3>The <code class="literal">“parent”</code> property</h3>
+<pre class="programlisting">  “parent”                   <span class="type">gpointer</span></pre>
+<p>Parent device for this device instance</p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--path"></a><h3>The <code class="literal">“path”</code> property</h3>
+<pre class="programlisting">  “path”                     <span class="type">gchar</span> *</pre>
+<p>The system path for this device. On Linux this is the sysfs path.</p>
+<p>Flags: Read</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--product-id"></a><h3>The <code class="literal">“product-id”</code> property</h3>
+<pre class="programlisting">  “product-id”               <span class="type">gint</span></pre>
+<p>The product ID for this device.</p>
+<p>Flags: Read</p>
+<p>Allowed values: [0,0]</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--vendor"></a><h3>The <code class="literal">“vendor”</code> property</h3>
+<pre class="programlisting">  “vendor”                   <span class="type">gchar</span> *</pre>
+<p>The vendor string to display the users, i.e. the manufacturer.</p>
+<p>Flags: Read</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--vendor-id"></a><h3>The <code class="literal">“vendor-id”</code> property</h3>
+<pre class="programlisting">  “vendor-id”                <span class="type">gint</span></pre>
+<p>The vendor ID for this device.</p>
+<p>Flags: Read</p>
+<p>Allowed values: [0,0]</p>
+<p>Default value: 0</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmDevice.see-also"></a><h2>See Also</h2>
+<p><a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a>, <a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a></p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.26</div>
+</body>
+</html>

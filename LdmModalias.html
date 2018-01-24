@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>LdmModalias</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="linux-driver-management Reference Manual">
+<link rel="up" href="linux-driver-management.html" title="Linux Driver Management">
+<link rel="prev" href="LdmManager.html" title="LdmManager">
+<link rel="next" href="LdmProvider.html" title="LdmProvider">
+<meta name="generator" content="GTK-Doc V1.26 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#LdmModalias.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#LdmModalias.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#LdmModalias.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="linux-driver-management.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="LdmManager.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="LdmProvider.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="LdmModalias"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="LdmModalias.top_of_page"></a>LdmModalias</span></h2>
+<p>LdmModalias — Modalias matching</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="LdmModalias.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmModalias.html" title="LdmModalias"><span class="returnvalue">LdmModalias</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmModalias.html#ldm-modalias-new" title="ldm_modalias_new ()">ldm_modalias_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmModalias.html#ldm-modalias-get-driver" title="ldm_modalias_get_driver ()">ldm_modalias_get_driver</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmModalias.html#ldm-modalias-get-match" title="ldm_modalias_get_match ()">ldm_modalias_get_match</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmModalias.html#ldm-modalias-get-package" title="ldm_modalias_get_package ()">ldm_modalias_get_package</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmModalias.html#ldm-modalias-matches" title="ldm_modalias_matches ()">ldm_modalias_matches</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmModalias.html#ldm-modalias-matches-device" title="ldm_modalias_matches_device ()">ldm_modalias_matches_device</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmModalias.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmModalias.html#LdmModalias--driver" title="The “driver” property">driver</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmModalias.html#LdmModalias--match" title="The “match” property">match</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="LdmModalias.html#LdmModalias--package" title="The “package” property">package</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmModalias.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GInitiallyUnowned
+        <span class="lineart">╰──</span> LdmModalias
+</pre>
+</div>
+<div class="refsect1">
+<a name="LdmModalias.description"></a><h2>Description</h2>
+<p>An LdmModalias is a mapping from an <code class="literal">fnmatch</code> style modalias match to
+the required package name and kernel module.</p>
+<p>This is used in hardware detection to determine which package provides
+the required kernel modules for any given hardware. At the most simple
+level, we attempt to match the <a class="link" href="LdmModalias.html#LdmModalias--match" title="The “match” property"><span class="type">“match”</span></a> field, which is an
+<code class="literal">fnmatch</code> style string, to each device's <a class="link" href="LdmDevice.html#LdmDevice--modalias" title="The “modalias” property"><span class="type">“modalias”</span></a> field, which is
+an explicit string set by the kernel.</p>
+<p>This allows for automatic hardware detection and association with each
+<a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a>.</p>
+<p>The primary use of <a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> is by the <a class="link" href="LdmModaliasPlugin.html" title="LdmModaliasPlugin"><span class="type">LdmModaliasPlugin</span></a> implementation,
+which adds a new modalias for every line in a file to allow hardware
+matching.</p>
+<p>For example, if we're trying to match an NVIDIA GPU which has the following
+modalias:</p>
+<p>     <code class="literal">pci:v000010DEd00001C60sv00001558sd000065A4bc03sc00i00</code></p>
+<p>as set by the kernel, we might have a <a class="link" href="LdmModalias.html#LdmModalias--match" title="The “match” property"><span class="type">“match”</span></a> line that looks like:</p>
+<p>     <code class="literal">pci:v000010DEd00001C60sv*sd*bc03sc*i*</code></p>
+<p>Then all that is left is a simple comparison to check if the driver can be
+supported by the given match. Once we verify a match, we also know from the
+<a class="link" href="LdmModalias.html#LdmModalias--driver" title="The “driver” property"><span class="type">“driver”</span></a> and <a class="link" href="LdmModalias.html#LdmModalias--package" title="The “package” property"><span class="type">“package”</span></a> fields what the end user would
+need to have installed on their system for the <a class="link" href="LdmModalias.html#LdmModalias--driver" title="The “driver” property"><span class="type">“driver”</span></a> to be
+activated. This helps immensely in detecting support for drivers.</p>
+</div>
+<div class="refsect1">
+<a name="LdmModalias.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ldm-modalias-new"></a><h3>ldm_modalias_new ()</h3>
+<pre class="programlisting"><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="returnvalue">LdmModalias</span></a> *
+ldm_modalias_new (<em class="parameter"><code>const <span class="type">gchar</span> *match</code></em>,
+                  <em class="parameter"><code>const <span class="type">gchar</span> *driver</code></em>,
+                  <em class="parameter"><code>const <span class="type">char</span> *package</code></em>);</pre>
+<div class="refsect3">
+<a name="ldm-modalias-new.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>match</p></td>
+<td class="parameter_description"><p>fnmatch style string to match hardware</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>driver</p></td>
+<td class="parameter_description"><p>Name of the driver for this modalias match</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>package</p></td>
+<td class="parameter_description"><p>Name of the package or bundle for this modalias match</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-modalias-new.returns"></a><h4>Returns</h4>
+<p>A newly initialised LdmModalias. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-modalias-get-driver"></a><h3>ldm_modalias_get_driver ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_modalias_get_driver (<em class="parameter"><code><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> *modalias</code></em>);</pre>
+<p>This function will return the driver name (i.e "wl") associated with
+this particular modalias match.</p>
+<div class="refsect3">
+<a name="ldm-modalias-get-driver.returns"></a><h4>Returns</h4>
+<p>The driver name. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-modalias-get-match"></a><h3>ldm_modalias_get_match ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_modalias_get_match (<em class="parameter"><code><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> *modalias</code></em>);</pre>
+<p>This function will return the fnmatch-style match line used to check
+if this <a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> matches a given hardware device on the system.</p>
+<div class="refsect3">
+<a name="ldm-modalias-get-match.returns"></a><h4>Returns</h4>
+<p>The match line. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-modalias-get-package"></a><h3>ldm_modalias_get_package ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+ldm_modalias_get_package (<em class="parameter"><code><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> *modalias</code></em>);</pre>
+<p>This function will return the name of the package or bundle that contains
+the corresponding driver required to enable hardware support.</p>
+<div class="refsect3">
+<a name="ldm-modalias-get-package.returns"></a><h4>Returns</h4>
+<p>The package or bundle name. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-modalias-matches"></a><h3>ldm_modalias_matches ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_modalias_matches (<em class="parameter"><code><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> *modalias</code></em>,
+                      <em class="parameter"><code>const <span class="type">gchar</span> *match_string</code></em>);</pre>
+<p>If the given match_string matches our own fnmatch style match, this function
+will return true, indicating compatibility.</p>
+<div class="refsect3">
+<a name="ldm-modalias-matches.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>match_string</p></td>
+<td class="parameter_description"><p>Device modalias to test against</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-modalias-matches.returns"></a><h4>Returns</h4>
+<p> True if the match_string is indeed a match</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-modalias-matches-device"></a><h3>ldm_modalias_matches_device ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_modalias_matches_device (<em class="parameter"><code><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> *modalias</code></em>,
+                             <em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *match_device</code></em>);</pre>
+<p>This is a simple wrapper around <a class="link" href="LdmModalias.html#ldm-modalias-matches" title="ldm_modalias_matches ()"><span class="type">ldm_modalias_matches</span></a>, and will simply pass
+the device's <a class="link" href="LdmDevice.html#LdmDevice--modalias" title="The “modalias” property"><span class="type">“modalias”</span></a> for testing.</p>
+<div class="refsect3">
+<a name="ldm-modalias-matches-device.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>match_device</p></td>
+<td class="parameter_description"><p>An LdmDevice to test against</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-modalias-matches-device.returns"></a><h4>Returns</h4>
+<p> True if the match_device is indeed a match</p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmModalias.other_details"></a><h2>Types and Values</h2>
+</div>
+<div class="refsect1">
+<a name="LdmModalias.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="LdmModalias--driver"></a><h3>The <code class="literal">“driver”</code> property</h3>
+<pre class="programlisting">  “driver”                   <span class="type">gchar</span> *</pre>
+<p>The associated kernel driver</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmModalias--match"></a><h3>The <code class="literal">“match”</code> property</h3>
+<pre class="programlisting">  “match”                    <span class="type">gchar</span> *</pre>
+<p>The fnmatch style string that would create a match</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmModalias--package"></a><h3>The <code class="literal">“package”</code> property</h3>
+<pre class="programlisting">  “package”                  <span class="type">gchar</span> *</pre>
+<p>The package or bundle containing this driver match</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmModalias.see-also"></a><h2>See Also</h2>
+<p><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a>, <a class="link" href="LdmModaliasPlugin.html" title="LdmModaliasPlugin"><span class="type">LdmModaliasPlugin</span></a></p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.26</div>
+</body>
+</html>

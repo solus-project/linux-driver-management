@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>LdmModaliasPlugin</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="linux-driver-management Reference Manual">
+<link rel="up" href="plugins.html" title="Plugins API">
+<link rel="prev" href="LdmPlugin.html" title="LdmPlugin">
+<link rel="next" href="object-tree.html" title="Object Hierarchy">
+<meta name="generator" content="GTK-Doc V1.26 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#LdmModaliasPlugin.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#LdmModaliasPlugin.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="plugins.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="LdmPlugin.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="object-tree.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="LdmModaliasPlugin"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="LdmModaliasPlugin.top_of_page"></a>LdmModaliasPlugin</span></h2>
+<p>LdmModaliasPlugin — Modalias-based plugin implementation</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="LdmModaliasPlugin.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="returnvalue">LdmPlugin</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmModaliasPlugin.html#ldm-modalias-plugin-new" title="ldm_modalias_plugin_new ()">ldm_modalias_plugin_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="returnvalue">LdmPlugin</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmModaliasPlugin.html#ldm-modalias-plugin-new-from-filename" title="ldm_modalias_plugin_new_from_filename ()">ldm_modalias_plugin_new_from_filename</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmModaliasPlugin.html#ldm-modalias-plugin-add-modalias" title="ldm_modalias_plugin_add_modalias ()">ldm_modalias_plugin_add_modalias</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmModaliasPlugin.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GInitiallyUnowned
+        <span class="lineart">╰──</span> <a class="link" href="LdmPlugin.html" title="LdmPlugin">LdmPlugin</a>
+            <span class="lineart">╰──</span> LdmModaliasPlugin
+</pre>
+</div>
+<div class="refsect1">
+<a name="LdmModaliasPlugin.description"></a><h2>Description</h2>
+<p>The LdmModaliasPlugin extends the base <a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a> and adds modalias-based
+hardware detection to it. This allows us to perform <a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> based
+matching against any given hardware.</p>
+<p>The most useful case for <a class="link" href="LdmModaliasPlugin.html" title="LdmModaliasPlugin"><span class="type">LdmModaliasPlugin</span></a> is to dynamically construct
+it at runtime using <code class="literal">.modaliases</code> files. These files contain specially
+formatted lines that can be parsed into a set of <a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> rules,
+all of which can later be used to detect hardware in bulk.</p>
+<p>The format of the file is very simple, space separated, with just 4
+columns:</p>
+<p>     <code class="literal">TYPE   ALIAS   PLUGIN  PACKAGE</code></p>
+<p><code class="literal">TYPE</code> is reserved and is currently always set to <code class="literal">alias</code>.
+<code class="literal">MODALIAS</code> is the <code class="literal">fnmatch</code> style string used to match against hardware.
+<code class="literal">PLUGIN</code> is the kernel driver that supports any hardware matching the <span class="type">“match”</span> field
+<code class="literal">PACKAGE</code> is the name of the package or bundle providing the kernel driver</p>
+<p>Example:</p>
+<p>     <code class="literal">alias pci:v000014E4d*sv*sd*bc02sc80i* wl broadcom-sta</code></p>
+<p>If a hardware device matching <code class="literal">pci:v000014E4d*sv*sd*bc02sc80i</code> is discovered,
+it requires <code class="literal">wl.ko</code> to operate correctly (or to enhance it). The user can find
+<code class="literal">wl.ko</code> in the <code class="literal">broadcom-sta</code> package.</p>
+</div>
+<div class="refsect1">
+<a name="LdmModaliasPlugin.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ldm-modalias-plugin-new"></a><h3>ldm_modalias_plugin_new ()</h3>
+<pre class="programlisting"><a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="returnvalue">LdmPlugin</span></a> *
+ldm_modalias_plugin_new (<em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>);</pre>
+<p>Create a new LdmPlugin for modalias detection with the given name</p>
+<div class="refsect3">
+<a name="ldm-modalias-plugin-new.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>Name for this plugin instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-modalias-plugin-new.returns"></a><h4>Returns</h4>
+<p>A newly initialised LdmModaliasPlugin. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-modalias-plugin-new-from-filename"></a><h3>ldm_modalias_plugin_new_from_filename ()</h3>
+<pre class="programlisting"><a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="returnvalue">LdmPlugin</span></a> *
+ldm_modalias_plugin_new_from_filename (<em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>);</pre>
+<p>Create a new LdmPlugin for modalias detection. The named file will be
+opened and the resulting plugin will be seeded from that file.</p>
+<div class="refsect3">
+<a name="ldm-modalias-plugin-new-from-filename.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>filename</p></td>
+<td class="parameter_description"><p>Path to a modaliases file</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-modalias-plugin-new-from-filename.returns"></a><h4>Returns</h4>
+<p>A newly initialised LdmModaliasPlugin. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-modalias-plugin-add-modalias"></a><h3>ldm_modalias_plugin_add_modalias ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+ldm_modalias_plugin_add_modalias (<em class="parameter"><code><a class="link" href="LdmModaliasPlugin.html" title="LdmModaliasPlugin"><span class="type">LdmModaliasPlugin</span></a> *driver</code></em>,
+                                  <em class="parameter"><code><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a> *modalias</code></em>);</pre>
+<p>Add a new modalias object to the plugin table. This method will take a new
+reference to the modalias.</p>
+<div class="refsect3">
+<a name="ldm-modalias-plugin-add-modalias.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>modalias</p></td>
+<td class="parameter_description"><p>Modalias object to add to the table. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmModaliasPlugin.other_details"></a><h2>Types and Values</h2>
+</div>
+<div class="refsect1">
+<a name="LdmModaliasPlugin.see-also"></a><h2>See Also</h2>
+<p><a class="link" href="LdmModalias.html" title="LdmModalias"><span class="type">LdmModalias</span></a>, <a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a></p>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.26</div>
+</body>
+</html>

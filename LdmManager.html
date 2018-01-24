@@ -1,0 +1,524 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>LdmManager</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.77.1">
+<link rel="home" href="index.html" title="linux-driver-management Reference Manual">
+<link rel="up" href="linux-driver-management.html" title="Linux Driver Management">
+<link rel="prev" href="LdmGPUConfig.html" title="LdmGPUConfig">
+<link rel="next" href="LdmModalias.html" title="LdmModalias">
+<meta name="generator" content="GTK-Doc V1.26 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#LdmManager.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#LdmManager.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#LdmManager.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#LdmManager.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="linux-driver-management.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="LdmGPUConfig.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="LdmModalias.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="LdmManager"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="LdmManager.top_of_page"></a>LdmManager</span></h2>
+<p>LdmManager — Device Manager</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="LdmManager.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a class="link" href="LdmManager.html" title="LdmManager"><span class="returnvalue">LdmManager</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmManager.html#ldm-manager-new" title="ldm_manager_new ()">ldm_manager_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GPtrArray</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmManager.html#ldm-manager-get-devices" title="ldm_manager_get_devices ()">ldm_manager_get_devices</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GPtrArray</span> *
+</td>
+<td class="function_name">
+<a class="link" href="LdmManager.html#ldm-manager-get-providers" title="ldm_manager_get_providers ()">ldm_manager_get_providers</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmManager.html#ldm-manager-add-modalias-plugin-for-path" title="ldm_manager_add_modalias_plugin_for_path ()">ldm_manager_add_modalias_plugin_for_path</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmManager.html#ldm-manager-add-modalias-plugins-for-directory" title="ldm_manager_add_modalias_plugins_for_directory ()">ldm_manager_add_modalias_plugins_for_directory</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmManager.html#ldm-manager-add-system-modalias-plugins" title="ldm_manager_add_system_modalias_plugins ()">ldm_manager_add_system_modalias_plugins</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmManager.html#ldm-manager-add-plugin" title="ldm_manager_add_plugin ()">ldm_manager_add_plugin</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmManager.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody><tr>
+<td class="property_type"><a class="link" href="LdmManager.html#LdmManagerFlags" title="enum LdmManagerFlags"><span class="type">LdmManagerFlags</span></a></td>
+<td class="property_name"><a class="link" href="LdmManager.html#LdmManager--flags" title="The “flags” property">flags</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmManager.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="LdmManager.html#LdmManager-device-added" title="The “device-added” signal">device-added</a></td>
+<td class="signal_flags">Action</td>
+</tr>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="LdmManager.html#LdmManager-device-removed" title="The “device-removed” signal">device-removed</a></td>
+<td class="signal_flags">Action</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmManager.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="LdmManager.html#LdmManagerFlags" title="enum LdmManagerFlags">LdmManagerFlags</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="LdmManager.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> LdmManager
+</pre>
+</div>
+<div class="refsect1">
+<a name="LdmManager.description"></a><h2>Description</h2>
+<p>The manager object is used to introspect the system and discover various
+devices. Using the <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> APIs one can enumerate specific device
+classes.</p>
+<p>LdmManager internally makes use of libudev to provide low level enumeration
+and hotplug event capabilities, but will convert those raw devices and
+interfaces into the more readily consumable <a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> type.</p>
+<p>Using the manager is very simple, and in a few lines you can grab all
+the devices from the system for introspection.</p>
+<p>C example:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3</pre></td>
+        <td class="listing_code"><pre class="programlisting">LdmManager <span class="gtkdoc opt">*</span>manager <span class="gtkdoc opt">=</span> <span class="function"><a href="LdmManager.html#ldm-manager-new">ldm_manager_new</a></span><span class="gtkdoc opt">(</span>LDM_MANAGER_FLAGS_NONE<span class="gtkdoc opt">);</span>
+<span class="function">g_autoptr</span><span class="gtkdoc opt">(</span>GPtrArray<span class="gtkdoc opt">)</span> devices <span class="gtkdoc opt">=</span> <span class="function"><a href="LdmManager.html#ldm-manager-get-devices">ldm_manager_get_devices</a></span><span class="gtkdoc opt">(</span>LDM_DEVICE_TYPE_ANY<span class="gtkdoc opt">);</span>
+LdmDevice <span class="gtkdoc opt">*</span>device <span class="gtkdoc opt">=</span> devices<span class="gtkdoc opt">-&gt;</span>pdata<span class="gtkdoc opt">[</span><span class="number">0</span><span class="gtkdoc opt">];</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+<p>Vala example:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting">var manager <span class="gtkdoc opt">=</span> <span class="keyword">new</span> Ldm<span class="gtkdoc opt">.</span><span class="function">Manager</span><span class="gtkdoc opt">();</span>
+var devices <span class="gtkdoc opt">=</span> manager<span class="gtkdoc opt">.</span><span class="function">get_devices</span><span class="gtkdoc opt">();</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p></p>
+</div>
+<div class="refsect1">
+<a name="LdmManager.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="ldm-manager-new"></a><h3>ldm_manager_new ()</h3>
+<pre class="programlisting"><a class="link" href="LdmManager.html" title="LdmManager"><span class="returnvalue">LdmManager</span></a> *
+ldm_manager_new (<em class="parameter"><code><a class="link" href="LdmManager.html#LdmManagerFlags" title="enum LdmManagerFlags"><span class="type">LdmManagerFlags</span></a> flags</code></em>);</pre>
+<p>Construct a new LdmManager
+Without any specified flags, the new <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> will default to monitoring
+for hotplug events.</p>
+<div class="refsect3">
+<a name="ldm-manager-new.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>flags</p></td>
+<td class="parameter_description"><p>Control behaviour of the new manager.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-manager-new.returns"></a><h4>Returns</h4>
+<p>A newly created <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a>. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-manager-get-devices"></a><h3>ldm_manager_get_devices ()</h3>
+<pre class="programlisting"><span class="returnvalue">GPtrArray</span> *
+ldm_manager_get_devices (<em class="parameter"><code><a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager</code></em>,
+                         <em class="parameter"><code><a class="link" href="LdmDevice.html#LdmDeviceType" title="enum LdmDeviceType"><span class="type">LdmDeviceType</span></a> class_mask</code></em>);</pre>
+<p>Return a subset of the devices known to this manager that happen to
+match the given classmask. As an example you might call this function
+with <a class="link" href="LdmDevice.html#LDM-DEVICE-TYPE-GPU:CAPS"><span class="type">LDM_DEVICE_TYPE_GPU</span></a>|<a class="link" href="LdmDevice.html#LDM-DEVICE-TYPE-PCI:CAPS"><span class="type">LDM_DEVICE_TYPE_PCI</span></a> to find all PCI GPUs on
+the system.</p>
+<p>This function will return an array of references to our internal storage,
+so that they persist should hotplugging then disable the device. It is
+advisable to not rely on the device list staying valid for any duration
+of time, and instead use it for basic probing, not persistence.</p>
+<div class="refsect3">
+<a name="ldm-manager-get-devices.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>class_mask</p></td>
+<td class="parameter_description"><p>Bitwise mask of LdmDeviceType</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-manager-get-devices.returns"></a><h4>Returns</h4>
+<p>a list of all currently known devices. </p>
+<p><span class="annotation">[<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> Ldm.Device][<acronym title="Free data container after the code is done."><span class="acronym">transfer container</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-manager-get-providers"></a><h3>ldm_manager_get_providers ()</h3>
+<pre class="programlisting"><span class="returnvalue">GPtrArray</span> *
+ldm_manager_get_providers (<em class="parameter"><code><a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager</code></em>,
+                           <em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p>Walk the plugins and find all known providers for the given device,
+if they can support it. The returned <span class="type">GPtrArray</span> will free all elements
+when it itself is freed.</p>
+<div class="refsect3">
+<a name="ldm-manager-get-providers.returns"></a><h4>Returns</h4>
+<p>a list of all possible providers. </p>
+<p><span class="annotation">[<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> Ldm.Provider][<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-manager-add-modalias-plugin-for-path"></a><h3>ldm_manager_add_modalias_plugin_for_path ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_manager_add_modalias_plugin_for_path
+                               (<em class="parameter"><code><a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *path</code></em>);</pre>
+<p>Add a new <a class="link" href="LdmModaliasPlugin.html" title="LdmModaliasPlugin"><span class="type">LdmModaliasPlugin</span></a> to the manager for the given path. This is a convenience
+wrapper around <a class="link" href="LdmModaliasPlugin.html#ldm-modalias-plugin-new-from-filename" title="ldm_modalias_plugin_new_from_filename ()"><span class="type">ldm_modalias_plugin_new_from_filename</span></a> and <a class="link" href="LdmManager.html#ldm-manager-add-plugin" title="ldm_manager_add_plugin ()"><span class="type">ldm_manager_add_plugin</span></a>.</p>
+<p>Note that newer modalias plugins have a higher priority than older plugins,
+so you should add newest drivers last if you have multiple driver versions.
+This is already taken care of by using the glob-based function
+<a class="link" href="LdmManager.html#ldm-manager-add-modalias-plugins-for-directory" title="ldm_manager_add_modalias_plugins_for_directory ()"><span class="type">ldm_manager_add_modalias_plugins_for_directory</span></a></p>
+<p>i.e. insert 380 driver AFTER 340.</p>
+<div class="refsect3">
+<a name="ldm-manager-add-modalias-plugin-for-path.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>The fully qualified ".modaliases" file path</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-manager-add-modalias-plugin-for-path.returns"></a><h4>Returns</h4>
+<p> TRUE if a new plugin was added</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-manager-add-modalias-plugins-for-directory"></a><h3>ldm_manager_add_modalias_plugins_for_directory ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_manager_add_modalias_plugins_for_directory
+                               (<em class="parameter"><code><a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *directory</code></em>);</pre>
+<p>Attempt to bulk-add <a class="link" href="LdmModaliasPlugin.html" title="LdmModaliasPlugin"><span class="type">LdmModaliasPlugin</span></a> objects from the given directory to
+ensure preservation of sort order and ease of use.</p>
+<p>This function is used to add well known modalias paths to the plugin and
+construct plugins used for hardware detection.</p>
+<div class="refsect3">
+<a name="ldm-manager-add-modalias-plugins-for-directory.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>directory</p></td>
+<td class="parameter_description"><p>Path containing <code class="literal">*.modaliases</code> files</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="ldm-manager-add-modalias-plugins-for-directory.returns"></a><h4>Returns</h4>
+<p> TRUE if a new plugin was added</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-manager-add-system-modalias-plugins"></a><h3>ldm_manager_add_system_modalias_plugins ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+ldm_manager_add_system_modalias_plugins
+                               (<em class="parameter"><code><a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager</code></em>);</pre>
+<p>Attempt to add all modalias plugins directory from the modalias directory
+set when the library was compiled.</p>
+<p>This is a convenience wrapper around <a class="link" href="LdmManager.html#ldm-manager-add-modalias-plugins-for-directory" title="ldm_manager_add_modalias_plugins_for_directory ()"><span class="type">ldm_manager_add_modalias_plugins_for_directory</span></a>.</p>
+<div class="refsect3">
+<a name="ldm-manager-add-system-modalias-plugins.returns"></a><h4>Returns</h4>
+<p> TRUE if any modalias plugins were added.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ldm-manager-add-plugin"></a><h3>ldm_manager_add_plugin ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+ldm_manager_add_plugin (<em class="parameter"><code><a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager</code></em>,
+                        <em class="parameter"><code><a class="link" href="LdmPlugin.html" title="LdmPlugin"><span class="type">LdmPlugin</span></a> *plugin</code></em>);</pre>
+<p>Add a new plugin to the current set of plugins. The plugins are used to
+provide automatic hardware detection capabilities to the <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a>
+and provide the internal API required for <a class="link" href="LdmManager.html#ldm-manager-get-providers" title="ldm_manager_get_providers ()"><span class="type">ldm_manager_get_providers</span></a> to
+work.</p>
+<div class="refsect3">
+<a name="ldm-manager-add-plugin.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>plugin</p></td>
+<td class="parameter_description"><p>New plugin to add. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmManager.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="LdmManagerFlags"></a><h3>enum LdmManagerFlags</h3>
+<p>Override the behaviour of the new LdmManager to allow disabling
+of hotplug events, etc.</p>
+<div class="refsect3">
+<a name="LdmManagerFlags.members"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-MANAGER-FLAGS-NONE:CAPS"></a>LDM_MANAGER_FLAGS_NONE</p></td>
+<td class="enum_member_description">
+<p>No special behaviour required</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-MANAGER-FLAGS-NO-MONITOR:CAPS"></a>LDM_MANAGER_FLAGS_NO_MONITOR</p></td>
+<td class="enum_member_description">
+<p>Disable hotplug events</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="LDM-MANAGER-FLAGS-GPU-QUICK:CAPS"></a>LDM_MANAGER_FLAGS_GPU_QUICK</p></td>
+<td class="enum_member_description">
+<p>Only allow GPU devices for fast initialisation</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmManager.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="LdmManager--flags"></a><h3>The <code class="literal">“flags”</code> property</h3>
+<pre class="programlisting">  “flags”                    <a class="link" href="LdmManager.html#LdmManagerFlags" title="enum LdmManagerFlags"><span class="type">LdmManagerFlags</span></a></pre>
+<p>The flags set at time of construction dictating the behaviour
+of this manager</p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="LdmManager.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="LdmManager-device-added"></a><h3>The <code class="literal">“device-added”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager,
+               <a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a>  *device,
+               <span class="type">gpointer</span>    user_data)</pre>
+<p>Connect to this signal to be notified about devices as they become
+available to the <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a>.</p>
+<div class="refsect3">
+<a name="LdmManager-device-added.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>manager</p></td>
+<td class="parameter_description"><p>The manager owning the device</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device</p></td>
+<td class="parameter_description"><p>The newly available device</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Action</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmManager-device-removed"></a><h3>The <code class="literal">“device-removed”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a> *manager,
+               <a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a>  *device,
+               <span class="type">gpointer</span>    user_data)</pre>
+<p>Connect to this signal to be notified when a device is about to
+be removed from the <a class="link" href="LdmManager.html" title="LdmManager"><span class="type">LdmManager</span></a>. The device being passed will
+be unreffed after this signal is emitted, so do not attempt to
+hold any references to it.</p>
+<div class="refsect3">
+<a name="LdmManager-device-removed.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>manager</p></td>
+<td class="parameter_description"><p>The manager owning the device</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device</p></td>
+<td class="parameter_description"><p>The device being removed</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Action</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.26</div>
+</body>
+</html>
