@@ -1,7 +1,7 @@
 project(
     'linux-driver-management',
     ['c'],
-    version: '0.1.0',
+    version: '1.0.0',
     license: [
         'LGPL-2.1',
     ],
@@ -140,7 +140,7 @@ with_gl_driver_switch_compat = get_option('with-gl-driver-switch-compat')
 with_docs = get_option('with-docs')
 
 # Define our ABI
-abi_major_version = '0'
+abi_major_version = '1'
 abi_minor_version = '0'
 abi_micro_version = '0'
 

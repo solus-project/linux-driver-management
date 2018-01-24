@@ -8,7 +8,7 @@
 #
 
 import gi
-gi.require_version('Ldm', '0.1')
+gi.require_version('Ldm', '1.0')
 from gi.repository import Ldm, GObject
 
 class PretendyPlugin(Ldm.Plugin):

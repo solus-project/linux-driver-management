@@ -114,7 +114,7 @@ libldm_gir = gnome.generate_gir(
     libldm,
     sources: libldm_sources + libldm_headers + libldm_plugin_headers + libldm_enums,
     namespace: 'Ldm',
-    nsversion: '0.1',
+    nsversion: '1.0',
     dependencies: libldm_dependencies,
     includes: [
         'GObject-2.0',
@@ -130,7 +130,7 @@ libldm_gir = gnome.generate_gir(
 
 if enable_vapigen
     libldm_vapi = gnome.generate_vapi(
-        'ldm-0.1',
+        'ldm-1.0',
         sources: [libldm_gir[0]],
         packages: [
             'glib-2.0',
@@ -142,10 +142,10 @@ endif
 
 # Install pkgconfig file to enable building against libldm
 pkgconfig.generate(
-    name: 'ldm-0.1',
+    name: 'ldm-1.0',
     description: 'Linux Driver Management Library',
     version: meson.project_version(),
-    filebase: 'ldm-0.1',
+    filebase: 'ldm-1.0',
     subdirs: meson.project_name(),
     libraries: ['-L${libdir}', '-lldm'],
     requires: [

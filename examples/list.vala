@@ -3,7 +3,7 @@
  *
  * Note this is buttugly, please don't actually use this as a UI template.
  *
- * Compile: valac list.vala --pkg gtk+-3.0 --pkg ldm-0.1
+ * Compile: valac list.vala --pkg gtk+-3.0 --pkg ldm-1.0
  * Run    : ./list
  */
 public class MyLister : Gtk.Window

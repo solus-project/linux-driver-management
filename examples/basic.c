@@ -1,7 +1,7 @@
 /*
  * This file is Public Domain and provided only for documentation purposes.
  *
- * Compile: gcc -Wall -g2 `pkg-config --cflags --libs ldm-0.1` basic.c -o basic
+ * Compile: gcc -Wall -g2 `pkg-config --cflags --libs ldm-1.0` basic.c -o basic
  * Run    : ./basic
  */
 
