@@ -266,7 +266,8 @@ static void ldm_manager_init_udev_static(LdmManager *self)
         autofree(udev_enum) *ue = NULL;
         udev_list *list = NULL, *entry = NULL;
         static const char *subsystems[] = {
-                "dmi", "usb", "pci", "bluetooth", "hid", /*< As child of USB typically */
+                "dmi",       "usb",       "pci",
+                "ieee80211", "bluetooth", "hid", /*< As child of USB typically */
         };
         /* For LDM_MANAGER_FLAGS_GPU_QUICK */
         static const char *subsystems_minimal[] = {
@@ -319,6 +320,7 @@ static void ldm_manager_init_udev_monitor(LdmManager *self)
                 "usb",
                 "hid",
                 "bluetooth",
+                "ieee80211",
         };
 
         self->monitor.udev = udev_monitor_new_from_netlink(self->udev, "udev");
@@ -558,13 +560,34 @@ static LdmDevice *ldm_manager_get_interface_parent(LdmManager *self, udev_device
 static LdmDevice *ldm_manager_get_device_parent(LdmManager *self, const char *subsystem,
                                                 udev_device *device)
 {
-        if (g_str_equal(subsystem, "hid") || g_str_equal(subsystem, "bluetooth")) {
-                return ldm_manager_get_interface_parent(self, device);
-        } else if (g_str_equal(subsystem, "usb")) {
+        udev_device *direct_parent = NULL;
+        const char *parent_subsystem = NULL;
+
+        /* Simple usb_interface->usb parent */
+        if (g_str_equal(subsystem, "usb")) {
                 return ldm_manager_get_usb_parent(self, device);
         }
 
-        return NULL;
+        /* We don't parent PCI physical devices */
+        if (g_str_equal(subsystem, "pci")) {
+                return NULL;
+        }
+
+        /* Attempt to grab direct PCI parent (no middle interface) */
+        direct_parent = udev_device_get_parent(device);
+        parent_subsystem = udev_device_get_subsystem(direct_parent);
+        if (parent_subsystem && g_str_equal(parent_subsystem, "pci")) {
+                LdmDevice *parent = NULL;
+                if (ldm_manager_device_by_sysfs_path(self,
+                                                     udev_device_get_syspath(direct_parent),
+                                                     &parent,
+                                                     NULL)) {
+                        return parent;
+                }
+                return NULL;
+        }
+
+        return ldm_manager_get_interface_parent(self, device);
 }
 
 /**

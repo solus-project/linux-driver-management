@@ -41,6 +41,7 @@ libldm_sources = [
     'pci-device.c',
     'provider.c',
     'usb-device.c',
+    'wifi-device.c',
     'plugins/modalias-plugin.c',
 ]
 
@@ -58,6 +59,7 @@ libldm_headers = [
     'pci-device.h',
     'provider.h',
     'usb-device.h',
+    'wifi-device.h',
 ]
 
 libldm_plugin_headers = [

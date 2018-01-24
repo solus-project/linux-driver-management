@@ -30,6 +30,7 @@
     <xi:include href="xml/hid-device.xml"/>
     <xi:include href="xml/pci-device.xml"/>
     <xi:include href="xml/usb-device.xml"/>
+    <xi:include href="xml/wifi-device.xml"/>
   </chapter>
   <chapter id="plugins">
     <title>Plugins API</title>

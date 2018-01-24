@@ -25,6 +25,7 @@ DEF_AUTOFREE(UMockdevTestbed, g_object_unref)
 #define NV_MOCKDEV_FILE TEST_DATA_ROOT "/nvidia1060.umockdev"
 #define OPTIMUS_MOCKDEV_FILE TEST_DATA_ROOT "/optimus765m.umockdev"
 #define BLUETOOTH_UMOCKDEV_FILE TEST_DATA_ROOT "/bluetoothUSB.umockdev"
+#define WIFI_UMOCKDEV_FILE TEST_DATA_ROOT "/wifi.umockdev"
 
 START_TEST(test_manager_simple)
 {
@@ -157,6 +158,28 @@ START_TEST(test_manager_bluetooth_usb)
 }
 END_TEST
 
+START_TEST(test_manager_wifi_pci)
+{
+        g_autoptr(LdmManager) manager = NULL;
+        autofree(UMockdevTestbed) *bed = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
+        LdmDevice *device = NULL;
+
+        bed = umockdev_testbed_new();
+        fail_if(!umockdev_testbed_add_from_file(bed, WIFI_UMOCKDEV_FILE, NULL),
+                "Failed to create WiFI device");
+        manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR);
+        fail_if(!manager, "Failed to get the LdmManager");
+
+        devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_WIRELESS);
+        fail_if(!devices, "Failed to obtain devices");
+        fail_if(devices->len != 1, "Invalid device set");
+
+        device = devices->pdata[0];
+        fail_if(!ldm_device_has_type(device, LDM_DEVICE_TYPE_PCI), "Device has wrong type");
+}
+END_TEST
+
 /**
  * Standard helper for running a test suite
  */
@@ -185,6 +208,7 @@ static Suite *test_create(void)
         tcase_add_test(tc, test_manager_simple);
         tcase_add_test(tc, test_manager_optimus);
         tcase_add_test(tc, test_manager_bluetooth_usb);
+        tcase_add_test(tc, test_manager_wifi_pci);
 
         return s;
 }

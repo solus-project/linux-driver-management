@@ -24,6 +24,7 @@
 #include <dmi-device.h>
 #include <pci-device.h>
 #include <usb-device.h>
+#include <wifi-device.h>
 
 /* Plugin API */
 #include <plugin.h>

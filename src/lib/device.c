@@ -22,6 +22,7 @@
 #include "hid-device.h"
 #include "pci-device.h"
 #include "usb-device.h"
+#include "wifi-device.h"
 
 static void ldm_device_set_property(GObject *object, guint id, const GValue *value,
                                     GParamSpec *spec);
@@ -405,6 +406,8 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
                 special_type = LDM_TYPE_HID_DEVICE;
         } else if (g_str_equal(subsystem, "bluetooth")) {
                 special_type = LDM_TYPE_BLUETOOTH_DEVICE;
+        } else if (g_str_equal(subsystem, "ieee80211")) {
+                special_type = LDM_TYPE_WIFI_DEVICE;
         } else {
                 special_type = LDM_TYPE_DEVICE;
         }
