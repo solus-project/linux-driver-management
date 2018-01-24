@@ -155,7 +155,7 @@ static gint ldm_manager_sort_by_priority(gconstpointer a, gconstpointer b)
  * if they can support it. The returned #GPtrArray will free all elements
  * when it itself is freed.
  *
- * Returns: (element-type Ldm.Provider) (transfer full): a list of all possible providers
+ * Returns: (element-type Ldm.Provider) (transfer container): a list of all possible providers
  */
 GPtrArray *ldm_manager_get_providers(LdmManager *self, LdmDevice *device)
 {
@@ -178,7 +178,11 @@ GPtrArray *ldm_manager_get_providers(LdmManager *self, LdmDevice *device)
                         continue;
                 }
 
-                g_ptr_array_add(ret, g_object_ref_sink(provider));
+                if (g_object_is_floating(provider)) {
+                        g_ptr_array_add(ret, g_object_ref_sink(provider));
+                } else {
+                        g_ptr_array_add(ret, provider);
+                }
         }
 
         g_ptr_array_sort(ret, ldm_manager_sort_by_priority);
