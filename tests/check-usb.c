@@ -34,7 +34,7 @@ START_TEST(test_manager_usb_simple)
 {
         g_autoptr(LdmManager) manager = NULL;
         autofree(UMockdevTestbed) *bed = NULL;
-        g_autoptr(GList) devices = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
 
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, YETI_UMOCKDEV_FILE, NULL),
@@ -45,9 +45,7 @@ START_TEST(test_manager_usb_simple)
         /* 2 devices right now because of the root hub. */
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_AUDIO);
         fail_if(!devices, "Failed to obtain devices");
-        fail_if(g_list_length(devices) != 1,
-                "Expected 1 device, got %u devices",
-                g_list_length(devices));
+        fail_if(devices->len != 1, "Expected 1 device, got %u devices", devices->len);
 }
 END_TEST
 
@@ -58,7 +56,7 @@ START_TEST(test_manager_usb_noisy)
 {
         g_autoptr(LdmManager) manager = NULL;
         autofree(UMockdevTestbed) *bed = NULL;
-        g_autoptr(GList) devices = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
         const char *vendor = NULL;
         LdmDevice *device = NULL;
         static const gchar *test_files[] = {
@@ -81,14 +79,16 @@ START_TEST(test_manager_usb_noisy)
 
         /* No PCI pls */
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_PRINTER);
-        fail_if(devices, "Printer should only be USB!");
+        fail_if(devices->len != 0, "Printer should only be USB!");
+        g_ptr_array_unref(devices);
+        devices = NULL;
 
         /* Has USB printer? */
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_PRINTER);
         fail_if(!devices, "Failed to find USB printers");
-        fail_if(g_list_length(devices) != 1, "Should only have one printer!");
+        fail_if(devices->len != 1, "Should only have one printer!");
 
-        device = g_list_nth_data(devices, 0);
+        device = devices->pdata[0];
         vendor = ldm_device_get_vendor(device);
         fail_if(!vendor, "Missing vendor on printer!");
         fail_if(!g_str_equal(vendor, "Brother Industries, Ltd"),

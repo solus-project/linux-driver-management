@@ -221,10 +221,11 @@ static void ldm_gpu_config_init(LdmGPUConfig *self)
  * Utility method to find the boot_vga device, i.e. the GPU that was used
  * to boot the system.
  */
-static LdmDevice *ldm_gpu_config_search_boot(GList *devices, gboolean vga_boot, LdmDevice *not_like)
+static LdmDevice *ldm_gpu_config_search_boot(GPtrArray *devices, gboolean vga_boot,
+                                             LdmDevice *not_like)
 {
-        for (GList *elem = devices; elem; elem = elem->next) {
-                LdmDevice *device = LDM_DEVICE(elem->data);
+        for (guint i = 0; i < devices->len; i++) {
+                LdmDevice *device = devices->pdata[i];
 
                 if (device == not_like) {
                         continue;
@@ -311,20 +312,20 @@ static gboolean ldm_gpu_config_do_amd_hybrid(LdmGPUConfig *self, LdmDevice *prim
  */
 static void ldm_gpu_config_analyze(LdmGPUConfig *self)
 {
-        g_autoptr(GList) devices = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
         LdmDevice *boot_vga = NULL;
         LdmDevice *non_boot_vga = NULL;
         gint vendor_id = 0;
 
         devices = ldm_manager_get_devices(self->manager, LDM_DEVICE_TYPE_PCI | LDM_DEVICE_TYPE_GPU);
-        self->n_gpu = g_list_length(devices);
+        self->n_gpu = devices->len;
         if (self->n_gpu < 1) {
                 g_message("failed to discover any GPUs");
                 return;
         }
 
         /* Safety set */
-        self->primary = g_list_nth_data(devices, 0);
+        self->primary = devices->pdata[0];
 
         /* Trivial GPU configuration */
         if (self->n_gpu == 1) {
@@ -335,7 +336,7 @@ static void ldm_gpu_config_analyze(LdmGPUConfig *self)
         /* Ensure we have boot_vga, compensate if required */
         boot_vga = ldm_gpu_config_search_boot(devices, TRUE, NULL);
         if (!boot_vga) {
-                boot_vga = g_list_nth_data(devices, 0);
+                boot_vga = devices->pdata[0];
         }
 
         /* Ensure primary is properly set now */

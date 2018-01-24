@@ -67,9 +67,8 @@ static guint obj_signals[N_SIGNALS] = { 0 };
  *
  * |[<!-- language="C" -->
  *      LdmManager *manager = ldm_manager_new(LDM_MANAGER_FLAGS_NONE);
- *      GList *devices = ldm_manager_get_devices(LDM_DEVICE_TYPE_ANY);
- *      LdmDevice *device = g_list_nth_data(devices, 0);
- *      g_list_free(devices);
+ *      g_autoptr(GPtrArray) devices = ldm_manager_get_devices(LDM_DEVICE_TYPE_ANY);
+ *      LdmDevice *device = devices->pdata[0];
  * ]|
  *
  * Vala example:
@@ -674,13 +673,20 @@ LdmManager *ldm_manager_new(LdmManagerFlags flags)
  * with #LDM_DEVICE_TYPE_GPU|#LDM_DEVICE_TYPE_PCI to find all PCI GPUs on
  * the system.
  *
- * Returns: (element-type Ldm.Device) (transfer container): a list of all currently known devices
+ * This function will return an array of references to our internal storage,
+ * so that they persist should hotplugging then disable the device. It is
+ * advisable to not rely on the device list staying valid for any duration
+ * of time, and instead use it for basic probing, not persistence.
+ *
+ * Returns: (element-type Ldm.Device) (transfer full): a list of all currently known devices
  */
-GList *ldm_manager_get_devices(LdmManager *self, LdmDeviceType class_mask)
+GPtrArray *ldm_manager_get_devices(LdmManager *self, LdmDeviceType class_mask)
 {
-        GList *ret = NULL;
+        GPtrArray *ret = NULL;
 
         g_return_val_if_fail(self != NULL, NULL);
+
+        ret = g_ptr_array_new_with_free_func(g_object_unref);
 
         for (guint i = 0; i < self->devices->len; i++) {
                 LdmDevice *node = NULL;
@@ -689,7 +695,7 @@ GList *ldm_manager_get_devices(LdmManager *self, LdmDeviceType class_mask)
                 if (!ldm_device_has_type(node, class_mask)) {
                         continue;
                 }
-                ret = g_list_append(ret, node);
+                g_ptr_array_add(ret, g_object_ref(node));
         }
 
         return ret;

@@ -45,7 +45,6 @@ START_TEST(test_gpu_config_simple)
 {
         g_autoptr(LdmManager) manager = NULL;
         autofree(UMockdevTestbed) *bed = NULL;
-        g_autoptr(GList) devices = NULL;
         g_autoptr(LdmGPUConfig) gpu = NULL;
         guint n_gpu = 0;
 
@@ -69,7 +68,6 @@ START_TEST(test_gpu_config_optimus)
 {
         g_autoptr(LdmManager) manager = NULL;
         autofree(UMockdevTestbed) *bed = NULL;
-        g_autoptr(GList) devices = NULL;
         g_autoptr(LdmGPUConfig) gpu = NULL;
         guint n_gpu = 0;
 
@@ -97,7 +95,6 @@ START_TEST(test_gpu_config_desktop_nvidia)
 {
         g_autoptr(LdmManager) manager = NULL;
         autofree(UMockdevTestbed) *bed = NULL;
-        g_autoptr(GList) devices = NULL;
         g_autoptr(LdmGPUConfig) gpu = NULL;
         guint n_gpu = 0;
 

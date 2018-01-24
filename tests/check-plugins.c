@@ -162,7 +162,7 @@ START_TEST(test_plugins_razer)
 {
         g_autoptr(LdmManager) manager = NULL;
         autofree(UMockdevTestbed) *bed = NULL;
-        g_autoptr(GList) devices = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
         g_autoptr(GPtrArray) providers = NULL;
         LdmDevice *device = NULL;
         const gchar *provider_id = NULL;
@@ -175,9 +175,9 @@ START_TEST(test_plugins_razer)
                 "Failed to add main modalias directory");
 
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_HID);
-        fail_if(g_list_length(devices) != 1, "Failed to find HID device!");
+        fail_if(devices->len != 1, "Failed to find HID device!");
 
-        device = g_list_nth_data(devices, 0);
+        device = devices->pdata[0];
 
         providers = ldm_manager_get_providers(manager, device);
         fail_if(providers->len != 1, "Expected 1 provider, got %u providers", providers->len);

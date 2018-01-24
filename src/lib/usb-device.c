@@ -69,9 +69,9 @@ struct _LdmUSBDeviceClass {
  *
  * |[<!-- language="c" -->
  *      gint search_mask = LDM_DEVICE_TYPE_USB | LDM_DEVICE_TYPE_PRINTER;
- *      GList *usb_printers = ldm_manager_get_devices(search_mask);
- *      g_message("Got %d printers", g_list_length(usb_printers);
- *      LdmDevice *device = g_list_nth_data(usb_printers, 0);
+ *      g_autoptr(GPtrArray) usb_printers = ldm_manager_get_devices(search_mask);
+ *      g_message("Got %u printers", usb_printers->len);
+ *      LdmDevice *device = usb_printers->pdata[0];
  *      if (ldm_device_has_type(device, LDM_DEVICE_TYPE_IMAGE)) {
  *              g_message("Printer supports PTP!");
  *      }

@@ -164,6 +164,8 @@ GPtrArray *ldm_manager_get_providers(LdmManager *self, LdmDevice *device)
         LdmPlugin *plugin = NULL;
         GHashTableIter iter = { 0 };
 
+        g_return_val_if_fail(self != NULL, NULL);
+
         ret = g_ptr_array_new_with_free_func(g_object_unref);
 
         g_hash_table_iter_init(&iter, self->plugins);

@@ -204,7 +204,7 @@ int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 {
         g_autoptr(LdmManager) manager = NULL;
         g_autoptr(LdmGPUConfig) gpu_config = NULL;
-        g_autoptr(GList) devices = NULL;
+        g_autoptr(GPtrArray) devices = NULL;
 
         /* No need for hot plug events */
         manager = ldm_manager_new(LDM_MANAGER_FLAGS_NO_MONITOR);
@@ -226,8 +226,8 @@ int ldm_cli_status(__ldm_unused__ int argc, __ldm_unused__ char **argv)
 
         /* Emit non GPU items here, platform first */
         devices = ldm_manager_get_devices(manager, LDM_DEVICE_TYPE_ANY);
-        for (GList *elem = devices; elem; elem = elem->next) {
-                print_non_gpu(manager, elem->data);
+        for (guint i = 0; i < devices->len; i++) {
+                print_non_gpu(manager, devices->pdata[i]);
         }
 
         /* Emit GPU config last for consistency */
