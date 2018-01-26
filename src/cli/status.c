@@ -192,7 +192,7 @@ static void print_non_gpu(LdmManager *manager, LdmDevice *device)
         for (guint i = 0; i < providers->len; i++) {
                 LdmProvider *provider = providers->pdata[i];
                 fprintf(stdout,
-                        "  \u2558 Provider %02u   : %s\n",
+                        "  \u2558 Provider %02u  : %s\n",
                         i + 1,
                         ldm_provider_get_package(provider));
         }
