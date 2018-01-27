@@ -89,6 +89,7 @@ The core form of driver matching is to use `*.modaliases` files. These are ident
  - `usb`
  - `pci`
  - `dmi`
+ - `bluetooth`
 
 Example `modalias` files can be found in the `tests/data/*.modaliases` set. Essentially they provide a `fnmatch(3)` style string to match each device node `modalias`, the name of the kernel driver, and the name of the package or bundle that the user would need to install to enable it. It is then up to the consumer of the APIs to do something with those providers.
 
