@@ -128,7 +128,7 @@ if with_tools != 'no'
         required_tools = true
     endif
 
-    dep_kmod = dependency('libkmod', version: '>= 24', required: required_test)
+    dep_kmod = dependency('libkmod', version: '>= 24', required: required_tools)
 
     if dep_kmod.found()
         enable_tools = true
