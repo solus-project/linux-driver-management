@@ -656,7 +656,10 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device, gbool
         }
 
         /* Build the actual device now */
-        ldm_device = ldm_device_new_from_udev(parent, device, properties);
+        ldm_device = ldm_device_new_from_udev(parent, device, properties, self->device_priority);
+
+        /* Note that due to subchilds this index may appear messed up, but that's fine. */
+        ++self->device_priority;
 
         if (parent) {
                 ldm_device_add_child(parent, ldm_device);
@@ -689,6 +692,14 @@ static void ldm_manager_push_device(LdmManager *self, udev_device *device, gbool
 LdmManager *ldm_manager_new(LdmManagerFlags flags)
 {
         return g_object_new(LDM_TYPE_MANAGER, "flags", flags, NULL);
+}
+
+static gint ldm_manager_sort_device_by_priority(gconstpointer a, gconstpointer b)
+{
+        gint prioA = ldm_device_get_priority(*(LdmDevice **)a);
+        gint prioB = ldm_device_get_priority(*(LdmDevice **)b);
+
+        return prioA - prioB;
 }
 
 /**
@@ -724,6 +735,8 @@ GPtrArray *ldm_manager_get_devices(LdmManager *self, LdmDeviceType class_mask)
                 }
                 g_ptr_array_add(ret, g_object_ref(node));
         }
+
+        g_ptr_array_sort(ret, ldm_manager_sort_device_by_priority);
 
         return ret;
 }

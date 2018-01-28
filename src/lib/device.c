@@ -63,6 +63,7 @@ enum { PROP_PARENT = 1,
        PROP_VENDOR_ID,
        PROP_DEV_TYPE,
        PROP_ATTRIBUTES,
+       PROP_PRIORITY,
        N_PROPS };
 
 static GParamSpec *obj_properties[N_PROPS] = {
@@ -209,6 +210,20 @@ static void ldm_device_class_init(LdmDeviceClass *klazz)
                                                              LDM_DEVICE_ATTRIBUTE_ANY,
                                                              G_PARAM_READABLE);
 
+        /**
+         * LdmDevice:priority
+         * Since: 1.0.2
+         *
+         * Internal integer used to ensure stable sort of devices
+         */
+        obj_properties[PROP_PRIORITY] = g_param_spec_int("priority",
+                                                         "Device priority",
+                                                         "Used to ensure stable device sorting",
+                                                         0,
+                                                         1000,
+                                                         0,
+                                                         G_PARAM_READWRITE);
+
         g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
@@ -220,6 +235,9 @@ static void ldm_device_set_property(GObject *object, guint id, const GValue *val
         switch (id) {
         case PROP_PARENT:
                 self->tree.parent = g_value_get_pointer(value);
+                break;
+        case PROP_PRIORITY:
+                self->priority = g_value_get_int(value);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -258,6 +276,9 @@ static void ldm_device_get_property(GObject *object, guint id, GValue *value, GP
                 break;
         case PROP_ATTRIBUTES:
                 g_value_set_flags(value, self->os.attributes);
+                break;
+        case PROP_PRIORITY:
+                g_value_set_int(value, self->priority);
                 break;
         default:
                 G_OBJECT_WARN_INVALID_PROPERTY_ID(object, id, spec);
@@ -381,11 +402,13 @@ gint ldm_device_get_vendor_id(LdmDevice *self)
  * @parent: (nullable): Parent device, if any.
  * @device: Associated udev device
  * @hwinfo: If set, the hwdb entry for this device.
+ * @priority: Sort priority for the device
  *
  * Construct a new LdmDevice from the given udev device and hwdb information.
  * This is private API between the manager and the device.
  */
-LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *properties)
+LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *properties,
+                                    gint priority)
 {
         udev_list *entry = NULL;
         LdmDevice *self = NULL;
@@ -412,7 +435,7 @@ LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev
                 special_type = LDM_TYPE_DEVICE;
         }
 
-        self = g_object_new(special_type, "parent", parent, NULL);
+        self = g_object_new(special_type, "parent", parent, "priority", priority, NULL);
 
         /* Set the absolute basics */
         self->os.sysfs_path = g_strdup(udev_device_get_syspath(device));
@@ -670,6 +693,19 @@ LdmDevice *ldm_device_get_child_by_path(LdmDevice *self, const gchar *path)
         g_return_val_if_fail(self != NULL, NULL);
 
         return g_hash_table_lookup(self->tree.kids, path);
+}
+
+/**
+ * ldm_device_get_priority:
+ * Since: 1.0.2
+ *
+ * Return the device priority. This is used internally for ensuring a stable
+ * sort of all devices.
+ */
+gint ldm_device_get_priority(LdmDevice *self)
+{
+        g_return_val_if_fail(self != NULL, 0);
+        return self->priority;
 }
 
 /*

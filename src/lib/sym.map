@@ -10,6 +10,7 @@ LIBLDM_0 {
     ldm_device_get_name;
     ldm_device_get_path;
     ldm_device_get_parent;
+    ldm_device_get_priority;
     ldm_device_get_product_id;
     ldm_device_get_vendor;
     ldm_device_get_vendor_id;

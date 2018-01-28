@@ -40,6 +40,8 @@ struct _LdmDeviceClass {
 struct _LdmDevice {
         GInitiallyUnowned parent;
 
+        gint priority; /* Sort index */
+
         struct {
                 LdmDevice *parent;
                 GHashTable *kids;
@@ -71,7 +73,8 @@ DEF_AUTOFREE(udev_enum, udev_enumerate_unref)
 DEF_AUTOFREE(gchar, g_free)
 
 /* Private device API */
-LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *properties);
+LdmDevice *ldm_device_new_from_udev(LdmDevice *parent, udev_device *device, udev_list *properties,
+                                    gint priority);
 
 void ldm_dmi_device_init_private(LdmDevice *self, udev_device *device);
 void ldm_pci_device_init_private(LdmDevice *self, udev_device *device);

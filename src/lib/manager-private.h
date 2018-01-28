@@ -31,6 +31,7 @@ struct _LdmManager {
         GHashTable *plugins;
 
         gint modalias_plugin_priority;
+        gint device_priority;
 
         /* Udev */
         udev_connection *udev;
