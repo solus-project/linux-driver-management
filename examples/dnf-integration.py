@@ -2,7 +2,7 @@
 #
 # This file is Public Domain and provided only for documentation purposes.
 #
-# Run : python2 ./list-usb.py
+# Run : python3 dnf-integration.py
 #
 #
 
