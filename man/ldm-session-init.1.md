@@ -31,7 +31,7 @@ On success, 0 is returned. A non-zero return code signals a failure.
 
 ## COPYRIGHT
 
- * Copyright © 2017-2018 Ikey Doherty, License: CC-BY-SA-3.0
+ * Copyright © 2017-2018 Linux Driver Management Developers, Solus Project, License: CC-BY-SA-3.0
 
 ## SEE ALSO
 
