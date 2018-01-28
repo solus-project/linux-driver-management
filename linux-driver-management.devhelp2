@@ -83,6 +83,7 @@
     <keyword type="function" name="ldm_device_has_attribute ()" link="LdmDevice.html#ldm-device-has-attribute"/>
     <keyword type="function" name="ldm_device_get_parent ()" link="LdmDevice.html#ldm-device-get-parent"/>
     <keyword type="function" name="ldm_device_get_children ()" link="LdmDevice.html#ldm-device-get-children"/>
+    <keyword type="function" name="ldm_device_get_priority ()" link="LdmDevice.html#ldm-device-get-priority" since="1.0.2"/>
     <keyword type="enum" name="enum LdmPCIVendorID" link="LdmDevice.html#LdmPCIVendorID"/>
     <keyword type="enum" name="enum LdmDeviceType" link="LdmDevice.html#LdmDeviceType"/>
     <keyword type="enum" name="enum LdmDeviceAttribute" link="LdmDevice.html#LdmDeviceAttribute"/>
@@ -92,6 +93,7 @@
     <keyword type="property" name="The “name” property" link="LdmDevice.html#LdmDevice--name"/>
     <keyword type="property" name="The “parent” property" link="LdmDevice.html#LdmDevice--parent"/>
     <keyword type="property" name="The “path” property" link="LdmDevice.html#LdmDevice--path"/>
+    <keyword type="property" name="The “priority” property" link="LdmDevice.html#LdmDevice--priority"/>
     <keyword type="property" name="The “product-id” property" link="LdmDevice.html#LdmDevice--product-id"/>
     <keyword type="property" name="The “vendor” property" link="LdmDevice.html#LdmDevice--vendor"/>
     <keyword type="property" name="The “vendor-id” property" link="LdmDevice.html#LdmDevice--vendor-id"/>

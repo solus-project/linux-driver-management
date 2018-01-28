@@ -133,6 +133,14 @@
 <a class="link" href="LdmDevice.html#ldm-device-get-children" title="ldm_device_get_children ()">ldm_device_get_children</a> <span class="c_punctuation">()</span>
 </td>
 </tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="LdmDevice.html#ldm-device-get-priority" title="ldm_device_get_priority ()">ldm_device_get_priority</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
 </tbody>
 </table></div>
 </div>
@@ -177,6 +185,11 @@
 <span class="type">gchar</span> *</td>
 <td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--path" title="The “path” property">path</a></td>
 <td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gint</span></td>
+<td class="property_name"><a class="link" href="LdmDevice.html#LdmDevice--priority" title="The “priority” property">priority</a></td>
+<td class="property_flags">Read / Write</td>
 </tr>
 <tr>
 <td class="property_type"><span class="type">gint</span></td>
@@ -467,6 +480,13 @@ ldm_device_get_children (<em class="parameter"><code><a class="link" href="LdmDe
 <p><span class="annotation">[<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> Ldm.Device][<acronym title="Free data container after the code is done."><span class="acronym">transfer container</span></acronym>]</span></p>
 </div>
 </div>
+<hr>
+<div class="refsect2">
+<a name="ldm-device-get-priority"></a><h3>ldm_device_get_priority ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+ldm_device_get_priority (<em class="parameter"><code><a class="link" href="LdmDevice.html" title="LdmDevice"><span class="type">LdmDevice</span></a> *device</code></em>);</pre>
+<p class="since">Since: 1.0.2</p>
+</div>
 </div>
 <div class="refsect1">
 <a name="LdmDevice.other_details"></a><h2>Types and Values</h2>
@@ -724,6 +744,16 @@ of multiple device types (such as PCI|GPU)</p>
 <p>The system path for this device. On Linux this is the sysfs path.</p>
 <p>Flags: Read</p>
 <p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="LdmDevice--priority"></a><h3>The <code class="literal">“priority”</code> property</h3>
+<pre class="programlisting">  “priority”                 <span class="type">gint</span></pre>
+<p>Used to ensure stable device sorting.</p>
+<p>Flags: Read / Write</p>
+<p>Allowed values: [0,1000]</p>
+<p>Default value: 0</p>
+<p class="since">Since: 1.0.2</p>
 </div>
 <hr>
 <div class="refsect2">
