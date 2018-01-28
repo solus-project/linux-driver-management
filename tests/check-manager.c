@@ -33,7 +33,7 @@ START_TEST(test_manager_simple)
         autofree(UMockdevTestbed) *bed = NULL;
         g_autoptr(GPtrArray) devices = NULL;
         LdmDevice *nvidia_device = NULL;
-        const gchar *vendor = NULL;
+        gint vendor_id = 0;
 
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, NV_MOCKDEV_FILE, NULL),
@@ -56,12 +56,8 @@ START_TEST(test_manager_simple)
         fail_if(!ldm_device_has_attribute(nvidia_device, LDM_DEVICE_ATTRIBUTE_BOOT_VGA),
                 "PCI GPU lacks boot_vga attribute");
 
-        vendor = ldm_device_get_vendor(nvidia_device);
-        fail_if(!vendor, "No vendor set on GPU!");
-        fail_if(!g_str_equal(vendor, "NVIDIA Corporation"),
-                "Expected vendor '%s', instead got '%s'",
-                "NVIDIA Corporation",
-                vendor);
+        vendor_id = ldm_device_get_vendor_id(nvidia_device);
+        fail_if(vendor_id != LDM_PCI_VENDOR_ID_NVIDIA, "NVIDIA device vendor is not NVIDIA");
 }
 END_TEST
 
@@ -76,8 +72,7 @@ START_TEST(test_manager_optimus)
         g_autoptr(GPtrArray) devices = NULL;
         LdmDevice *igpu = NULL;
         LdmDevice *dgpu = NULL;
-        const gchar *vendor = NULL;
-        const gchar *name = NULL;
+        gint vendor_id = 0;
 
         bed = umockdev_testbed_new();
         fail_if(!umockdev_testbed_add_from_file(bed, OPTIMUS_MOCKDEV_FILE, NULL),
@@ -91,28 +86,13 @@ START_TEST(test_manager_optimus)
 
         /* Check the dGPU data is correct */
         dgpu = devices->pdata[1];
-        vendor = ldm_device_get_vendor(dgpu);
-        fail_if(!vendor, "No vendor set on dGPU!");
-        fail_if(!g_str_equal(vendor, "NVIDIA Corporation"),
-                "Expected vendor '%s', instead got '%s'",
-                "NVIDIA Corporation",
-                vendor);
-        vendor = NULL;
+        vendor_id = ldm_device_get_vendor_id(dgpu);
+        fail_if(vendor_id != LDM_PCI_VENDOR_ID_NVIDIA, "dGPU Vendor is not NVIDIA");
 
         /* Check the iGPU data is correct */
         igpu = devices->pdata[0];
-        vendor = ldm_device_get_vendor(igpu);
-        fail_if(!vendor, "No vendor set on iGPU!");
-        fail_if(!g_str_equal(vendor, "Intel Corporation"),
-                "Expected vendor '%s', instead got '%s'",
-                "Intel Corporation",
-                vendor);
-        vendor = NULL;
-        name = ldm_device_get_name(igpu);
-        fail_if(!g_str_equal(name, "4th Gen Core Processor Integrated Graphics Controller"),
-                "Invalid iGPU name, expected '%s', got '%s'",
-                "4th Gen Core Processor Integrated Graphics Controller",
-                name);
+        vendor_id = ldm_device_get_vendor_id(igpu);
+        fail_if(vendor_id != LDM_PCI_VENDOR_ID_INTEL, "iGPU vendor is not Intel");
 
         fail_if(!ldm_device_has_attribute(igpu, LDM_DEVICE_ATTRIBUTE_BOOT_VGA),
                 "iGPU has missing boot_vga attribute");
