@@ -1,7 +1,7 @@
 project(
     'linux-driver-management',
     ['c'],
-    version: '1.0.1',
+    version: '1.0.2',
     license: [
         'LGPL-2.1',
     ],
@@ -147,7 +147,7 @@ with_docs = get_option('with-docs')
 # Define our ABI
 abi_major_version = '1'
 abi_minor_version = '0'
-abi_micro_version = '0'
+abi_micro_version = '2'
 
 abi_version = '@0@.@1@.@2@'.format(
     abi_major_version,
