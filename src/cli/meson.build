@@ -5,6 +5,10 @@ cli_sources = [
     'version.c',
 ]
 
+if with_glx_configuration == true
+    cli_sources += 'configure.c'
+endif
+
 executable('linux-driver-management',
     sources: cli_sources,
     dependencies: [

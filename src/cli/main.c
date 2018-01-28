@@ -11,6 +11,7 @@
 
 #include "cli.h"
 #include "config.h"
+#include "util.h"
 
 #include <glib.h>
 #include <stdio.h>
@@ -36,6 +37,14 @@ static void print_usage(const char *progname)
         fprintf(stderr, "%s usage: [status]\n", progname);
         fprintf(stderr, "Run '%s --help' for further information\n", progname);
 }
+
+#ifndef WITH_GLX_CONFIGURATION
+static int ldm_cli_configure(__ldm_unused__ int argc, __ldm_unused__ char **argv)
+{
+        fprintf(stderr, "GLX configuration has been disabled in this build\n");
+        return EXIT_FAILURE;
+}
+#endif
 
 int main(int argc, char **argv)
 {

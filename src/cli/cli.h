@@ -11,12 +11,17 @@
 
 #pragma once
 
+#include "config.h"
+
 /**
  * Basic typedef that all of our CLI commands adhere too
  */
 typedef int (*ldm_cli_command)(int argc, char **argv);
 
+#ifdef WITH_GLX_CONFIGURATION
 int ldm_cli_configure(int argc, char **argv);
+#endif
+
 int ldm_cli_status(int argc, char **argv);
 int ldm_cli_version(int argc, char **argv);
 

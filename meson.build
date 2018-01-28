@@ -75,10 +75,15 @@ cdata.set_quoted('SYSCONFDIR', path_sysconfdir)
 cdata.set_quoted('XORG_MODULE_DIRECTORY', xorg_module_dir)
 cdata.set_quoted('MODALIAS_DIR', path_modalias_dir)
 
+with_glx_configuration = get_option('with-glx-configuration')
+
 # Track dirs
 cdata.set_quoted('LDM_TRACK_DIR', path_vardir)
 with_hybrid_file = join_paths(path_vardir, 'hybrid') 
 cdata.set_quoted('LDM_HYBRID_FILE', with_hybrid_file)
+if with_glx_configuration == true
+    cdata.set('WITH_GLX_CONFIGURATION', '1')
+endif
 
 # Write config.h now
 config_h = configure_file(
@@ -188,6 +193,7 @@ report = [
     '    ==============',
     '',
     '    gl-driver-switch-compat:                @0@'.format(with_gl_driver_switch_compat),
+    '    GLX configuration:                      @0@'.format(with_glx_configuration),
     '    tools:                                  @0@'.format(enable_tools),
     '    vala bindings:                          @0@'.format(enable_vapigen),
     '',
