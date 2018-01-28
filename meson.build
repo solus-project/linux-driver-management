@@ -103,7 +103,7 @@ if with_tests != 'no'
         required_test = true
     endif
 
-    dep_check = dependency('check', version: '>= 0.12.0', required: required_test)
+    dep_check = dependency('check', version: '>= 0.11.0', required: required_test)
     dep_umockdev = dependency('umockdev-1.0', version: '>= 0.9.0', required: required_test)
     run_umockdev = find_program('umockdev-wrapper', required: required_test)
 
