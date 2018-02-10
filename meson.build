@@ -1,7 +1,7 @@
 project(
     'linux-driver-management',
     ['c'],
-    version: '1.0.2',
+    version: '1.0.3',
     license: [
         'LGPL-2.1',
     ],
