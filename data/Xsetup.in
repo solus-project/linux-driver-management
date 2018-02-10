@@ -1,1 +1,2 @@
-@BINDIR@/ldm-session-init
+#!/bin/bash
+exec @BINDIR@/ldm-session-init
