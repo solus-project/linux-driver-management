@@ -6,9 +6,9 @@ Linux Driver Management provides a core library and some tooling to enable the q
 
 Through this library we aim to centralise driver management solutions for Linux, and allow all distributions a chance to improve the UX around driver/device installation through device/driver discovery, with hotplug capabilities. Users should be able to plug in that new device and have the corresponding drivers offered to them dynamically, without having to hunt through software centers and menus for driver tools. Additionally - users might not realise they **need** to install extra support, and will rightfully believe that it's "broken".
 
-Linux Driver Management is a [Solus project](https://solus-project.com/)
+Linux Driver Management is a [Solus project](https://getsol.us/)
 
-![logo](https://build.solus-project.com/logo.png)
+![logo](https://build.getsol.us/logo.png)
 
 ## Core Overview
 
